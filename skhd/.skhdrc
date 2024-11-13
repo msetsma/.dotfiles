@@ -1,0 +1,103 @@
+# Keybinding to minimize or center WezTerm
+cmd - space : \
+    yabai -m window --focus "$(yabai -m query --windows | jq -r '.[] | select(.app == "WezTerm") | .id')" && \
+    yabai -m window --grid 4:4:1:1:2:2;
+
+cmd + shift - space : yabai -m window --minimize;
+
+# # Focus windows in different directions
+# cmd - i : yabai -m window --focus north
+# cmd - j : yabai -m window --focus west
+# cmd - k : yabai -m window --focus south
+# cmd - l : yabai -m window --focus east
+
+# # Swap windows in different directions
+# cmd + shift - i : yabai -m window --swap north
+# cmd + shift - j : yabai -m window --swap west
+# cmd + shift - k : yabai -m window --swap south
+# cmd + shift - l : yabai -m window --swap east
+
+# # Resize windows: expand with one keybinding and contract with a modifier
+# # Expand window size
+# cmd + ctrl - i : yabai -m window --resize top:0:-40
+# cmd + ctrl - j : yabai -m window --resize left:-40:0
+# cmd + ctrl - k : yabai -m window --resize bottom:0:40
+# cmd + ctrl - l : yabai -m window --resize right:40:0
+
+# # Contract window size
+# cmd + ctrl + shift - i : yabai -m window --resize top:0:40
+# cmd + ctrl + shift - j : yabai -m window --resize left:40:0
+# cmd + ctrl + shift - k : yabai -m window --resize bottom:0:-40
+# cmd + ctrl + shift - l : yabai -m window --resize right:-40:0
+
+# ################################################################ #
+# THE FOLLOWING IS AN EXPLANATION OF THE GRAMMAR THAT SKHD PARSES. #
+# FOR SIMPLE EXAMPLE MAPPINGS LOOK FURTHER DOWN THIS FILE..        #
+# ################################################################ #
+
+# A list of all built-in modifier and literal keywords can
+# be found at https://github.com/koekeishiya/skhd/issues/1
+#
+# A hotkey is written according to the following rules:
+#
+#   hotkey       = <mode> '<' <action> | <action>
+#
+#   mode         = 'name of mode' | <mode> ',' <mode>
+#
+#   action       = <keysym> '[' <proc_map_lst> ']' | <keysym> '->' '[' <proc_map_lst> ']'
+#                  <keysym> ':' <command>          | <keysym> '->' ':' <command>
+#                  <keysym> ';' <mode>             | <keysym> '->' ';' <mode>
+#
+#   keysym       = <mod> '-' <key> | <key>
+#
+#   mod          = 'modifier keyword' | <mod> '+' <mod>
+#
+#   key          = <literal> | <keycode>
+#
+#   literal      = 'single letter or built-in keyword'
+#
+#   keycode      = 'apple keyboard kVK_<Key> values (0x3C)'
+#
+#   proc_map_lst = * <proc_map>
+#
+#   proc_map     = <string> ':' <command> | <string>     '~' |
+#                  '*'      ':' <command> | '*'          '~'
+#
+#   string       = '"' 'sequence of characters' '"'
+#
+#   command      = command is executed through '$SHELL -c' and
+#                  follows valid shell syntax. if the $SHELL environment
+#                  variable is not set, it will default to '/bin/bash'.
+#                  when bash is used, the ';' delimeter can be specified
+#                  to chain commands.
+#
+#                  to allow a command to extend into multiple lines,
+#                  prepend '\' at the end of the previous line.
+#
+#                  an EOL character signifies the end of the bind.
+#
+#   ->           = keypress is not consumed by skhd
+#
+#   *            = matches every application not specified in <proc_map_lst>
+#
+#   ~            = application is unbound and keypress is forwarded per usual, when specified in a <proc_map>
+#
+# A mode is declared according to the following rules:
+#
+#   mode_decl = '::' <name> '@' ':' <command> | '::' <name> ':' <command> |
+#               '::' <name> '@'               | '::' <name>
+#
+#   name      = desired name for this mode,
+#
+#   @         = capture keypresses regardless of being bound to an action
+#
+#   command   = command is executed through '$SHELL -c' and
+#               follows valid shell syntax. if the $SHELL environment
+#               variable is not set, it will default to '/bin/bash'.
+#               when bash is used, the ';' delimeter can be specified
+#               to chain commands.
+#
+#               to allow a command to extend into multiple lines,
+#               prepend '\' at the end of the previous line.
+#
+#               an EOL character signifies the end of the bind.
