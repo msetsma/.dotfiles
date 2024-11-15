@@ -27,12 +27,11 @@ format = '[$duration]($style)'
 # Directory module
 [directory]
 home_symbol = "⌂"
-truncation_length = 5
-
+truncation_length = 20
 
 [gcloud]
-format = 'GCP [$symbol$project]($style)'
-style = 'bold blue'
+format = '[$symbol$active]($style) '
+style = 'bold yellow'
 disabled = true
 
 [lua]

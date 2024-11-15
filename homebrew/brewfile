@@ -4,6 +4,7 @@ tap "koekeishiya/formulae"
 
 brew "eza"
 brew "fzf"
+brew "stow"
 brew "cmake"
 brew "pyenv"
 brew "neofetch"
