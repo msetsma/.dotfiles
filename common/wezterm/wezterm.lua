@@ -13,13 +13,13 @@ config.keys = keybinds
 
 config.automatically_reload_config = true
 config.window_close_confirmation = "NeverPrompt"
-config.window_decorations = "RESIZE" -- Disable the title bar but enable the resizable border
+config.window_decorations = "RESIZE"
 config.default_cursor_style = "BlinkingBar"
 
 -- Font settings
 config.font = wezterm.font_with_fallback({
-    "FiraCode Nerd Font",        -- Main font
-    "Noto Color Emoji", -- Emoji support
+    "FiraCode Nerd Font", -- Main font
+    "Noto Color Emoji",   -- Emoji support
 })
 config.harfbuzz_features = { "calt=1", "clig=1", "liga=1" }
 config.font_size = 20
