@@ -4,6 +4,7 @@ $git_branch\
 $git_metrics\
 $git_status\
 $fill\
+$rust\
 $python\
 $lua\
 $golang\
