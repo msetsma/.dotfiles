@@ -1,4 +1,11 @@
 # ----------------------------------------
+# Secrets & Tokens
+# ----------------------------------------
+if [ -f ~/.env ]; then
+    export $(grep -v '^#' ~/.env | xargs)
+fi
+
+# ----------------------------------------
 # Aliases
 # ----------------------------------------
 [ -f "$HOME/.config/zsh/aliases.zsh" ] && source "$HOME/.config/zsh/aliases.zsh"

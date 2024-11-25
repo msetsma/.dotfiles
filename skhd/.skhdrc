@@ -1,9 +1,4 @@
 # Keybinding to minimize or center WezTerm
-cmd - space : \
-    yabai -m window --focus "$(yabai -m query --windows | jq -r '.[] | select(.app == "WezTerm") | .id')" && \
-    yabai -m window --grid 4:4:1:1:2:2;
-
-cmd + shift - space : yabai -m window --minimize;
 
 # # Focus windows in different directions
 # cmd - i : yabai -m window --focus north
