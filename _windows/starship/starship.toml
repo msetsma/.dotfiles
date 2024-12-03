@@ -8,7 +8,6 @@ $rust\
 $python\
 $lua\
 $golang\
-$gcloud\
 $cmd_duration\
 $line_break\
 $character"""
