@@ -14,7 +14,6 @@ if (Test-Path "$PWD\wezterm") {
     Write-Error "WezTerm folder not found: $PWD\wezterm"
 }
 
-# Copy PowerShell profile
 # Explicitly define the source file path and destination
 $sourceProfilePath = "$PWD\powershell"
 $destinationProfilePath = "$HOME\Documents\WindowsPowerShell"
