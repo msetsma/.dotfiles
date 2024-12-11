@@ -10,6 +10,10 @@ fi
 # ----------------------------------------
 [ -f "$HOME/.config/zsh/aliases.zsh" ] && source "$HOME/.config/zsh/aliases.zsh"
 
+# ----------------------------------------
+# Functions
+# ----------------------------------------
+[ -f "$HOME/.config/zsh/functions.zsh" ] && source "$HOME/.config/zsh/functions.zsh"
 
 # ----------------------------------------
 # Homebrew Configuration
