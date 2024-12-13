@@ -6,7 +6,7 @@ local config = wezterm.config_builder()
 
 local wezterm = require 'wezterm'
 
-config.default_prog = { 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe' }
+config.default_prog = { 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe', '-NoLogo' }
 
 config.leader = {
     key = "Delete",
@@ -47,6 +47,5 @@ config.inactive_pane_hsb = {
     brightness = 0.85,
 }
 config.adjust_window_size_when_changing_font_size = false
-
 
 return config

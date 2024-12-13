@@ -50,6 +50,7 @@ primaryMonitorPath := HOME "\.dotfiles\_windows\monitor_control\build\monitor_m3
 ; [ALT SHIFT F18] - toggle between two audio devices (Audio Switcher)
 ^!+F18::{
     static toggle := false
+    Sleep(100)
     if (toggle) {
         Send("^!+y") ; Sends [CTRL ALT SHIFT y]
         toggle := false
