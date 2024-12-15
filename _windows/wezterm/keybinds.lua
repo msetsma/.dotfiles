@@ -5,13 +5,13 @@ local functions = require 'functions'
 return {
     {
         key = "n",
-        mods = "CMD",
+        mods = "CTRL",
         action = wezterm.action.ToggleFullScreen,
     },
     -- Close the current pane
     {
         key = "e",
-        mods = "CMD",
+        mods = "CTRL",
         action = wezterm.action.CloseCurrentPane { confirm = false },
     },
     -- Pane navigation
@@ -37,15 +37,14 @@ return {
     },
     {
         key = "Tab",
-        mods = "CMD",
+        mods = "CTRL",
         action = wezterm.action.ActivateTabRelative(1),
     },
     {
         key = "Tab",
-        mods = "CMD|SHIFT",
+        mods = "CTRL|SHIFT",
         action = wezterm.action.ActivateTabRelative(-1),
     },
-
 
     -- Splitting panes in different directions using the leader key
     {
@@ -84,12 +83,12 @@ return {
     -- Change font size not window size
     {
         key = "-",
-        mods = "CMD",
+        mods = "CTRL",
         action = wezterm.action.DecreaseFontSize,
     },
     {
         key = "-",
-        mods = "CMD|SHIFT",
+        mods = "CTRL|SHIFT",
         action = wezterm.action.IncreaseFontSize,
     },
 }
