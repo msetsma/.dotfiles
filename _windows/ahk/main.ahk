@@ -31,6 +31,7 @@
 
 
 HOME := StrReplace(A_Desktop, "\Desktop") ; Does AHK 2 not have a $HOME dir var?
+
 secondMonitorPath := HOME "\.dotfiles\_windows\monitor_control\build\monitor_hp42.exe"
 primaryMonitorPath := HOME "\.dotfiles\_windows\monitor_control\build\monitor_m32u.exe"
 
@@ -47,10 +48,10 @@ primaryMonitorPath := HOME "\.dotfiles\_windows\monitor_control\build\monitor_m3
 }
 
 
-; [ALT SHIFT F18] - toggle between two audio devices (Audio Switcher)
-^!+F18::{
+; [CTRL ALT F18] - toggle between two audio devices (Audio Switcher)
+^!F18::{
     static toggle := false
-    Sleep(100)
+    Sleep(10)
     if (toggle) {
         Send("^!+y") ; Sends [CTRL ALT SHIFT y]
         toggle := false
