@@ -1,16 +1,20 @@
 # Dotfiles for WezTerm and StarShip
 
 This repository contains my configuration files for my dot files.
-I would advice against blindly installing these dotfiles.
+Please copy what you want, but I would advice against blindly installing these dotfiles.
 
-## run the script to create symlinks
+# My Requirements
 
-1. **Make the Script Executable**:
-   ```sh
-   chmod +x ~/.dotfiles/bootstrap.sh
-   ```
+1. Cross Platform.
+2. Fast.
+3. Easy to install.
 
-2. **Run the Script**:
-   ```sh
-   ~/.dotfiles/bootstrap.sh
-   ```
+
+# How to install?
+
+1. Install Rust - https://www.rust-lang.org/tools/install
+    - Windows Download: https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe
+    - UNIX: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+2. Clone this repo
+3. Run install script
+    - dotter -v

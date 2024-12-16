@@ -1,0 +1,22 @@
+[wezterm.files]
+wezterm = "~/.config/wezterm"
+
+[nu.files]
+nushell = "~/.config/nushell"
+
+[starship.files]
+starship = "~/.config/starship"
+
+[scripts.files]
+scripts = "~/.config/scripts"
+
+[bottom.files]
+#bottom = "~/."
+
+[rust.files]
+rust = "~/.cargo"
+
+[ahk.files]
+"_windows/ahk" = "~\\2015m\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup"
+
+

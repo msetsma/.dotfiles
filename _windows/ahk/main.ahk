@@ -1,4 +1,5 @@
 #Requires AutoHotkey v2.0
+#Include functions.ahk
 
 /*
 =====================================================
@@ -28,23 +29,17 @@
 
 =====================================================
 */
+; HOME := StrReplace(A_Desktop, "\Desktop") ; Does AHK 2 not have a $HOME dir var?
 
-
-HOME := StrReplace(A_Desktop, "\Desktop") ; Does AHK 2 not have a $HOME dir var?
-
-secondMonitorPath := HOME "\.dotfiles\_windows\monitor_control\build\monitor_hp42.exe"
-primaryMonitorPath := HOME "\.dotfiles\_windows\monitor_control\build\monitor_m32u.exe"
-
-
-; [CTRL ALT SHIFT F20] - toggle hp24's input
+; [CTRL ALT SHIFT F20] - HP24 switch between: display port <-> HDMI
 ^!+F20::{
-    Run(secondMonitorPath, "" , "Hide")
+    toggleMonitorInputs("HPN3688", 15, 17) 
 }
 
 
-; [CTRL ALT SHIFT F19] - toggle m32u's input
+; [CTRL ALT SHIFT F19] - M32U switch between: display port <-> USB-C
 ^!+F19::{
-    Run(primaryMonitorPath, "" , "Hide")
+    toggleMonitorInputs("GBT3204", 15, 16) 
 }
 
 
@@ -61,41 +56,6 @@ primaryMonitorPath := HOME "\.dotfiles\_windows\monitor_control\build\monitor_m3
     }
 }
 
-
-; d
-!F16::{
-
-}
-
-; e
-!F17::{
-
-}
-
-; f
-!F18::{
-
-}
-
-; g
-!F19::{
-
-}
-
-; h
-!F20::{
-
-}
-
-; i
-!F21::{
-
-}
-
-; j
-!F22::{
-
-}
 
 /*
 ==========================================

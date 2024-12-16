@@ -1,0 +1,88 @@
+[tasks.setup]
+description = "Set up the development environment"
+dependencies = ["install-rust", "dotfiles", "install-coreutils", "install-rust-tools", "clean"]
+
+
+[tasks.install-rust]
+description = "Install Rust and toolchain components"
+script = [
+    "rustup install stable",
+    "rustup default stable",
+    "rustup component add clippy rustfmt"
+]
+
+
+[tasks.dotfiles]
+description = "Symlink all the .dotfiles depending on system .toml files"
+script = [
+    "dotter"
+]
+
+
+[tasks.install-coreutils]
+description = "Install uutils coreutils with platform-specific features"
+linux = { script = ["echo 'Installing coreutils for Linux...'", "cargo install coreutils --features unix"] }
+mac = { script = ["echo 'Installing coreutils for macOS...'", "cargo install coreutils --features macos"] }
+windows = { script = ["echo 'Installing coreutils for Windows...'", "cargo install coreutils --features windows"] }
+
+
+[tasks.install-rust-tools]
+description = "Install necessary rust tools if not already installed (using cargo)"
+script_runner = "@rust"
+script = '''
+use std::process::Command;
+use std::io;
+
+fn main() -> io::Result<()> {
+    let tools = vec![
+        ("ripgrep", "rg"),
+        ("fzf", "fzf"),
+        ("eza", "eza"),
+        ("fd-find", "fd"),
+        ("bat", "bat"),
+        ("starship", "starship"),
+        ("bottom", "btm"),
+        ("dotter", "dotter"),
+    ];
+
+    for (tool, command) in tools {
+        if is_installed(command) {
+            println!("{} is already installed", tool);
+        } else {
+            println!("Installing {}...", tool);
+            install_tool(tool);
+        }
+    }
+
+    Ok(())
+}
+
+fn is_installed(command: &str) -> bool {
+    Command::new(command)
+        .output()
+        .is_ok()
+}
+
+fn install_tool(tool: &str) {
+    let status = Command::new("cargo")
+        .arg("install")
+        .arg(tool)
+        .status()
+        .expect("Failed to execute cargo install");
+
+    if status.success() {
+        println!("{} installed successfully!", tool);
+    } else {
+        eprintln!("Failed to install {}", tool);
+    }
+}
+'''
+
+[tasks.install-tools]
+description = "Install necessary tools if not already installed"
+
+[tasks.clean]
+description = "Clean the build and sccache cache"
+script = [
+    "cargo clean",
+]
