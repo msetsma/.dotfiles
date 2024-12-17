@@ -5,7 +5,7 @@ wezterm = "~/.config/wezterm"
 nushell = "~/.config/nushell"
 
 [starship.files]
-starship = "~/.config/starship"
+starship = "~/.config/"
 
 [scripts.files]
 scripts = "~/.config/scripts"

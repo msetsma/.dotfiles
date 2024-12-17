@@ -18,3 +18,4 @@ Please copy what you want, but I would advice against blindly installing these d
 2. Clone this repo
 3. Run install script
     - dotter -v
+    - add environment variable for XDG_CONFIG_HOME to system -> XDG_CONFIG_HOME="/Users/bob/.config"
