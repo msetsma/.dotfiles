@@ -29,7 +29,8 @@ config.font = wezterm.font_with_fallback({
     "Noto Color Emoji",          -- Emoji support
 })
 config.font_size = 12
-config.color_scheme = 'Aci (Gogh)'
+--config.color_scheme = 'Aci (Gogh)'
+config.color_scheme = 'kanagawabones'
 
 -- Window Settings
 config.hide_tab_bar_if_only_one_tab = false
