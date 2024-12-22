@@ -1,2 +1,2 @@
 # Run initial commands
-source ~/.config/nu/plugins/starship.nu
+# source ~/.config/nu/plugins/starship.nu

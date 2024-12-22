@@ -1,0 +1,18 @@
+scoop bucket add extras
+
+
+Name             Version                  Source Updated             Info
+----             -------                  ------ -------             ----
+7zip             24.09                    main   2024-12-21 19:41:22
+7zip19.00-helper 19.00                    main   2024-12-17 18:24:51
+fd               10.2.0                   main   2024-12-21 19:41:32
+ffmpeg           7.1                      main   2024-12-21 19:41:29
+fzf              0.57.0                   main   2024-12-21 19:41:33
+imagemagick      7.1.1-42                 main   2024-12-21 19:41:46
+innounp          1.76                     main   2024-12-21 19:41:37
+jq               1.7.1                    main   2024-12-21 19:41:29
+poppler          24.08.0-0                main   2024-12-21 19:41:30
+ripgrep          14.1.1                   main   2024-12-21 19:41:32
+wezterm          20240203-110809-5046fc22 extras 2024-12-17 07:12:09
+yazi             0.4.2                    main   2024-12-21 19:41:05
+zoxide           0.9.6                    main   2024-12-21 19:41:33

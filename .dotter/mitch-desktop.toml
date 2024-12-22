@@ -1,1 +1,1 @@
-packages = [ "bottom", "nu", "rust", "starship", "scripts", "wezterm", "ahk"]
+packages = [ "common", "ahk" ]

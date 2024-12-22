@@ -1,7 +1,4 @@
 source-env ~/.config/nushell/env.nu
-source ~/.config/nushell/aliases.nu
-source ~/.config/nushell/functions.nu
-source ~/.config/nushell/keybinds.nu
 
 $env.config.history.file_format = "sqlite"
 $env.config.history.max_size = 5_000_000
@@ -37,4 +34,10 @@ $env.config.table.footer_inheritance = false
 $env.config.datetime_format.table = null
 $env.config.filesize.metric = true
 $env.config.float_precision = 2
+
 use ~/.cache/starship/init.nu
+
+source ~/.config/zoxide.nu
+source ~/.config/nushell/aliases.nu
+source ~/.config/nushell/functions.nu
+source ~/.config/nushell/keybinds.nu
