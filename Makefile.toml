@@ -82,14 +82,13 @@ script = [
   "echo '--- Installing Scoop ---'",
   "irm get.scoop.sh | iex",
   "scoop bucket add extras", 
+  "scoop install autohotkey",
+  "scoop install zoxide",
+  "scoop install yazi",
+  "scoop install wezterm",
+  "scoop install fzf",
   "scoop install ripgrep",
-  "scoop install ripgrep",
-  "scoop install ripgrep",
-  "scoop install ripgrep",
-  "scoop install ripgrep",
-  "scoop install ripgrep",
-  "scoop install ripgrep",
-  "scoop install ripgrep",
+  "scoop install gsudo",
 ]
 
 [tasks.mac-tools]

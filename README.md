@@ -43,6 +43,8 @@ These dotfiles are a bit more complicated due to the cross platform compatabilit
    ```
 
 ## Tools
+> Note: Tools listed under "common" do not imply they are installed using a universal  method. The installation process may vary depending on the system, such as system package manager (Scoop, Homebrew, or APT).
+
 #### Common
 - [mise](https://github.com/jdx/mise)
 - [nushell](https://github.com/nushell/nushell) 
@@ -62,6 +64,7 @@ These dotfiles are a bit more complicated due to the cross platform compatabilit
 - [ahk](https://github.com/AutoHotkey/AutoHotkey)
 - [komorebi](https://github.com/LGUG2Z/komorebi)
 - [audioswitcher](https://github.com/xenolightning/AudioSwitcher_v1)
+- [gsudo]()
 
 
 #### Linux (WIP)

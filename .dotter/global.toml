@@ -2,15 +2,14 @@
 [common.files]
 wezterm = "~/.config/wezterm"
 nushell = "~/.config/nushell"
-starship = "~/.config/"
-#bottom = "~/."
+starship = "~/.config"
+bottom = "~/.config/dotter"
 rust = "~/.cargo"
 mise = "~/.config/mise"
 
 # windows
 [ahk.files]
 "_windows/ahk" = "~\\2015m\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup"
-
 
 # osx
 
