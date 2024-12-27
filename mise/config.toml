@@ -2,17 +2,3 @@
 # languages
 python = "latest"
 go = "latest"
-
-# cargo
-cargo-binstall = "latest"
-"cargo:eza" = "latest"
-"cargo:bottom" = "latest"
-"cargo:dotter" = "latest"
-"cargo:ripgrep" = "latest"
-"cargo:fd-find" = "latest"
-"cargo:bat" = "latest"
-"cargo:mise" = "latest"
-"cargo:zoxide" = "latest"
-
-[settings]
-experimental = true

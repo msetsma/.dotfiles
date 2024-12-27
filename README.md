@@ -54,7 +54,9 @@ These dotfiles are a bit more complicated due to the cross platform compatabilit
 - [duckypad](https://github.com/dekuNukem/duckyPad-Pro)
 - [wezterm](https://github.com/wez/wezterm)
 - [starship](https://github.com/starship/starship)
-- [ruff](https://github.com/astral-sh/ruff?tab=readme-ov-file)
+- [ruff](https://github.com/astral-sh/ruff)
+- [vivid](https://github.com/sharkdp/vivid)
+- [firacode](https://github.com/tonsky/FiraCode)
 
 #### OSX
 - [karabiner](https://github.com/pqrs-org/Karabiner-Elements)
@@ -64,7 +66,7 @@ These dotfiles are a bit more complicated due to the cross platform compatabilit
 - [ahk](https://github.com/AutoHotkey/AutoHotkey)
 - [komorebi](https://github.com/LGUG2Z/komorebi)
 - [audioswitcher](https://github.com/xenolightning/AudioSwitcher_v1)
-- [gsudo]()
+- [gsudo](https://github.com/gerardog/gsudo)
 
 
 #### Linux (WIP)
@@ -88,8 +90,6 @@ These dotfiles are a bit more complicated due to the cross platform compatabilit
 
 For Rust to work properly, you'll need to have a compatible compiler suite installed on your system. These are the recommended compiler suites:
 
-    Linux: GCC or Clang
-    macOS: Clang (install Xcode)
-    Windows: MSVC (install Visual Studio or the Visual Studio Build Tools)
-        Make sure to install the "Desktop development with C++" workload
-        Any Visual Studio edition will work (Community is free)
+- Linux: GCC or Clang
+- macOS: Clang (install Xcode)
+- Windows: MSVC (Visual Studio Build Tools) Make sure to install the "Desktop development with C++" workload.

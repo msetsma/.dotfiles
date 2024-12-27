@@ -21,8 +21,7 @@ dependencies = [
     "install-rust",            # Install Rust and its components
     "install-coreutils",       # Install platform-specific coreutils
     "install-tools",           # Install platform-specific tools
-    "install-rust-tools",      # Install additional Rust tools
-    "run-mise",                # Run mise to apply configuration
+    "install-rust-tools",      # Install additional Rust tools                
     "dotfiles"                 # Symlink dotfiles
 ]
 
@@ -35,7 +34,14 @@ script = [
 
 [tasks.install-rust-tools]
 script = [
-    "cargo install mise dotter cargo-update"
+    "cargo install mise",
+    "cargo install dotter",
+    "cargo install nushell",
+    "cargo install cargo-update",
+    "cargo install vivid",
+    "cargo install eza",
+    "cargo install bottom",
+    "cargo install bat",
 ]
 
 # Platform-Specific Coreutils Installation
@@ -79,9 +85,9 @@ script = [
 
 [tasks.windows-tools]
 script = [
-  "echo '--- Installing Scoop ---'",
-  "irm get.scoop.sh | iex",
   "scoop bucket add extras", 
+  "scoop bucket add nerd-fonts",
+  "scoop install firacode",
   "scoop install autohotkey",
   "scoop install zoxide",
   "scoop install yazi",
@@ -89,21 +95,25 @@ script = [
   "scoop install fzf",
   "scoop install ripgrep",
   "scoop install gsudo",
+  "scoop install fd-find",
+  "scoop install python",
+  "scoop install go",
+  'setx XDG_CONFIG_HOME "%USERPROFILE%\.config"',
+  'setx YAZI_CONFIG_HOME "%USERPROFILE%\.config\yazi"',
 ]
 
 [tasks.mac-tools]
 script = [
   "echo '--- Installing Homebrew ---'",
   '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"',
-  "brew install xcode-select --install"
-]
-
-# Mise Configuration
-[tasks.run-mise]
-description = "Run mise to apply configuration files"
-script = [
-  "echo 'Running mise to configure your system...'",
-  "mise install"
+  "brew install xcode-select --install",
+  "brew install zoxide",
+  "brew install yazi",
+  "brew install wezterm",
+  "brew install fzf",
+  "brew install ripgrep",
+  "brew install font-fira-code",
+  "brew install fd-find",
 ]
 
 # Dotfiles Management
@@ -121,7 +131,8 @@ description = "Manually update all tools, dependencies, and configurations"
 dependencies = [
     "update-rust",           # Update Rust toolchain and components
     "update-platform-tools", # Update platform-specific tools
-    "update-mise"            # Update mise configurations
+    "update-mise",           # Update mise configurations
+    "dotfiles"               # Take the chance to validate the dotfiles
 ]
 
 # Rust Toolchain Update

@@ -6,6 +6,8 @@ starship = "~/.config"
 bottom = "~/.config/dotter"
 rust = "~/.cargo"
 mise = "~/.config/mise"
+vivid = "~/.config/vivid"
+yazi = "~/.config/yazi"
 
 # windows
 [ahk.files]

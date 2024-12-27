@@ -1,10 +1,23 @@
 local wezterm = require 'wezterm'
 
--- Return the list of key bindings
+
 return {
-    -- Copy and paste like a standard terminal
-    { key = "c", mods = "CTRL", action = wezterm.action.CopyTo("Clipboard") },
-    { key = "v", mods = "CTRL", action = wezterm.action.PasteFrom("Clipboard") },
+    -- Bind Ctrl+Backspace to send a cancel signal
+    {
+        key = "Backspace",
+        mods = "CTRL",
+        action = wezterm.action { SendString = "\x03" }
+    },
+    {
+        key = "c",
+        mods = "CTRL",
+        action = wezterm.action.CopyTo("Clipboard")
+    },
+    {
+        key = "v",
+        mods = "CTRL",
+        action = wezterm.action.PasteFrom("Clipboard")
+    },
     {
         key = "n",
         mods = "CTRL",
