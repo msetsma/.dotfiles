@@ -1,17 +1,32 @@
 local wezterm = require 'wezterm'
-local functions = require 'functions'
 
--- Return the list of key bindings
+
 return {
+    -- Bind Ctrl+Backspace to send a cancel signal
+    {
+        key = "Backspace",
+        mods = "CTRL",
+        action = wezterm.action { SendString = "\x03" }
+    },
+    {
+        key = "c",
+        mods = "CTRL",
+        action = wezterm.action.CopyTo("Clipboard")
+    },
+    {
+        key = "v",
+        mods = "CTRL",
+        action = wezterm.action.PasteFrom("Clipboard")
+    },
     {
         key = "n",
-        mods = "CMD",
+        mods = "CTRL",
         action = wezterm.action.ToggleFullScreen,
     },
     -- Close the current pane
     {
         key = "e",
-        mods = "CMD",
+        mods = "CTRL",
         action = wezterm.action.CloseCurrentPane { confirm = false },
     },
     -- Pane navigation
@@ -37,15 +52,14 @@ return {
     },
     {
         key = "Tab",
-        mods = "CMD",
+        mods = "CTRL",
         action = wezterm.action.ActivateTabRelative(1),
     },
     {
         key = "Tab",
-        mods = "CMD|SHIFT",
+        mods = "CTRL|SHIFT",
         action = wezterm.action.ActivateTabRelative(-1),
     },
-
 
     -- Splitting panes in different directions using the leader key
     {
@@ -84,12 +98,12 @@ return {
     -- Change font size not window size
     {
         key = "-",
-        mods = "CMD",
+        mods = "CTRL",
         action = wezterm.action.DecreaseFontSize,
     },
     {
         key = "-",
-        mods = "CMD|SHIFT",
+        mods = "CTRL|SHIFT",
         action = wezterm.action.IncreaseFontSize,
     },
 }

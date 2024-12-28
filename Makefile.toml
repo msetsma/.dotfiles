@@ -1,0 +1,189 @@
+# ==============================================================================
+# How to Use
+# ==============================================================================
+# To initialize the environment:
+#     $ cargo make init
+#
+# To update tools and dependencies:
+#     $ cargo make update
+#
+# You can also run individual tasks as needed. Examples:
+#     $ cargo make install-rust       # Install Rust and components
+#     $ cargo make install-tools      # Install platform-specific tools
+# ==============================================================================
+
+
+
+# ==========================
+# ==== Main Setup Task =====
+# ==========================
+[tasks.init]
+description = "Set up the development environment"
+dependencies = [
+    "install-rust",            # Install Rust and its components
+    "install-coreutils",       # Install platform-specific coreutils
+    "install-tools",           # Install platform-specific tools
+    "install-rust-tools",      # Install additional Rust tools                
+    "dotfiles"                 # Symlink dotfiles
+]
+
+# Rust Configuration (rust is dependency for this entire make file)
+[tasks.install-rust]
+description = "Install Rust toolchain components."
+script = [
+    "rustup component add clippy rustfmt"
+]
+
+[tasks.install-rust-tools]
+script = [
+    "cargo install mise",
+    "cargo install dotter",
+    "cargo install nushell",
+    "cargo install cargo-update",
+    "cargo install vivid",
+    "cargo install eza",
+    "cargo install bottom",
+    "cargo install bat",
+]
+
+# Platform-Specific Coreutils Installation
+[tasks.install-coreutils]
+linux_alias = "linux-core-utils"
+windows_alias = "windows-core-utils"
+mac_alias = "mac-core-utils"
+
+[tasks.linux-core-utils]
+condition = { platforms = ["linux"] }
+script = [
+  "echo 'Installing coreutils for Linux...'",
+  "cargo install coreutils --features unix"
+]
+
+[tasks.windows-core-utils]
+condition = { platforms = ["windows"] }
+script = [
+  "echo 'Installing coreutils for Windows...'",
+  "cargo install coreutils --features windows"
+]
+
+[tasks.mac-core-utils]
+condition = { platforms = ["mac"] }
+script = [
+  "echo 'Installing coreutils for macOS...'",
+  "cargo install coreutils --features macos"
+]
+
+# Platform-Specific Tool Installation
+[tasks.install-tools]
+linux_alias = "linux-tools"
+windows_alias = "windows-tools"
+mac_alias = "mac-tools"
+
+[tasks.linux-tools]
+script = [
+  "echo '--- Installing Linux Tools ---'",
+  "sudo apt-get update" 
+]
+
+[tasks.windows-tools]
+script = [
+  "echo --- Checking if Scoop is installed ---",
+  "where scoop >nul 2>nul || (echo Scoop is not installed. Please install Scoop first. && exit /b 1)",
+  "echo '--- Setting Windows Environment Variables ---'",
+  'setx XDG_CONFIG_HOME "%USERPROFILE%\.config"',
+  'setx YAZI_CONFIG_HOME "%USERPROFILE%\.config\yazi"',
+  "echo '--- Installing Windows Tools ---'",
+  "scoop bucket add extras", 
+  "scoop bucket add nerd-fonts",
+  "scoop install firacode",
+  "scoop install autohotkey",
+  "scoop install zoxide",
+  "scoop install yazi",
+  "scoop install wezterm",
+  "scoop install fzf",
+  "scoop install ripgrep",
+  "scoop install gsudo",
+  "scoop install fd-find",
+  "scoop install fastfetch",
+  "scoop install python",
+  "scoop install go",
+]
+
+[tasks.mac-tools]
+script = [
+  "echo '--- Installing Homebrew ---'",
+  '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"',
+  "echo '--- Checking if Homebrew is installed ---'",
+  "[ -x \"$(command -v brew)\" ] || { echo 'Homebrew is not installed. Please install Homebrew first.'; exit 1; }",
+  "echo '--- Installing Mac Tools ---'",
+  "brew install xcode-select --install",
+  "brew install zoxide",
+  "brew install yazi",
+  "brew install wezterm",
+  "brew install fzf",
+  "brew install ripgrep",
+  "brew install font-fira-code",
+  "brew install fd-find",
+  "brew install fastfetch"
+  "brew install go",
+  "brew install python",
+]
+
+# Dotfiles Management
+[tasks.dotfiles]
+description = "Symlink all the .dotfiles depending on dotter/system.toml files"
+script = [
+    "echo --- Creating Symlinks ---",
+    "dotter",
+]
+
+# ==========================
+# ==== Main Update Task ====
+# ==========================
+[tasks.update]
+description = "Update all tools, dependencies, and configurations"
+dependencies = [
+    "update-rust",           # Update Rust toolchain and components
+    "update-platform-tools", # Update platform-specific tools
+    "update-mise",           # Update mise configurations
+    "dotfiles"               # Take the chance to validate the dotfiles
+]
+
+# Rust Toolchain Update
+[tasks.update-rust]
+script = [
+    "rustup update",     
+    "cargo install-update -a"
+]
+
+# Platform-Specific Tools Update
+[tasks.update-platform-tools]
+linux_alias = "update-linux-tools"
+windows_alias = "update-windows-tools"
+mac_alias = "update-mac-tools"
+
+[tasks.update-linux-tools]
+script = [
+    "sudo apt-get update -y",
+    "sudo apt-get upgrade -y",
+]
+
+[tasks.update-windows-tools]
+script = [
+    "echo --- Updating Scoop & Packages ---",
+    "scoop update",
+    "scoop update *",
+]
+
+[tasks.update-mac-tools]
+script = [
+    "echo --- Updating Homebrew & Packages ---",
+    "brew update",
+    "brew upgrade",
+]
+
+[tasks.update-mise]
+script = [
+    "echo --- Updating Global Mise Packages ---",
+    "mise install",
+]

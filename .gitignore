@@ -46,7 +46,15 @@ wezterm-*.*  # Example: wezterm-errors.txt or other temp files
 # Optional: Other common global ignores
 node_modules/
 .env
+.env/
 .env.local
 venv/
 dist/
 build/
+
+# dotter
+.dotter/local.toml
+.dotter/cache.toml
+.dotter/cache
+
+target/
