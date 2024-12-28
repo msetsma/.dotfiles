@@ -18,10 +18,7 @@ config.leader = {
 
 -- font
 config.font_size = 12
-config.font = (wezterm.font_with_fallback({
-	{ family = "Fira Code", weight = "Medium" },
-	"Noto Color Emoji",
-}))
+config.font = (wezterm.font("FiraCode Nerd Font", {weight=450, stretch="Normal", style="Normal"})) -- (AKA: FiraCode Nerd Font Ret))
 
 -- ligatures 
 config.harfbuzz_features = {

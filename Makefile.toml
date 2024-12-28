@@ -12,9 +12,11 @@
 #     $ cargo make install-tools      # Install platform-specific tools
 # ==============================================================================
 
-# ==============================================================================
-# Main Setup Task
-# ==============================================================================
+
+
+# ==========================
+# ==== Main Setup Task =====
+# ==========================
 [tasks.init]
 description = "Set up the development environment"
 dependencies = [
@@ -79,12 +81,18 @@ mac_alias = "mac-tools"
 
 [tasks.linux-tools]
 script = [
-  "echo '--- Installing Linux tools ---'",
+  "echo '--- Installing Linux Tools ---'",
   "sudo apt-get update" 
 ]
 
 [tasks.windows-tools]
 script = [
+  "echo --- Checking if Scoop is installed ---",
+  "where scoop >nul 2>nul || (echo Scoop is not installed. Please install Scoop first. && exit /b 1)",
+  "echo '--- Setting Windows Environment Variables ---'",
+  'setx XDG_CONFIG_HOME "%USERPROFILE%\.config"',
+  'setx YAZI_CONFIG_HOME "%USERPROFILE%\.config\yazi"',
+  "echo '--- Installing Windows Tools ---'",
   "scoop bucket add extras", 
   "scoop bucket add nerd-fonts",
   "scoop install firacode",
@@ -96,16 +104,18 @@ script = [
   "scoop install ripgrep",
   "scoop install gsudo",
   "scoop install fd-find",
+  "scoop install fastfetch",
   "scoop install python",
   "scoop install go",
-  'setx XDG_CONFIG_HOME "%USERPROFILE%\.config"',
-  'setx YAZI_CONFIG_HOME "%USERPROFILE%\.config\yazi"',
 ]
 
 [tasks.mac-tools]
 script = [
   "echo '--- Installing Homebrew ---'",
   '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"',
+  "echo '--- Checking if Homebrew is installed ---'",
+  "[ -x \"$(command -v brew)\" ] || { echo 'Homebrew is not installed. Please install Homebrew first.'; exit 1; }",
+  "echo '--- Installing Mac Tools ---'",
   "brew install xcode-select --install",
   "brew install zoxide",
   "brew install yazi",
@@ -114,20 +124,24 @@ script = [
   "brew install ripgrep",
   "brew install font-fira-code",
   "brew install fd-find",
+  "brew install fastfetch"
+  "brew install go",
+  "brew install python",
 ]
 
 # Dotfiles Management
 [tasks.dotfiles]
 description = "Symlink all the .dotfiles depending on dotter/system.toml files"
 script = [
-    "dotter" # Apply dotfiles using dotter
+    "echo --- Creating Symlinks ---",
+    "dotter",
 ]
 
-# ==============================================================================
-# Main Update Task
-# ==============================================================================
+# ==========================
+# ==== Main Update Task ====
+# ==========================
 [tasks.update]
-description = "Manually update all tools, dependencies, and configurations"
+description = "Update all tools, dependencies, and configurations"
 dependencies = [
     "update-rust",           # Update Rust toolchain and components
     "update-platform-tools", # Update platform-specific tools
@@ -137,7 +151,6 @@ dependencies = [
 
 # Rust Toolchain Update
 [tasks.update-rust]
-description = "Update Rust and toolchain components"
 script = [
     "rustup update",     
     "cargo install-update -a"
@@ -157,20 +170,20 @@ script = [
 
 [tasks.update-windows-tools]
 script = [
-    "echo --- Updating Scoop Packages ---",
+    "echo --- Updating Scoop & Packages ---",
     "scoop update",
     "scoop update *",
 ]
 
 [tasks.update-mac-tools]
 script = [
+    "echo --- Updating Homebrew & Packages ---",
     "brew update",
     "brew upgrade",
 ]
 
 [tasks.update-mise]
-description = "Update Mise Managed Packages"
 script = [
-    "echo --- Updating Mise Packages ---",
+    "echo --- Updating Global Mise Packages ---",
     "mise install",
 ]

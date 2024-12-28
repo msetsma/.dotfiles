@@ -41,6 +41,19 @@ def "ps tree" [--root-pids (-p): list<int>]: [table -> table,] {
         }
     }
 }
+###############
+## WIP BELOW ##
+###############
+def copy-last-output [] {
+    # Get the most recent command from history
+    let last_command = (history | last | get command)
+
+    # Re-run the command and capture its output
+    let output = ($last_command | eval)
+
+    # Convert the output to text and copy it to the clipboard
+    $output | to text | clip
+}
 
 def get_directories [path: string] {
     ls $path | where type == "dir" | get name

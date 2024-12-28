@@ -8,6 +8,7 @@ rust = "~/.cargo"
 mise = "~/.config/mise"
 vivid = "~/.config/vivid"
 yazi = "~/.config/yazi"
+fastfetch = "~/.config/fastfetch"
 
 # windows
 [ahk.files]
