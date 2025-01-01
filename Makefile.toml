@@ -128,7 +128,7 @@ script = [
   "brew install ripgrep",
   "brew install font-fira-code",
   "brew install fd-find",
-  "brew install fastfetch",
+  "brew install fastfetch"
   "brew install go",
   "brew install python",
 ]
