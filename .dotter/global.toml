@@ -9,6 +9,7 @@ mise = "~/.config/mise"
 vivid = "~/.config/vivid"
 yazi = "~/.config/yazi"
 fastfetch = "~/.config/fastfetch"
+nvim = "~/.config/nvim"
 
 # windows
 [ahk.files]
