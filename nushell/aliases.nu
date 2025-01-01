@@ -16,3 +16,6 @@ alias giturl = git remote get-url origin
 
 # fastfetch
 alias info = fastfetch
+
+# ripgrep
+alias grep = rg
