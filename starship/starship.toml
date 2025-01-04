@@ -63,7 +63,7 @@ format = " [${symbol}${version}]($style)"
 style = 'bold #89b4fa'
 
 [fill]
-symbol = ' '
+symbol = '. '
 style = '$style'
 
 [aws]

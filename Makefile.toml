@@ -58,22 +58,22 @@ mac_alias = "mac-core-utils"
 [tasks.linux-core-utils]
 condition = { platforms = ["linux"] }
 script = [
-  "echo 'Installing coreutils for Linux...'",
-  "cargo install coreutils --features unix"
+    "echo 'Installing coreutils for Linux...'",
+    "cargo install coreutils --features unix"
 ]
 
 [tasks.windows-core-utils]
 condition = { platforms = ["windows"] }
 script = [
-  "echo 'Installing coreutils for Windows...'",
-  "cargo install coreutils --features windows"
+    "echo 'Installing coreutils for Windows...'",
+    "cargo install coreutils --features windows"
 ]
 
 [tasks.mac-core-utils]
 condition = { platforms = ["mac"] }
 script = [
-  "echo 'Installing coreutils for macOS...'",
-  "cargo install coreutils --features macos"
+    "echo 'Installing coreutils for macOS...'",
+    "cargo install coreutils --features macos"
 ]
 
 # Platform-Specific Tool Installation
@@ -84,53 +84,59 @@ mac_alias = "mac-tools"
 
 [tasks.linux-tools]
 script = [
-  "echo '--- Installing Linux Tools ---'",
-  "sudo apt-get update" 
+    "echo '--- Installing Linux Tools ---'",
+    "sudo pacman -S base-devel"
 ]
 
 [tasks.windows-tools]
 script = [
-  "echo --- Checking if Scoop is installed ---",
-  "where scoop >nul 2>nul || (echo Scoop is not installed. Please install Scoop first. && exit /b 1)",
-  "echo '--- Setting Windows Environment Variables ---'",
-  'setx XDG_CONFIG_HOME "%USERPROFILE%\.config"',
-  'setx YAZI_CONFIG_HOME "%USERPROFILE%\.config\yazi"',
-  "echo '--- Installing Windows Tools ---'",
-  "scoop bucket add extras", 
-  "scoop bucket add nerd-fonts",
-  "scoop install firacode",
-  "scoop install autohotkey",
-  "scoop install zoxide",
-  "scoop install yazi",
-  "scoop install neovim",
-  "scoop install wezterm",
-  "scoop install fzf",
-  "scoop install ripgrep",
-  "scoop install gsudo",
-  "scoop install fd-find",
-  "scoop install fastfetch",
-  "scoop install python",
-  "scoop install go",
+    "echo --- Checking if Scoop is installed ---",
+    "where scoop >nul 2>nul || (echo Scoop is not installed. Please install Scoop first. && exit /b 1)",
+    "scoop bucket add extras", 
+    "scoop bucket add nerd-fonts",
+    "echo '--- Installing Windows Tools ---'",
+    "scoop install neovim",
+    "scoop install zoxide",
+    "scoop install yazi",
+    "scoop install neovim",
+    "scoop install wezterm",
+    "scoop install fzf",
+    "scoop install ripgrep",
+    "scoop install fd-find",
+    "scoop install fastfetch",
+    "scoop install firacode",
+    "scoop install python",
+    "scoop install go",
+    "echo --- Windows Only ---",
+    "scoop install autohotkey",
+    "scoop install cmake",
+    "scoop install gcc",
+    "scoop install gsudo",
+    "scoop shim add gcc ~\\scoop\\apps\\gcc\\current\\bin\\gcc.exe", # needed for nvim telescope fzf native
+    "echo '--- Setting Windows Environment Variables ---'",
+    'setx XDG_CONFIG_HOME "%USERPROFILE%\.config"',
+    'setx YAZI_CONFIG_HOME "%USERPROFILE%\.config\yazi"',
 ]
 
 [tasks.mac-tools]
 script = [
-  "echo '--- Installing Homebrew ---'",
-  '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"',
-  "echo '--- Checking if Homebrew is installed ---'",
-  "[ -x \"$(command -v brew)\" ] || { echo 'Homebrew is not installed. Please install Homebrew first.'; exit 1; }",
-  "echo '--- Installing Mac Tools ---'",
-  "brew install xcode-select --install",
-  "brew install zoxide",
-  "brew install yazi",
-  "brew install wezterm",
-  "brew install fzf",
-  "brew install ripgrep",
-  "brew install font-fira-code",
-  "brew install fd-find",
-  "brew install fastfetch",
-  "brew install go",
-  "brew install python",
+    "echo '--- Installing Homebrew ---'",
+    '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"',
+    "echo '--- Checking if Homebrew is installed ---'",
+    "[ -x \"$(command -v brew)\" ] || { echo 'Homebrew is not installed. Please install Homebrew first.'; exit 1; }",
+    "echo '--- Installing Mac Tools ---'",
+    "brew install xcode-select --install",
+    "brew install zoxide",
+    "brew install neovim",
+    "brew install yazi",
+    "brew install wezterm",
+    "brew install fzf",
+    "brew install ripgrep",
+    "brew install font-fira-code",
+    "brew install fd-find",
+    "brew install fastfetch",
+    "brew install go",
+    "brew install python",
 ]
 
 # Dotfiles Management

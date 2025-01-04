@@ -9,7 +9,7 @@ local function rename_tab_action(colors)
     return action.PromptInputLine({
         description = wezterm.format({
             { Attribute = { Intensity = 'Bold' } },
-            { Foreground = { Color = colors.indexed[16] } },
+            { Foreground = { Color = colors.ansi[8] } },
             { Text = 'Renaming tab title:' },
         }),
         action = wezterm.action_callback(function(window, _, line)
@@ -24,7 +24,7 @@ local function rename_workspace_action(colors)
     return action.PromptInputLine({
         description = wezterm.format({
             { Attribute = { Intensity = 'Bold' } },
-            { Foreground = { Color = colors.indexed[16] } },
+            { Foreground = { Color = colors.ansi[8] } },
             { Text = 'Renaming session/workspace:' },
         }),
         action = wezterm.action_callback(function(_, _, line)
@@ -51,6 +51,7 @@ local function switch_workspace_relative_action(direction)
     })
 end
 
+-- needs work still
 local function show_workspace_launcher_action()
     return wezterm.action_callback(function(window, _)
         local workspaces = mux.get_workspace_names()
@@ -116,10 +117,6 @@ function K.keybinds(custom, colors)
 		{ key = 'l', mods = 'ALT', action = action.ActivatePaneDirection('Right') }, -- Move to the pane to the right
 		{ key = 'i', mods = 'ALT', action = action.ActivatePaneDirection('Up') },    -- Move to the pane above
 
-		-- Scrolling
-		{ key = 'k', mods = 'SHIFT', action = action.ScrollByLine(1) },  -- Scroll down by one line
-		{ key = 'i', mods = 'SHIFT', action = action.ScrollByLine(-1) }, -- Scroll up by one line
-
 		-- Command Palette
 		{ key = 'p', mods = 'LEADER', action = action.ActivateCommandPalette }, -- Open command palette
 
@@ -140,19 +137,19 @@ function K.keybinds(custom, colors)
 		{ key = 'Backspace', mods = 'CTRL', action = wezterm.action({ SendString = '\x03' }) }, -- Send cancel signal (Ctrl+C)
 
 		-- Tab Management
-		{ key = 't', mods = 'ALT',   action = action.SpawnTab('DefaultDomain') },           -- Spawn a new tab
+		{ key = 't', mods = 'ALT',    action = action.SpawnTab('DefaultDomain') },           -- Spawn a new tab
 		{ key = 'j', mods = 'ALT',    action = action.ActivateTabRelative(-1) },              -- Move to the previous tab
 		{ key = 'l', mods = 'ALT',    action = action.ActivateTabRelative(1) },               -- Move to the next tab
 		{ key = 'l', mods = 'ALT',    action = action.ActivateTabRelative(1) },
-		{ key = '.', mods = 'ALT', action = rename_tab_action(colors) },
+		{ key = '.', mods = 'ALT',    action = rename_tab_action(colors) },
 		{ key = 'w', mods = 'ALT',    action = action.ShowLauncherArgs({ flags = 'TABS' }) }, -- Show launcher (tabs)
 
 		-- Workspace/Mux managment
-		{ key = 'j', mods = 'CTRL',  action = switch_workspace_relative_action(-1) },
-		{ key = 'l', mods = 'CTRL', action = switch_workspace_relative_action(1) },
-		{ key = 'o', mods = 'CTRL', action = switch_previous_workspace_action() },
+		{ key = 'Tab', mods = 'CTRL|SHIFT', action = switch_workspace_relative_action(-1) },
+		{ key = 'Tab', mods = 'CTRL', action = switch_workspace_relative_action(1) },
+		{ key = 'z', mods = 'CTRL|SHIFT', action = switch_previous_workspace_action() },
 		{ key = '.', mods = 'CTRL', action = rename_workspace_action(colors) },
-		{ key = 'w', mods = 'CTRL', action = show_workspace_launcher_action()},
+		{ key = 'w', mods = 'CTRL', action = show_workspace_launcher_action()}, -- needs work
 	}
 
 	-- ALT + N to change tab

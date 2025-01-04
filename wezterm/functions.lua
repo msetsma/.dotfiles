@@ -3,23 +3,34 @@ local wezterm = require("wezterm")
 local nerdfonts = wezterm.nerdfonts
 local mux = wezterm.mux
 
-function F.get_color_or_default(colors , index, fallback)
-    if colors.indexed and colors.indexed[index] then
-        return colors.indexed[index]
-    end
-    return fallback
-end
-
-
 function F.path(...)
 	local is_windows = wezterm.target_triple:find("windows") ~= nil
 	local separator = is_windows and "\\" or "/"
-    local parts = { ... }
-    return table.concat(parts, separator)
+	local parts = { ... }
+	return table.concat(parts, separator)
 end
 
+-- Default colors for indexed[16] and indexed[17]
+function F.patch_color_scheme(scheme)
+	local fallback_indexed = {
+	  [16] = scheme.ansi[2],
+	  [17] = scheme.ansi[4],
+	}
+	if not scheme.indexed then
+	  scheme.indexed = {}
+	end
+
+	for index, color in pairs(fallback_indexed) do
+	  if not scheme.indexed[index] then
+		scheme.indexed[index] = color
+	  end
+	end
+
+	return scheme
+  end
+
 function F.normalize_path(path)
-    local n_path = path:gsub("\\", "/")
+	local n_path = path:gsub("\\", "/")
 	if n_path:match("^/") then
 		n_path = n_path:sub(2)
 	end
@@ -63,7 +74,7 @@ function F.get_tab_title(tab, tabs, colors)
 	local inactive_title = F.tab_title(tab)
 	local active_title = F.tab_title(tab)
 	local tab_number = tostring(tab.tab_index + 1)
-    local is_last_tab = (tab.tab_index + 1 == #tabs)
+	local is_last_tab = (tab.tab_index + 1 == #tabs)
 
 	if pane.is_zoomed then
 		active_title = nerdfonts.cod_zoom_in .. " " .. active_title
@@ -82,10 +93,10 @@ function F.get_tab_title(tab, tabs, colors)
 		return {
 			-- left circle
 			{ Background = { Color = colors.ansi[1] } },
-            { Foreground = { Color = colors.indexed[16]} },
-			{ Text = " " .. tab_number .. " " .. active_title .. " "},
-			-- optional 
-            { Foreground = { Color = colors.ansi[1] } },
+			{ Foreground = { Color = colors.ansi[8] } },
+			{ Text = " " .. tab_number .. " " .. active_title .. " " },
+			-- optional
+			{ Foreground = { Color = colors.ansi[1] } },
 			{ Background = { Color = colors.background } },
 			{ Text = optional_end },
 		}
@@ -93,10 +104,10 @@ function F.get_tab_title(tab, tabs, colors)
 		return {
 			-- tab text
 			{ Background = { Color = colors.ansi[1] } },
-            { Foreground = { Color = colors.foreground } },
-			{ Text = " " .. tab_number .. " " ..  inactive_title .. " " },
-			-- optional 
-            { Foreground = { Color = colors.ansi[1] } },
+			{ Foreground = { Color = colors.foreground } },
+			{ Text = " " .. tab_number .. " " .. inactive_title .. " " },
+			-- optional
+			{ Foreground = { Color = colors.ansi[1] } },
 			{ Background = { Color = colors.background } },
 			{ Text = optional_end },
 		}
@@ -141,20 +152,20 @@ function F.set_tab_bar_status(window, pane, colors, custom)
 	-- Left status (left of the tab line)
 	window:set_left_status(wezterm.format({
 		-- workspace/mux
-		{ Background = { Color = colors.background }                },
-		{ Text       = " "                                          },
-		{ Background = { Color = colors.background }                },
-		{ Foreground = { Color = workspace_color }                  },
-		{ Text       = nerdfonts.ple_left_half_circle_thick         },
-		{ Background = { Color = workspace_color }                  },
-		{ Foreground = { Color = colors.ansi[1] }                   },
-		{ Text       = nerdfonts.cod_terminal_tmux .. " "           },
-		{ Background = { Color = colors.ansi[1] }                   },
-		{ Foreground = { Color = colors.foreground }                },
-		{ Text       = " " .. stat                                  },
-		{ Background = { Color = colors.background }                },
-		{ Foreground = { Color = colors.ansi[1] }                   },
-		{ Text       = nerdfonts.ple_right_half_circle_thick .. " " },
+		{ Background = { Color = colors.background } },
+		{ Text = " " },
+		{ Background = { Color = colors.background } },
+		{ Foreground = { Color = workspace_color } },
+		{ Text = nerdfonts.ple_left_half_circle_thick },
+		{ Background = { Color = workspace_color } },
+		{ Foreground = { Color = colors.ansi[1] } },
+		{ Text = nerdfonts.cod_terminal_tmux .. " " },
+		{ Background = { Color = colors.ansi[1] } },
+		{ Foreground = { Color = colors.foreground } },
+		{ Text = " " .. stat },
+		{ Background = { Color = colors.background } },
+		{ Foreground = { Color = colors.ansi[1] } },
+		{ Text = nerdfonts.ple_right_half_circle_thick .. " " },
 		-- start of tabs
 		{ Background = { Color = colors.background } },
 		{ Foreground = { Color = colors.ansi[8] } },
@@ -275,9 +286,10 @@ end
 
 function F.init_default_workspaces(projects)
 	for _, project in pairs(projects.repositories) do
-		 -- Create workspace and tab
-		 if project.tabs then
-			local _, _, window = mux.spawn_window({ workspace = project.workspace, cwd = F.path(project.path, project.tabs[1]) })
+		-- Create workspace and tab
+		if project.tabs then
+			local _, _, window =
+				mux.spawn_window({ workspace = project.workspace, cwd = F.path(project.path, project.tabs[1]) })
 			window:active_tab():set_title(project.name)
 
 			for tab = 2, #project.tabs do
@@ -295,7 +307,7 @@ end
 
 function F.get_process_icon(tab)
 	-- ([^/\\]+)%.exe$: Extracts the file name without the .exe extension if the path ends in .exe.
-    -- ([^/\\]+)$: Extracts the file name as-is if it doesn't end in .exe.
+	-- ([^/\\]+)$: Extracts the file name as-is if it doesn't end in .exe.
 	local process_name = tab.active_pane.foreground_process_name:match("([^/\\]+)%.exe$")
 		or tab.active_pane.foreground_process_name:match("([^/\\]+)$")
 	print(process_name)
