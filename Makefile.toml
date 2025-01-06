@@ -106,6 +106,10 @@ script = [
     "scoop install fastfetch",
     "scoop install firacode",
     "scoop install python",
+    "scoop install lua",
+    "scoop install luarocks"
+    "scoop install stylua",
+    "scoop install lua-language-server",
     "scoop install go",
     "echo --- Windows Only ---",
     "scoop install autohotkey",
@@ -135,6 +139,9 @@ script = [
     "brew install font-fira-code",
     "brew install fd-find",
     "brew install fastfetch",
+    "brew install lua",
+    "brew install luarocks"
+    "brew install lua-language-server",
     "brew install go",
     "brew install python",
 ]

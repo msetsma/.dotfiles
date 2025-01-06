@@ -1,16 +1,11 @@
--- Standalone plugins with less than 10 lines of config go here
 return {
 	{
-		-- Detect tabstop and shiftwidth automatically
+		"echasnovski/mini.icons",
+		version = false,
+	},
+	{
+		-- Auto tabstop & shiftwidth
 		"tpope/vim-sleuth",
-	},
-	{
-		-- Powerful Git integration for Vim
-		"tpope/vim-fugitive",
-	},
-	{
-		-- GitHub integration for vim-fugitive
-		"tpope/vim-rhubarb",
 	},
 	{
 		-- Autoclose parentheses, brackets, quotes, etc.

@@ -16,8 +16,8 @@ o.softtabstop = 4 -- Number of spaces a tab counts for while editing
 o.expandtab = true -- Convert tabs to spaces
 
 -- Scrolling and Cursor Behavior
-o.scrolloff = 4 -- Minimal number of lines to keep above/below the cursor
-o.sidescrolloff = 8 -- Minimal number of columns to keep on either side of the cursor
+o.scrolloff = 10 -- Minimal number of lines to keep above/below the cursor
+o.sidescrolloff = 4 -- Minimal number of columns to keep on either side of the cursor
 o.cursorline = true -- highlighting the current line
 
 -- Splits and Window Management
