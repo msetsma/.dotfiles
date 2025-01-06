@@ -29,6 +29,7 @@ o.clipboard = "unnamedplus" -- Sync clipboard between OS and Neovim
 o.backspace = "indent,eol,start" -- Allow unrestricted backspacing
 o.mouse = "a" -- Enable mouse support
 o.whichwrap = "bs<>[]hl" -- Allow specified keys to wrap lines
+--o.undodir = os.getenv("HOME") .. "/.vim/undodir"
 
 -- Searching
 o.ignorecase = true -- Case-insensitive searching unless capital letters are used
