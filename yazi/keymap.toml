@@ -1,12 +1,5 @@
 [manager]
 keymap = [
-    # Navigation remaps
-    { on = "i", run = "arrow -1", desc = "Move up" },
-    { on = "k", run = "arrow 1", desc = "Move down" },
-    { on = "j", run = "leave", desc = "Move left" },
-    { on = "l", run = "enter", desc = "Move right" },
-
-    # Additional useful bindings (optional)
     { on = "o", run = "open", desc = "Open file/directory" },
     { on = "q", run = "quit", desc = "Quit Yazi" },
     { on = "/", run = "search", desc = "Search files" },

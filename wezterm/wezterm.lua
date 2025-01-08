@@ -1,7 +1,7 @@
 local wezterm = require("wezterm")
+local schemes = require("schemes")
 local K = require("keybinds")
 local F = require("functions")
-local schemes = require("schemes")
 local config = wezterm.config_builder()
 local colors = {}
 
@@ -18,17 +18,11 @@ local custom = {
 	username = os.getenv("USER") or os.getenv("LOGNAME") or os.getenv("USERNAME"),
 }
 
--- workspaces/mux defaults
-local projects = {
-	default_workspace = "default",
+local default_workspaces = {
+	default = "main",
 	repositories = {
-		{ workspace = "default", name = "", path = wezterm.home_dir, tabs = {} },
-		{
-			workspace = "dotfiles",
-			name = "",
-			path = F.path(wezterm.home_dir, ".dotfiles"),
-			tabs = { "wezterm", "nushell" },
-		},
+		{ name = "main", path = wezterm.home_dir },
+		{ name = "dotfiles", path = F.path(wezterm.home_dir, ".dotfiles") },
 	},
 }
 
@@ -51,7 +45,6 @@ config.inactive_pane_hsb = {
 config.default_prog = { "nu" }
 config.automatically_reload_config = true
 
-
 -- Window
 config.adjust_window_size_when_changing_font_size = false
 config.bold_brightens_ansi_colors = true
@@ -68,6 +61,7 @@ config.window_padding = {
 -- Graphics
 config.front_end = wezterm.gui_platform_supports_opengl and "WebGpu" or "Software"
 config.webgpu_power_preference = "HighPerformance"
+config.max_fps = 144
 -- "LowPower" - use an integrated GPU
 -- "HighPerformance" - use a discrete GPU
 
@@ -127,6 +121,7 @@ wezterm.on("opacity-decrease", function(window, _)
 	F.lower_opacity(window, config)
 end)
 
+
 wezterm.on("opacity-increase", function(window, _)
 	F.increase_opacity(window, config)
 end)
@@ -136,7 +131,8 @@ wezterm.on("opacity-reset", function(window, _)
 end)
 
 wezterm.on("gui-startup", function()
-	F.init_default_workspaces(projects)
+	F.init_default_workspaces(default_workspaces)
 end)
 
 return config
+

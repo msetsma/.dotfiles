@@ -1,4 +1,5 @@
-vim.opt.signcolumn = "yes"
+vim.g.loaded_netrwPlugin = 0
+vim.g.did_install_default_menus = 1
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then

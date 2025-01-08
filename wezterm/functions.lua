@@ -1,7 +1,11 @@
-local F = {}
 local wezterm = require("wezterm")
+local const = require("constants")
+local action = wezterm.action
 local nerdfonts = wezterm.nerdfonts
 local mux = wezterm.mux
+local F = {}
+
+local process_icons = const.process_icons
 
 function F.path(...)
 	local is_windows = wezterm.target_triple:find("windows") ~= nil
@@ -13,21 +17,21 @@ end
 -- Default colors for indexed[16] and indexed[17]
 function F.patch_color_scheme(scheme)
 	local fallback_indexed = {
-	  [16] = scheme.ansi[2],
-	  [17] = scheme.ansi[4],
+		[16] = scheme.ansi[2],
+		[17] = scheme.ansi[4],
 	}
 	if not scheme.indexed then
-	  scheme.indexed = {}
+		scheme.indexed = {}
 	end
 
 	for index, color in pairs(fallback_indexed) do
-	  if not scheme.indexed[index] then
-		scheme.indexed[index] = color
-	  end
+		if not scheme.indexed[index] then
+			scheme.indexed[index] = color
+		end
 	end
 
 	return scheme
-  end
+end
 
 function F.normalize_path(path)
 	local n_path = path:gsub("\\", "/")
@@ -47,44 +51,27 @@ function F.file_exists(name)
 	end
 end
 
-function F.scheme_for_appearance(appearance, dark, light)
-	if appearance:find("Dark") then
-		return dark
-	else
-		return light
-	end
-end
-
 function F.basename(string)
 	return string.gsub(string, "(.*[/\\])(.*)", "%2")
 end
 
-function F.tab_title(tab)
-	local title = tab.tab_title
-	-- if the tab title is explicitly set, take that
-	if title and #title > 0 then
-		return title
-	end
-	-- Otherwise, use the title from the active pane in that tab
-	return F.basename(tab.active_pane.title)
+function F.get_process_icon(tab)
+	-- ([^/\\]+)%.exe$: Extracts the file name without the .exe extension if the path ends in .exe.
+	-- ([^/\\]+)$: Extracts the file name as-is if it doesn't end in .exe.
+	local process_name = tab.active_pane.title
+	print(process_name)
+	process_name = process_name:match("([^/\\]+)%.exe$") or process_name:match("([^/\\]+)$")
+	local icon = process_icons[process_name] or string.format('%s', process_name)
+	return icon
 end
 
+
 function F.get_tab_title(tab, tabs, colors)
-	local pane = tab.active_pane
-	local inactive_title = F.tab_title(tab)
-	local active_title = F.tab_title(tab)
+	local icon = F.get_process_icon(tab)
 	local tab_number = tostring(tab.tab_index + 1)
 	local is_last_tab = (tab.tab_index + 1 == #tabs)
-
-	if pane.is_zoomed then
-		active_title = nerdfonts.cod_zoom_in .. " " .. active_title
-	end
-
-	if string.find(pane.title, "^Copy mode:") then
-		active_title = nerdfonts.md_content_copy .. " " .. active_title
-	end
-
 	local optional_end = ""
+
 	if is_last_tab then
 		optional_end = nerdfonts.ple_right_half_circle_thick
 	end
@@ -93,9 +80,10 @@ function F.get_tab_title(tab, tabs, colors)
 		return {
 			-- left circle
 			{ Background = { Color = colors.ansi[1] } },
-			{ Foreground = { Color = colors.ansi[8] } },
-			{ Text = " " .. tab_number .. " " .. active_title .. " " },
-			-- optional
+			{ Foreground = { Color = colors.ansi[2] } },
+			{ Attribute = { Intensity = "Bold" } },	
+			{ Text = " " .. tab_number .. " " .. icon .. " " },
+			-- ending for very last tab
 			{ Foreground = { Color = colors.ansi[1] } },
 			{ Background = { Color = colors.background } },
 			{ Text = optional_end },
@@ -105,8 +93,8 @@ function F.get_tab_title(tab, tabs, colors)
 			-- tab text
 			{ Background = { Color = colors.ansi[1] } },
 			{ Foreground = { Color = colors.foreground } },
-			{ Text = " " .. tab_number .. " " .. inactive_title .. " " },
-			-- optional
+			{ Text = " " .. tab_number .. " " .. icon .. " " },
+			-- ending for very last tab
 			{ Foreground = { Color = colors.ansi[1] } },
 			{ Background = { Color = colors.background } },
 			{ Text = optional_end },
@@ -127,7 +115,7 @@ function F.set_tab_bar_status(window, pane, colors, custom)
 		workspace_color = colors.ansi[2]
 	end
 
-	-- Current working directory
+	-- Current worki{ng directory
 	local cwd = pane:get_current_working_dir()
 	if cwd then
 		if type(cwd) == "userdata" and cwd.path then
@@ -284,55 +272,56 @@ function F.increase_opacity(window, config)
 	end
 end
 
-function F.init_default_workspaces(projects)
-	for _, project in pairs(projects.repositories) do
-		-- Create workspace and tab
-		if project.tabs then
-			local _, _, window =
-				mux.spawn_window({ workspace = project.workspace, cwd = F.path(project.path, project.tabs[1]) })
-			window:active_tab():set_title(project.name)
-
-			for tab = 2, #project.tabs do
-				window:spawn_tab({ cwd = F.path(project.path, project.tabs[tab]) })
-			end
-		else
-			-- Create workspace
-			local _, _, window = mux.spawn_window({ workspace = project.workspace, cwd = project.path })
-			window:active_tab():set_title(project.name)
-		end
+function F.init_default_workspaces(workspaces)
+	for _, space in pairs(workspaces.repositories) do
+		mux.spawn_window({ workspace = space.name, cwd = space.path })
 	end
-	-- Set default workspace
-	mux.set_active_workspace(projects.default_workspace)
+	mux.set_active_workspace(workspaces.default)
 end
 
-function F.get_process_icon(tab)
-	-- ([^/\\]+)%.exe$: Extracts the file name without the .exe extension if the path ends in .exe.
-	-- ([^/\\]+)$: Extracts the file name as-is if it doesn't end in .exe.
-	local process_name = tab.active_pane.foreground_process_name:match("([^/\\]+)%.exe$")
-		or tab.active_pane.foreground_process_name:match("([^/\\]+)$")
-	print(process_name)
-	local process_icons = { -- for get_process function
-		["docker"] = wezterm.nerdfonts.linux_docker,
-		["docker-compose"] = wezterm.nerdfonts.linux_docker,
-		["nvim"] = wezterm.nerdfonts.custom_vim,
-		["make"] = wezterm.nerdfonts.seti_makefile,
-		["vim"] = wezterm.nerdfonts.dev_vim,
-		["go"] = wezterm.nerdfonts.seti_go,
-		["zsh"] = wezterm.nerdfonts.dev_terminal,
-		["bash"] = wezterm.nerdfonts.cod_terminal_bash,
-		["btm"] = wezterm.nerdfonts.mdi_chart_donut_variant,
-		["cargo"] = wezterm.nerdfonts.dev_rust,
-		["sudo"] = wezterm.nerdfonts.fa_hashtag,
-		["git"] = wezterm.nerdfonts.dev_git,
-		["lua"] = wezterm.nerdfonts.seti_lua,
-		["gh"] = wezterm.nerdfonts.dev_github_badge,
-		["node"] = wezterm.nerdfonts.dev_nodejs_small,
-	}
+-- Function to create a new workspace
+function F.create_workspace(window, pane)
+    window:perform_action(action.PromptInputLine {
+        description = wezterm.format {
+            { Attribute = { Intensity = 'Bold' } },
+            { Foreground = { AnsiColor = 'Fuchsia' } },
+            { Text = 'Enter name for new workspace' },
+        },
+        action = function(user_window, user_pane, line)
+            if line and #line > 0 then
+                user_window:perform_action(
+                    action.SwitchToWorkspace { name = line },
+                    user_pane
+                )
+            else
+                user_window:toast_notification(
+                    "Workspace Creation Cancelled",
+                    "No workspace name provided.",
+                    nil,
+                    3000
+                )
+            end
+        end,
+    }, pane)
+end
 
-	-- local icon = process_icons[process_name] or string.format('[%s]', process_name)
-	local icon = process_icons[process_name] or wezterm.nerdfonts.seti_checkbox_unchecked
-
-	return icon
+-- Function to close the current workspace with confirmation
+function F.close_workspace(window, pane)
+    window:perform_action(wezterm.action.PromptInputLine {
+        description = "Are you sure you want to close this workspace? (yes/no)",
+        action = wezterm.action_callback(function(window, _, line)
+            if line and line:lower() == "yes" then
+                local mux_window = window:mux_window()
+                if mux_window then
+                    for _, tab in ipairs(mux_window:tabs()) do
+                        mux_window:kill_tab(tab)
+                    end
+                end
+            else
+                window:toast_notification("Workspace Close Cancelled", "No tabs were closed.", nil, 3000)
+            end
+        end),
+    }, pane)
 end
 
 return F

@@ -4,28 +4,13 @@ local mux = wezterm.mux
 local action = wezterm.action
 local K = {}
 
--- helper functions
-local function rename_tab_action(colors)
-	return action.PromptInputLine({
-		description = wezterm.format({
-			{ Attribute = { Intensity = "Bold" } },
-			{ Foreground = { Color = colors.ansi[8] } },
-			{ Text = "Renaming tab title:" },
-		}),
-		action = wezterm.action_callback(function(window, _, line)
-			if line then
-				window:active_tab():set_title(line)
-			end
-		end),
-	})
-end
 
-local function rename_workspace_action(colors)
+local function rename_workspace(colors)
 	return action.PromptInputLine({
 		description = wezterm.format({
 			{ Attribute = { Intensity = "Bold" } },
-			{ Foreground = { Color = colors.ansi[8] } },
-			{ Text = "Renaming session/workspace:" },
+			{ Foreground = { Color = colors.ansi[2] } },
+			{ Text = "Enter a new name for the workspace" },
 		}),
 		action = wezterm.action_callback(function(_, _, line)
 			if line then
@@ -35,23 +20,22 @@ local function rename_workspace_action(colors)
 	})
 end
 
-local function switch_previous_workspace_action()
-	return action.Multiple({
-		wezterm.action_callback(function(window, pane)
-			F.switch_previous_workspace(window, pane)
-		end),
-		action.EmitEvent("set-previous-workspace"),
-	})
+local function new_workspace(colors)
+	return action.PromptInputLine {
+		description = wezterm.format {
+			{ Attribute = { Intensity = 'Bold' } },
+			{ Foreground = { Color = colors.ansi[2] } },
+			{ Text = 'Enter name for the new workspace' },
+		},
+		action = wezterm.action_callback(function(window, pane, line)
+			if line then
+				window:perform_action( action.SwitchToWorkspace { name = line }, pane )
+			end
+	end) }
 end
 
-local function switch_workspace_relative_action(direction)
-	return action.Multiple({
-		action.SwitchWorkspaceRelative(direction),
-		action.EmitEvent("set-previous-workspace"),
-	})
-end
 
--- needs work still
+-- TODO: needs work
 local function show_workspace_launcher_action()
 	return wezterm.action_callback(function(window, _)
 		local workspaces = mux.get_workspace_names()
@@ -69,17 +53,54 @@ local function show_workspace_launcher_action()
 end
 
 function K.keybinds(custom, colors)
-	local keybinds = {
-		{
-			key = "o",
-			mods = "LEADER",
-			action = action.ActivateKeyTable({
-				name = "open",
-				one_shot = false,
-				until_unknown = true,
-				timeout_milliseconds = custom.timeout.key,
-			}),
-		},
+	return {
+		-- Clipboard Operations
+		{ key = "c",         mods = "CTRL",         action = wezterm.action.CopyTo("Clipboard") }, -- Copy to clipboard
+		{ key = "v",         mods = "CTRL",         action = wezterm.action.PasteFrom("Clipboard") }, -- Paste from clipboard
+
+		-- Search
+		{ key = "/",         mods = "LEADER",       action = action.Search({ CaseInSensitiveString = "" }) }, -- Search with case-insensitive string
+
+		-- Pane Navigation
+		{ key = "h",         mods = "ALT",          action = action.ActivatePaneDirection("Left") }, -- Move to the pane to the left
+		{ key = "j",         mods = "ALT",          action = action.ActivatePaneDirection("Down") }, -- Move to the pane below
+		{ key = "k",         mods = "ALT",          action = action.ActivatePaneDirection("Up") }, -- Move to the pane above
+		{ key = "l",         mods = "ALT",          action = action.ActivatePaneDirection("Right") }, -- Move to the pane to the right
+
+		-- Application Control
+		{ key = "p",         mods = "LEADER",       action = action.ActivateCommandPalette },
+		{ key = "q",         mods = "LEADER",       action = action.QuitApplication },
+
+		-- Font Size Adjustments
+		{ key = "0",         mods = "CTRL",         action = action.ResetFontSize }, -- Reset font size
+		{ key = "-",         mods = "CTRL",         action = action.DecreaseFontSize }, -- Decrease font size
+		{ key = "_",         mods = "CTRL|SHIFT",   action = action.IncreaseFontSize }, -- Increase font size
+
+		-- Opacity Controls
+		{ key = "0",         mods = "ALT",          action = action.EmitEvent("opacity-reset") }, -- Reset opacity
+		{ key = "-",         mods = "ALT",          action = action.EmitEvent("opacity-decrease") }, -- Decrease opacity
+		{ key = "_",         mods = "ALT|SHIFT",    action = action.EmitEvent("opacity-increase") }, -- Increase opacity
+
+		-- Signals
+		{ key = "Backspace", mods = "CTRL",         action = wezterm.action({ SendString = "\x03" }) }, -- Send cancel signal (Ctrl+C)
+
+		-- Tab Management
+		{ key = "n",         mods = "ALT",          action = action.SpawnTab("DefaultDomain") },
+		{ key = "l",         mods = "ALT",          action = action.ActivateTabRelative(1) }, -- Move to right tab
+		{ key = "h",         mods = "ALT",          action = action.ActivateTabRelative(-1) }, -- Move to left bab
+		{ key = "x",         mods = "ALT",          action = action.CloseCurrentTab { confirm = false } },
+		{ key = ".",         mods = "ALT",          action = action.ShowLauncherArgs({ flags = "TABS" }) },
+
+		-- Workspace/Mux managment
+		{ key = "l",         mods = "LEADER",       action = action.SwitchWorkspaceRelative(1) },
+		{ key = "h",         mods = "LEADER",       action = action.SwitchWorkspaceRelative(-1) },
+		{ key = "r",         mods = "LEADER",       action = rename_workspace(colors) },
+		{ key = "w",         mods = "LEADER",       action = show_workspace_launcher_action() },
+		{ key = "x",         mods = "LEADER",       action = wezterm.action_callback(F.close_workspace) },
+		{ key = ".",         mods = "LEADER",       action = action.ShowLauncherArgs({ flags = "WORKSPACES" }) },
+		{ key = "n",         mods = "LEADER",       action = new_workspace(colors) },
+
+		-- keytables
 		{
 			key = "m",
 			mods = "LEADER",
@@ -91,7 +112,7 @@ function K.keybinds(custom, colors)
 			}),
 		},
 		{
-			key = "r",
+			key = "t",
 			mods = "LEADER",
 			action = action.ActivateKeyTable({
 				name = "resize",
@@ -100,126 +121,44 @@ function K.keybinds(custom, colors)
 				timeout_milliseconds = custom.timeout.key,
 			}),
 		},
-
-		-- Clipboard Operations
-		{ key = "c", mods = "CTRL", action = wezterm.action.CopyTo("Clipboard") }, -- Copy to clipboard
-		{ key = "v", mods = "CTRL", action = wezterm.action.PasteFrom("Clipboard") }, -- Paste from clipboard
-
-		-- Search
-		{ key = "/", mods = "LEADER", action = action.Search({ CaseInSensitiveString = "" }) }, -- Search with case-insensitive string
-
-		-- Split Management
-		{ key = "|", mods = "LEADER|SHIFT", action = action.SplitHorizontal({ domain = "CurrentPaneDomain" }) }, -- Split pane horizontally
-		{ key = "-", mods = "LEADER", action = action.SplitVertical({ domain = "CurrentPaneDomain" }) }, -- Split pane vertically
-
-		-- Pane Navigation
-		{ key = "k", mods = "ALT", action = action.ActivatePaneDirection("Down") }, -- Move to the pane below
-		{ key = "j", mods = "ALT", action = action.ActivatePaneDirection("Left") }, -- Move to the pane to the left
-		{ key = "l", mods = "ALT", action = action.ActivatePaneDirection("Right") }, -- Move to the pane to the right
-		{ key = "i", mods = "ALT", action = action.ActivatePaneDirection("Up") }, -- Move to the pane above
-
-		-- Command Palette
-		{ key = "p", mods = "LEADER", action = action.ActivateCommandPalette }, -- Open command palette
-
-		-- Application Control
-		{ key = "q", mods = "LEADER", action = action.QuitApplication }, -- Quit application
-
-		-- Font Size Adjustments
-		{ key = "0", mods = "CTRL", action = action.ResetFontSize }, -- Reset font size
-		{ key = "-", mods = "CTRL", action = action.DecreaseFontSize }, -- Decrease font size
-		{ key = "_", mods = "CTRL|SHIFT", action = action.IncreaseFontSize }, -- Increase font size
-
-		-- Opacity Controls
-		{ key = "0", mods = "ALT", action = action.EmitEvent("opacity-reset") }, -- Reset opacity
-		{ key = "-", mods = "ALT", action = action.EmitEvent("opacity-decrease") }, -- Decrease opacity
-		{ key = "_", mods = "ALT|SHIFT", action = action.EmitEvent("opacity-increase") }, -- Increase opacity
-
-		-- Signals
-		{ key = "Backspace", mods = "CTRL", action = wezterm.action({ SendString = "\\x03" }) }, -- Send cancel signal (Ctrl+C)
-
-		-- Tab Management
-		{ key = "t", mods = "ALT", action = action.SpawnTab("DefaultDomain") }, -- Spawn a new tab
-		{ key = "j", mods = "ALT", action = action.ActivateTabRelative(-1) }, -- Move to the previous tab
-		{ key = "l", mods = "ALT", action = action.ActivateTabRelative(1) }, -- Move to the next tab
-		{ key = "l", mods = "ALT", action = action.ActivateTabRelative(1) },
-		{ key = ".", mods = "ALT", action = rename_tab_action(colors) },
-		{ key = "w", mods = "ALT", action = action.ShowLauncherArgs({ flags = "TABS" }) }, -- Show launcher (tabs)
-
-		-- Workspace/Mux managment
-		{ key = "Tab", mods = "CTRL|SHIFT", action = switch_workspace_relative_action(-1) },
-		{ key = "Tab", mods = "CTRL", action = switch_workspace_relative_action(1) },
-		{ key = "z", mods = "CTRL|SHIFT", action = switch_previous_workspace_action() },
-		{ key = ".", mods = "CTRL", action = rename_workspace_action(colors) },
-		{ key = "w", mods = "CTRL", action = show_workspace_launcher_action() }, -- needs work
+		{
+			key = "s",
+			mods = "LEADER",
+			action = action.ActivateKeyTable({
+				name = "split",
+				one_shot = false,
+				until_unknown = true,
+				timeout_milliseconds = custom.timeout.key,
+			}),
+		},
 	}
-
-	-- ALT + N to change tab
-	for i = 1, 9 do
-		table.insert(keybinds, {
-			key = tostring(i),
-			mods = "ALT",
-			action = action.ActivateTab(i - 1),
-		})
-	end
-
-	return keybinds
 end
 
 function K.tables()
 	return {
 		move = {
-			{ key = "r", action = action.RotatePanes("CounterClockwise") },
-			{ key = "s", action = action.PaneSelect },
-			{ key = "Enter", action = "PopKeyTable" },
-			{ key = "Escape", action = "PopKeyTable" },
-			{ key = "LeftArrow", mods = "SHIFT", action = action.MoveTabRelative(-1) },
+			{ key = "r",                          action = action.RotatePanes("CounterClockwise") },
+			{ key = "s",                          action = action.PaneSelect },
+			{ key = "Enter",                      action = "PopKeyTable" },
+			{ key = "Escape",                     action = "PopKeyTable" },
+			{ key = "LeftArrow",  mods = "SHIFT", action = action.MoveTabRelative(-1) },
 			{ key = "RightArrow", mods = "SHIFT", action = action.MoveTabRelative(1) },
 		},
 
 		resize = {
-			{ key = "DownArrow", action = action.AdjustPaneSize({ "Down", 1 }) },
-			{ key = "LeftArrow", action = action.AdjustPaneSize({ "Left", 1 }) },
+			{ key = "DownArrow",  action = action.AdjustPaneSize({ "Down", 1 }) },
+			{ key = "LeftArrow",  action = action.AdjustPaneSize({ "Left", 1 }) },
 			{ key = "RightArrow", action = action.AdjustPaneSize({ "Right", 1 }) },
-			{ key = "UpArrow", action = action.AdjustPaneSize({ "Up", 1 }) },
-			{ key = "Enter", action = "PopKeyTable" },
-			{ key = "Escape", action = "PopKeyTable" },
+			{ key = "UpArrow",    action = action.AdjustPaneSize({ "Up", 1 }) },
+			{ key = "Enter",      action = "PopKeyTable" },
+			{ key = "Escape",     action = "PopKeyTable" },
 		},
 
-		open = {
-			{
-				key = "g",
-				action = action({
-					QuickSelectArgs = {
-						label = "execute 'gcloud auth login --remote-bootstrap'",
-						patterns = { 'gcloud auth login --remote-bootstrap=".*"' },
-						scope_lines = 30,
-						action = action.EmitEvent("trigger-gcloud-auth"),
-					},
-				}),
-			},
-			{
-				key = "p",
-				action = action.SpawnCommandInNewWindow({
-					label = "open current path on file manager",
-					args = { "xdg-open", "." },
-				}),
-			},
-			{
-				key = "u",
-				action = action({
-					QuickSelectArgs = {
-						label = "open URL on browser",
-						patterns = { "https?://\\S+" },
-						scope_lines = 30,
-						action = wezterm.action_callback(function(window, pane)
-							local url = window:get_selection_text_for_pane(pane)
-							wezterm.log_info("opening: " .. url)
-							wezterm.open_with(url)
-						end),
-					},
-				}),
-			},
-		},
+		split = {
+			{ key = "h", mods = "LEADER", action = action.SplitHorizontal({ domain = "CurrentPaneDomain" }) },
+			{ key = "v", mods = "LEADER", action = action.SplitVertical({ domain = "CurrentPaneDomain" }) },
+
+		}
 	}
 end
 
