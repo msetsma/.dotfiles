@@ -1,12 +1,11 @@
 local wezterm = require("wezterm")
-local schemes = require("schemes")
 local K = require("keybinds")
 local F = require("functions")
 local config = wezterm.config_builder()
-local colors = {}
 
--- custom project settings
+-- init selector
 local custom = {
+	username = os.getenv("USER") or os.getenv("LOGNAME") or os.getenv("USERNAME"),
 	hostname = {
 		current = string.lower(wezterm.hostname()),
 		work = "pc-xxxxxx",
@@ -15,35 +14,29 @@ local custom = {
 		key = 3000,
 		leader = 2000,
 	},
-	username = os.getenv("USER") or os.getenv("LOGNAME") or os.getenv("USERNAME"),
-}
-
-local default_workspaces = {
-	default = "main",
-	repositories = {
-		{ name = "main", path = wezterm.home_dir },
-		{ name = "dotfiles", path = F.path(wezterm.home_dir, ".dotfiles") },
+	default_workspaces = {
+		default = "main",
+		repositories = {
+			{ name = "main",     path = wezterm.home_dir },
+			{ name = "dotfiles", path = F.path(wezterm.home_dir, ".dotfiles") },
+		},
 	},
-}
-
--- Color Scheme
-config.color_scheme = "Everforest Dark Hard"
-config.color_schemes = schemes
-colors = schemes[config.color_scheme]
-config.colors = {
-	compose_cursor = colors.ansi[2],
-	cursor_bg = colors.indexed[16],
-	split = colors.indexed[16],
-	tab_bar = { background = colors.background },
-}
-config.inactive_pane_hsb = {
-	saturation = 0.9,
-	brightness = 0.9,
 }
 
 -- Launch
 config.default_prog = { "nu" }
 config.automatically_reload_config = true
+
+-- Colors
+config.color_scheme = "Everforest Dark (Gogh)"
+local color_table = wezterm.color.get_builtin_schemes()[config.color_scheme]
+config.colors = {
+	compose_cursor = color_table.ansi[2],
+	cursor_bg = color_table.indexed[16] or color_table.ansi[2],
+	split = color_table.indexed[16] or color_table.ansi[2],
+	tab_bar = { background = color_table.background },
+}
+wezterm.GLOBAL.color_table = color_table
 
 -- Window
 config.adjust_window_size_when_changing_font_size = false
@@ -56,6 +49,10 @@ config.window_padding = {
 	right = 5,
 	top = 5,
 	bottom = 5,
+}
+config.inactive_pane_hsb = {
+	saturation = 0.9,
+	brightness = 0.9,
 }
 
 -- Graphics
@@ -106,21 +103,20 @@ config.use_fancy_tab_bar = false
 -- Keys Mapping
 config.disable_default_key_bindings = true
 config.leader = { key = "Delete", timeout_milliseconds = custom.timeout.leader }
-config.keys = K.keybinds(custom, colors)
 config.key_tables = K.tables()
+config.keys = K.keybinds(custom)
 
 wezterm.on("update-status", function(window, pane)
-	F.set_tab_bar_status(window, pane, colors, custom)
+	F.set_tab_bar_status(window, pane, custom)
 end)
 
 wezterm.on("format-tab-title", function(tab, tabs)
-	return F.get_tab_title(tab, tabs, colors)
+	return F.get_tab_title(tab, tabs)
 end)
 
 wezterm.on("opacity-decrease", function(window, _)
 	F.lower_opacity(window, config)
 end)
-
 
 wezterm.on("opacity-increase", function(window, _)
 	F.increase_opacity(window, config)
@@ -131,8 +127,7 @@ wezterm.on("opacity-reset", function(window, _)
 end)
 
 wezterm.on("gui-startup", function()
-	F.init_default_workspaces(default_workspaces)
+	F.init_default_workspaces(custom.default_workspaces)
 end)
 
 return config
-

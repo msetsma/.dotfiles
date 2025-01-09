@@ -3,9 +3,9 @@ local F = require("functions")
 local mux = wezterm.mux
 local action = wezterm.action
 local K = {}
+local colors = wezterm.GLOBAL.color_table 
 
-
-local function rename_workspace(colors)
+local function rename_workspace()
 	return action.PromptInputLine({
 		description = wezterm.format({
 			{ Attribute = { Intensity = "Bold" } },
@@ -20,7 +20,7 @@ local function rename_workspace(colors)
 	})
 end
 
-local function new_workspace(colors)
+local function new_workspace()
 	return action.PromptInputLine {
 		description = wezterm.format {
 			{ Attribute = { Intensity = 'Bold' } },
@@ -52,7 +52,7 @@ local function show_workspace_launcher_action()
 	end)
 end
 
-function K.keybinds(custom, colors)
+function K.keybinds(custom)
 	return {
 		-- Clipboard Operations
 		{ key = "c",         mods = "CTRL",         action = wezterm.action.CopyTo("Clipboard") }, -- Copy to clipboard
@@ -94,11 +94,11 @@ function K.keybinds(custom, colors)
 		-- Workspace/Mux managment
 		{ key = "l",         mods = "LEADER",       action = action.SwitchWorkspaceRelative(1) },
 		{ key = "h",         mods = "LEADER",       action = action.SwitchWorkspaceRelative(-1) },
-		{ key = "r",         mods = "LEADER",       action = rename_workspace(colors) },
+		{ key = "r",         mods = "LEADER",       action = rename_workspace() },
 		{ key = "w",         mods = "LEADER",       action = show_workspace_launcher_action() },
 		{ key = "x",         mods = "LEADER",       action = wezterm.action_callback(F.close_workspace) },
 		{ key = ".",         mods = "LEADER",       action = action.ShowLauncherArgs({ flags = "WORKSPACES" }) },
-		{ key = "n",         mods = "LEADER",       action = new_workspace(colors) },
+		{ key = "n",         mods = "LEADER",       action = new_workspace() },
 
 		-- keytables
 		{
