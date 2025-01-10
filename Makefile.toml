@@ -142,7 +142,6 @@ script = [
     "brew install fastfetch",
     "brew install lua",
     "brew install luarocks"
-    "brew install lua-language-server",
     "brew install go",
     "brew install python",
 ]

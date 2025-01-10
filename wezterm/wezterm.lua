@@ -44,11 +44,11 @@ config.bold_brightens_ansi_colors = true
 config.text_background_opacity = 1.0
 config.window_background_opacity = 0.98
 config.window_decorations = "RESIZE"
-config.window_padding = {
-	left = 5,
-	right = 5,
-	top = 5,
-	bottom = 5,
+config.window_padding = { -- will also add padding to nvim
+	left = 0,
+	right = 0,
+	top = 0,
+	bottom = 0,
 }
 config.inactive_pane_hsb = {
 	saturation = 0.9,
