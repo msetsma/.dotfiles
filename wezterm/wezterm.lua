@@ -28,7 +28,7 @@ config.default_prog = { "nu" }
 config.automatically_reload_config = true
 
 -- Colors
-config.color_scheme = "Everforest Dark (Gogh)"
+config.color_scheme = "Catppuccin Mocha"
 local color_table = wezterm.color.get_builtin_schemes()[config.color_scheme]
 config.colors = {
 	compose_cursor = color_table.ansi[2],
