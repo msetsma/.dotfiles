@@ -36,7 +36,7 @@ config.colors = {
 	split = color_table.indexed[16] or color_table.ansi[2],
 	tab_bar = { background = color_table.background },
 }
-wezterm.GLOBAL.color_table = color_table
+wezterm.GLOBAL.color_table = color_table -- custom tab bar formatting
 
 -- Window
 config.adjust_window_size_when_changing_font_size = false
@@ -45,10 +45,10 @@ config.text_background_opacity = 1.0
 config.window_background_opacity = 0.98
 config.window_decorations = "RESIZE"
 config.window_padding = { -- will also add padding to nvim
-	left = 5,
-	right = 5,
-	top = 5,
-	bottom = 5,
+	left = 0,
+	right = 0,
+	top = 10,
+	bottom = 0,
 }
 config.inactive_pane_hsb = {
 	saturation = 0.9,
