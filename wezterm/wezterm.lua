@@ -45,10 +45,10 @@ config.text_background_opacity = 1.0
 config.window_background_opacity = 0.98
 config.window_decorations = "RESIZE"
 config.window_padding = { -- will also add padding to nvim
-	left = 0,
-	right = 0,
-	top = 0,
-	bottom = 0,
+	left = 5,
+	right = 5,
+	top = 5,
+	bottom = 5,
 }
 config.inactive_pane_hsb = {
 	saturation = 0.9,
@@ -68,9 +68,9 @@ config.default_cursor_style = "BlinkingBar"
 config.hide_mouse_cursor_when_typing = false
 
 -- Font & ligatures
-config.font = wezterm.font_with_fallback({
-	"FiraCode Nerd Font",
-	"Symbols Nerd Font",
+config.font = wezterm.font({
+	family = "FiraCode Nerd Font",
+	weight = "Medium"
 })
 config.font_size = 12
 config.harfbuzz_features = {

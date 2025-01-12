@@ -1,33 +1,50 @@
 return {
   'saghen/blink.cmp',
   -- optional: provides snippets for the snippet source
-  dependencies = 'rafamadriz/friendly-snippets',
+  dependencies = {
+    'rafamadriz/friendly-snippets',
+    'mikavilpas/blink-ripgrep.nvim',
+  },
   version = '0.*',
 
   ---@module 'blink.cmp'
   ---@type blink.cmp.Config
   opts = {
-    -- 'default' for mappings similar to built-in completion
-    -- 'super-tab' for mappings similar to vscode (tab to accept, arrow keys to navigate)
-    -- 'enter' for mappings similar to 'super-tab' but with 'enter' to accept
     keymap = { preset = 'default' },
     appearance = {
-      -- Useful for when your theme doesn't support blink.cmp
-      -- Will be removed in a future release
-      use_nvim_cmp_as_default = true,
-      -- Set to 'mono' for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
       nerd_font_variant = 'mono'
     },
 
-    -- Default list of enabled providers defined so that you can extend it
-    -- elsewhere in your config, without redefining it, due to `opts_extend`
     sources = {
-      default = { "lazydev", 'lsp', 'path', 'snippets', 'buffer' },
+      default = { "lazydev", 'lsp', 'path', 'snippets', 'buffer', 'ripgrep' },
       providers = {
-      lazydev = {
-        name = "LazyDev",
-        module = "lazydev.integrations.blink",
+        lazydev = {
+          name = "LazyDev",
+          module = "lazydev.integrations.blink",
           score_offset = 100,
+        },
+        ripgrep = {
+          module = "blink-ripgrep",
+          name = "Ripgrep",
+          ---@module "blink-ripgrep"
+          ---@type blink-ripgrep.Options
+          opts = {
+            prefix_min_len = 3,
+            context_size = 5,
+            max_filesize = "1M",
+            project_root_marker = ".git",
+            search_casing = "--ignore-case",
+            additional_rg_options = {},
+            debug = false,
+          },
+        transform_items = function(_, items)
+            for _, item in ipairs(items) do
+              item.labelDetails = {
+                description = "󰮢",
+              }
+            end
+            return items
+          end,
         },
       },
     },

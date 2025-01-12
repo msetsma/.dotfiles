@@ -3,10 +3,10 @@ return {
 	event = "VimEnter",
 	branch = "0.1.x",
 	dependencies = {
-		"nvim-lua/plenary.nvim",
-		"nvim-telescope/telescope-fzf-native.nvim",
-		"nvim-telescope/telescope-ui-select.nvim",
-		"nvim-tree/nvim-web-devicons",
+		'nvim-lua/plenary.nvim',
+		'nvim-telescope/telescope-fzf-native.nvim',
+		'nvim-telescope/telescope-ui-select.nvim',
+		'nvim-tree/nvim-web-devicons',
 	},
 	config = function()
 		require("telescope").setup({
@@ -28,7 +28,7 @@ return {
 
 		-- See `:help telescope.builtin`
 		local builtin = require("telescope.builtin")
-		vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "[F]ind [H]elp Tags" })
+		vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = "[F]ind [H]elp Tags" })
 		vim.keymap.set("n", "<leader>fk", builtin.keymaps, { desc = "[F]ind [K]eymaps" })
 		vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "[F]ind [F]iles" })
 		vim.keymap.set("n", "<leader>fs", builtin.builtin, { desc = "[F]ind [S]elect Telescope" })
