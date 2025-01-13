@@ -1,6 +1,5 @@
 return {
   'saghen/blink.cmp',
-  -- optional: provides snippets for the snippet source
   dependencies = {
     'rafamadriz/friendly-snippets',
     'mikavilpas/blink-ripgrep.nvim',
@@ -10,33 +9,24 @@ return {
   ---@module 'blink.cmp'
   ---@type blink.cmp.Config
   opts = {
-    keymap = { preset = 'default' },
-    appearance = {
-      nerd_font_variant = 'mono'
-    },
-
     sources = {
-      default = { "lazydev", 'lsp', 'path', 'snippets', 'buffer', 'ripgrep' },
+      default = { 'lsp', 'path', 'snippets', 'buffer', 'ripgrep' },
       providers = {
-        lazydev = {
-          name = "LazyDev",
-          module = "lazydev.integrations.blink",
-          score_offset = 100,
-        },
-        ripgrep = {
+        ripgrep = { -- rg suggestions from repo
           module = "blink-ripgrep",
           name = "Ripgrep",
           ---@module "blink-ripgrep"
           ---@type blink-ripgrep.Options
           opts = {
             prefix_min_len = 3,
-            context_size = 5,
+            context_size = 3,
             max_filesize = "1M",
             project_root_marker = ".git",
             search_casing = "--ignore-case",
             additional_rg_options = {},
             debug = false,
           },
+        -- this adds icon next to suggestions
         transform_items = function(_, items)
             for _, item in ipairs(items) do
               item.labelDetails = {
@@ -46,6 +36,19 @@ return {
             return items
           end,
         },
+      },
+    },
+    signature = {
+      enabled = true,
+      window = { border = "rounded" },
+    },
+    completion = {
+      documentation = {
+        auto_show = true,
+        window = { border = "single" },
+      },
+      ghost_text = {
+        enabled = true,
       },
     },
   },

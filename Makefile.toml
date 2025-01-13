@@ -110,7 +110,6 @@ script = [
     "scoop install lua",
     "scoop install luarocks"
     "scoop install stylua",
-    "scoop install lua-language-server",
     "scoop install go",
     "echo --- Windows Only ---",
     "scoop install autohotkey",

@@ -1,6 +1,6 @@
 source-env ~/.config/nushell/env.nu
 
-$env.config.buffer_editor = "code"
+$env.config.buffer_editor = "nvim"
 $env.config.show_banner = false
 $env.config.completions.case_sensitive = false 
 $env.config.completions.use_ls_colors = true
@@ -13,8 +13,7 @@ $env.config.shell_integration.osc133 = false # not working with Wezterm on windo
 $env.config.shell_integration.osc633 = true
 $env.config.bracketed_paste = false
 $env.config.filesize.metric = true
-# TODO: fix issue with missing path.
-# $env.LS_COLORS = (vivid generate ~/.config/vivid/everforest-dark-hard.yml | str trim)
+$env.LS_COLORS = (vivid generate catppuccin | str trim)
 
 source ~/.config/zoxide.nu
 source ~/.config/nushell/aliases.nu

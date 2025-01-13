@@ -8,14 +8,10 @@ return { -- Highlight, edit, and navigate code
 			"lua",
 			"rust",
 			"python",
-			-- "javascript", -- ew
-			-- "typescript", -- ew
-			"vimdoc",
-			"vim",
+			"go",
 			"dockerfile",
 			"toml",
 			"json",
-			"go",
 			"yaml",
 			"markdown",
 			"bash",
