@@ -3,6 +3,7 @@ return {
 	options = {
 		theme = "auto",
 	},
+	event = "VeryLazy",
 	config = function()
 		local mode = {
 			"mode",

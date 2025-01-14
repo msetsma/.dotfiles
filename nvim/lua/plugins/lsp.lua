@@ -57,33 +57,27 @@ return {
 				end, { desc = "LSP: [T]oggle Inlay [H]ints" })
 			end,
 		})
+		--`:help lspconfig-all` list of all the pre-configured LSPs
+		local lsp_config = require("lspconfig")
+		lsp_config.nushell.setup({})
+
 		-- LSP Settings
-		local servers = { --`:help lspconfig-all` list of all the pre-configured LSPs
-			gopls = {},
-			pyright = {},
-			ruff = {
-				commands = {
-					RuffAutofix = {
-						function()
-							vim.lsp.buf.execute_command({
-								command = "ruff.applyAutofix",
-								arguments = {
-									{ uri = vim.uri_from_bufnr(0) },
-								},
-							})
-						end,
-						description = "Ruff: Fix all auto-fixable problems",
-					},
-					RuffOrganizeImports = {
-						function()
-							vim.lsp.buf.execute_command({
-								command = "ruff.applyOrganizeImports",
-								arguments = {
-									{ uri = vim.uri_from_bufnr(0) },
-								},
-							})
-						end,
-						description = "Ruff: Format imports",
+		local lsp_mason_servers = {
+			dockerls = {},
+			jsonls = {},
+			yamlls = {},
+			gopls = {
+				settings = {
+					gopls = {
+						hints = {
+							assignVariableTypes = true,
+							compositeLiteralFields = true,
+							compositeLiteralTypes = true,
+							constantValues = true,
+							functionTypeParameters = true,
+							parameterNames = true,
+							rangeVariableTypes = true,
+						},
 					},
 				},
 			},
@@ -112,10 +106,6 @@ return {
 					},
 				},
 			},
-			dockerls = {},
-			terraformls = {},
-			jsonls = {},
-			yamlls = {},
 			lua_ls = {
 				settings = {
 					Lua = {
@@ -138,10 +128,20 @@ return {
 
 		-- Pass LSP Settings to Mason
 		require("mason-lspconfig").setup({
+			ensure_installed = {
+				"lua_ls",
+				"rust_analyzer",
+				"pylsp",
+				"gopls",
+				"ruff",
+				"dockerls",
+				"terraformls",
+				"jsonls",
+				"yamlls",
+			},
 			handlers = {
 				function(server_name)
-					local lsp_config = require("lspconfig")
-					local server = servers[server_name] or {}
+					local server = lsp_mason_servers[server_name] or {}
 					-- Merge Blink capabilities with any existing ones
 					server.capabilities = require("blink.cmp").get_lsp_capabilities(server.capabilities or {})
 					lsp_config[server_name].setup(server)

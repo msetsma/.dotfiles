@@ -1,5 +1,6 @@
 return { -- Highlight, edit, and navigate code
 	"nvim-treesitter/nvim-treesitter",
+	event = { "BufReadPre", "BufNewFile" },
 	build = ":TSUpdate",
 	main = "nvim-treesitter.configs",
 	opts = {
@@ -17,8 +18,5 @@ return { -- Highlight, edit, and navigate code
 			"bash",
 		},
 		auto_install = true,
-		highlight = {
-			enable = true,
-		},
 	},
 }

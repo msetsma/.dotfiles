@@ -9,6 +9,7 @@ mise = "~/.config/mise"
 yazi = "~/.config/yazi"
 fastfetch = "~/.config/fastfetch"
 nvim = "~/.config/nvim"
+code-tools = "~/.config"
 
 # windows
 [ahk.files]

@@ -13,7 +13,7 @@ $env.config.shell_integration.osc133 = false # not working with Wezterm on windo
 $env.config.shell_integration.osc633 = true
 $env.config.bracketed_paste = false
 $env.config.filesize.metric = true
-$env.LS_COLORS = (vivid generate catppuccin | str trim)
+$env.LS_COLORS = (vivid generate catppuccin-mocha | str trim)
 
 source ~/.config/zoxide.nu
 source ~/.config/nushell/aliases.nu

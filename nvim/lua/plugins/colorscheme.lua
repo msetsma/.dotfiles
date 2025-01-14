@@ -33,7 +33,7 @@ local night_owl = {
 	  end
 }
 
-local catppuccin = { 
+local catppuccin = {
 	"catppuccin/nvim",
 	name = "catppuccin",
 	priority = 1000,

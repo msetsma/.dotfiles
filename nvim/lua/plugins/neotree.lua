@@ -4,6 +4,7 @@ return {
 	branch = "v3.x",
 	dependencies = {
 		"nvim-lua/plenary.nvim",
+		"nvim-tree/nvim-web-devicons",
 		"MunifTanjim/nui.nvim",
 	},
 	keys = {
@@ -11,9 +12,11 @@ return {
 	},
 	config = function()
 		require("neo-tree").setup({
+			enable_git_status = true,
+			enable_diagnostics = true,
 			filesystem = {
 				filtered_items = {
-					visible = true,
+					visible = false,
 					show_hidden_count = true,
 					hide_dotfiles = false,
 					hide_gitignored = true,

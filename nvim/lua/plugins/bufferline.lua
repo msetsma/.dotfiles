@@ -4,6 +4,7 @@ return {
 		"moll/vim-bbye",
 		"nvim-tree/nvim-web-devicons",
 	},
+	event = "VeryLazy",
 	config = function()
 		require("bufferline").setup({
 			options = {
@@ -23,7 +24,7 @@ return {
 				show_buffer_icons = true,
 				persist_buffer_sort = true, -- whether or not custom sorted buffers should persist
 				enforce_regular_tabs = true,
-				always_show_bufferline = true,
+				always_show_bufferline = false,
 				show_tab_indicators = false,
 				indicator = {
 					icon = '▎', -- this should be omitted if indicator style is not 'icon'
