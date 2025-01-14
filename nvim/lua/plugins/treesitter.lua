@@ -1,22 +1,30 @@
-return { -- Highlight, edit, and navigate code
-	"nvim-treesitter/nvim-treesitter",
-	event = { "BufReadPre", "BufNewFile" },
-	build = ":TSUpdate",
-	main = "nvim-treesitter.configs",
-	opts = {
-		ensure_installed = {
-			"c",
-			"lua",
-			"rust",
-			"python",
-			"go",
-			"dockerfile",
-			"toml",
-			"json",
-			"yaml",
-			"markdown",
-			"bash",
-		},
-		auto_install = true,
-	},
+return {
+    'nvim-treesitter/nvim-treesitter',
+    event = { 'BufReadPre', 'BufNewFile' },
+    build = ':TSUpdate',
+    config = function()
+        require('nvim-treesitter.configs').setup({
+            ensure_installed = {
+                'bash',
+                'dockerfile',
+                'lua',
+                'c',
+                'lua',
+                'rust',
+                'python',
+                'go',
+                'dockerfile',
+                'toml',
+                'json',
+                'yaml',
+                'markdown',
+                'bash',
+                'nu',
+            },
+            auto_install = true,
+            highlights = {
+                enable = true,
+            },
+        })
+    end,
 }
