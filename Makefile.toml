@@ -26,7 +26,7 @@ dependencies = [
     "install-rust",            # Install Rust and its components
     "install-coreutils",       # Install platform-specific coreutils
     "install-tools",           # Install platform-specific tools
-    "install-rust-tools",      # Install additional Rust tools                
+    "install-rust-tools",      # Install additional Rust tools
     "dotfiles"                 # Symlink dotfiles
 ]
 
@@ -92,7 +92,7 @@ script = [
 script = [
     "echo --- Checking if Scoop is installed ---",
     "where scoop >nul 2>nul || (echo Scoop is not installed. Please install Scoop first. && exit /b 1)",
-    "scoop bucket add extras", 
+    "scoop bucket add extras",
     "scoop bucket add nerd-fonts",
     "scoop bucket add versions",
     "echo '--- Installing Windows Tools ---'",
@@ -108,7 +108,7 @@ script = [
     "scoop install firacode",
     "scoop install python",
     "scoop install lua",
-    "scoop install luarocks"
+    "scoop install luarocks",
     "scoop install stylua",
     "scoop install go",
     "echo --- Windows Only ---",
@@ -169,7 +169,7 @@ dependencies = [
 [tasks.update-rust]
 script = [
     "rustup self update",
-    "rustup update",  
+    "rustup update",
     "cargo install-update -a"
 ]
 
@@ -184,7 +184,7 @@ script = [
     "echo --- Updating package database ---",
     "sudo pacman -Sy",
     "echo --- Upgrading installed packages ---",
-    "sudo pacman -Su --noconfirm" 
+    "sudo pacman -Su --noconfirm"
 ]
 
 [tasks.update-windows-tools]
