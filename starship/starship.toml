@@ -2,8 +2,7 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
 format = """
-$directory\
-$git_branch\
+$all\
 $fill\
 $rust\
 $python\
@@ -17,13 +16,13 @@ $character
 add_newline = true
 
 [character]
-success_symbol = '[󱞩](#a6e3a1)'
-error_symbol = '[󱞩](#f38ba8)'
+success_symbol = '[](#a6e3a1)'
+error_symbol = '[](#f38ba8)'
 
 [directory]
 truncation_length = 3
 truncate_to_repo = true
-style = 'bold #cba6f7'
+style = '#cba6f7'
 home_symbol = "~ "
 
 [cmd_duration]
@@ -31,9 +30,16 @@ min_time = 2_000
 format = "[ 󱦟 $duration ]($style)"
 style = "white"
 
+[git_metrics]
+disabled = false
+format = '(([ $added ]($added_style))([ $deleted ]($deleted_style)))'
+only_nonzero_diffs = true
+added_style = 'green'
+deleted_style = 'red'
+
 [git_branch]
 symbol = " "
-style = 'bold #89b4fa'
+style = '#89b4fa'
 
 [lua]
 format = " [lua](italic) [${symbol}${version}]($style)"
@@ -45,22 +51,18 @@ symbol = " "
 format = '[${symbol}${pyenv_prefix}(${version})${virtualenv}]($style)'
 pyenv_version_name = true
 pyenv_prefix = ''
-style = 'bold #f2cdcd'
 
 [rust]
 symbol = "󱘗 "
 format = '[${symbol}${version}]($style)'
-style = 'bold #fab387'
 
 [package]
 symbol = "󰏗 "
-style = 'bold #a6e3a1'
 format = '[${symbol}${version}]($style)'
 
 [golang]
 symbol = " "
 format = " [${symbol}${version}]($style)"
-style = 'bold #89b4fa'
 
 [fill]
 symbol = ' '
