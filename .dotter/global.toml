@@ -15,6 +15,8 @@ code-tools = "~/.config"
 [ahk.files]
 "_windows/ahk" = "~\\2015m\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup"
 
-# osx
+# mac
+[mac.files]
+_osx = "~/.config"
 
-# linux 
+# linux

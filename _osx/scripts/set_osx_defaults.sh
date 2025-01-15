@@ -1,5 +1,4 @@
 #!/bin/bash
-
 apply_osx_system_defaults() {
     info "Applying OSX system defaults..."
 

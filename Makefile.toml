@@ -16,32 +16,28 @@
 # ==============================================================================
 
 
-
 # ==========================
 # ==== Main Setup Task =====
 # ==========================
 [tasks.init]
 description = "Set up the development environment"
 dependencies = [
-    "install-rust",            # Install Rust and its components
-    "install-coreutils",       # Install platform-specific coreutils
-    "install-tools",           # Install platform-specific tools
-    "install-rust-tools",      # Install additional Rust tools                
-    "dotfiles"                 # Symlink dotfiles
+    "install-rust",       # Install Rust and its components
+    "install-coreutils",  # Install platform-specific coreutils
+    "install-tools",      # Install platform-specific tools
+    "install-rust-tools", # Install additional Rust tools
+    "dotfiles",           # Symlink dotfiles
 ]
 
 # Rust Configuration
 [tasks.install-rust]
 description = "Install Rust toolchain components."
-script = [
-    "rustup component add clippy rustfmt"
-]
+script = ["rustup component add clippy rustfmt"]
 
 [tasks.install-rust-tools]
 script = [
     "cargo install mise",
     "cargo install dotter",
-    "cargo install nushell",
     "cargo install cargo-update",
     "cargo install vivid",
     "cargo install eza",
@@ -83,16 +79,13 @@ windows_alias = "windows-tools"
 mac_alias = "mac-tools"
 
 [tasks.linux-tools]
-script = [
-    "echo '--- Installing Linux Tools ---'",
-    "sudo pacman -S base-devel"
-]
+script = ["echo '--- Installing Linux Tools ---'", "sudo apt-get update"]
 
 [tasks.windows-tools]
 script = [
     "echo --- Checking if Scoop is installed ---",
     "where scoop >nul 2>nul || (echo Scoop is not installed. Please install Scoop first. && exit /b 1)",
-    "scoop bucket add extras", 
+    "scoop bucket add extras",
     "scoop bucket add nerd-fonts",
     "scoop bucket add versions",
     "echo '--- Installing Windows Tools ---'",
@@ -108,7 +101,7 @@ script = [
     "scoop install firacode",
     "scoop install python",
     "scoop install lua",
-    "scoop install luarocks"
+    "scoop install luarocks",
     "scoop install stylua",
     "scoop install go",
     "echo --- Windows Only ---",
@@ -124,23 +117,20 @@ script = [
 
 [tasks.mac-tools]
 script = [
-    "echo '--- Installing Homebrew ---'",
-    '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"',
-    "echo '--- Checking if Homebrew is installed ---'",
     "[ -x \"$(command -v brew)\" ] || { echo 'Homebrew is not installed. Please install Homebrew first.'; exit 1; }",
     "echo '--- Installing Mac Tools ---'",
-    "brew install xcode-select --install",
-    "brew install zoxide",
-    "brew install neovim",
     "brew install yazi",
-    "brew install wezterm",
+    "brew install --cask wezterm@nightly",
+    "brew install openssl",
+    "brew install cmake",
+    "brew install nushell",
     "brew install fzf",
     "brew install ripgrep",
     "brew install font-fira-code",
     "brew install fd-find",
     "brew install fastfetch",
     "brew install lua",
-    "brew install luarocks"
+    "brew install luarocks",
     "brew install go",
     "brew install python",
 ]
@@ -148,10 +138,7 @@ script = [
 # Dotfiles Management
 [tasks.dotfiles]
 description = "Symlink all the .dotfiles depending on dotter/system.toml files"
-script = [
-    "echo --- Creating Symlinks ---",
-    "dotter",
-]
+script = ["echo --- Creating Symlinks ---", "dotter"]
 
 # ==========================
 # ==== Main Update Task ====
@@ -162,14 +149,14 @@ dependencies = [
     "update-rust",           # Update Rust toolchain and components
     "update-platform-tools", # Update platform-specific tools
     "update-mise",           # Update mise configurations
-    "dotfiles"               # Take the chance to validate the dotfiles
+    "dotfiles",              # Take the chance to validate the dotfiles
 ]
 
 # Rust Toolchain Update
 [tasks.update-rust]
 script = [
     "rustup self update",
-    "rustup update",  
+    "rustup update",
     "cargo install-update -a"
 ]
 
@@ -180,12 +167,7 @@ windows_alias = "update-windows-tools"
 mac_alias = "update-mac-tools"
 
 [tasks.update-linux-tools]
-script = [
-    "echo --- Updating package database ---",
-    "sudo pacman -Sy",
-    "echo --- Upgrading installed packages ---",
-    "sudo pacman -Su --noconfirm" 
-]
+script = []
 
 [tasks.update-windows-tools]
 script = [
@@ -202,10 +184,7 @@ script = [
 ]
 
 [tasks.update-mise]
-script = [
-    "echo --- Updating Global Mise Packages ---",
-    "mise install",
-]
+script = ["echo --- Updating Global Mise Packages ---", "mise install"]
 
 # ================================
 # ==== Check for Updates Task ====
@@ -213,14 +192,14 @@ script = [
 [tasks.check-outdated]
 description = "Set up the development environment"
 dependencies = [
-    "check-outdated-rust",     # Check rustup for updates
-    "check-package-managers",  # Check platform specific updates
+    "check-outdated-rust",    # Check rustup for updates
+    "check-package-managers", # Check platform specific updates
 ]
 
 [tasks.check-outdated-rust]
 script = [
     "echo --- Checking for available updates (without applying) ---",
-    "rustup update --no-self-update || echo 'Rustup is up-to-date'"
+    "rustup update --no-self-update || echo 'Rustup is up-to-date'",
 ]
 
 [tasks.check-package-managers]
@@ -231,17 +210,17 @@ mac_alias = "check-outdated-mac"
 [tasks.check-outdated-linux]
 script = [
     "echo --- Checking for outdated pacman packages ---",
-    "pacman -Qu || echo 'No outdated packages found or not running on Arch-based Linux'"
+    "pacman -Qu || echo 'No outdated packages found or not running on Arch-based Linux'",
 ]
 
 [tasks.check-outdated-windows]
 script = [
     "echo --- Checking for outdated Scoop packages ---",
-    "scoop status || echo 'Scoop not found or not running on Windows'"
+    "scoop status || echo 'Scoop not found or not running on Windows'",
 ]
 
 [tasks.check-outdated-mac]
 script = [
     "echo --- Checking for outdated Homebrew packages ---",
-    "brew outdated || echo 'No outdated packages found or not running on macOS'"
+    "brew outdated || echo 'No outdated packages found or not running on macOS'",
 ]
