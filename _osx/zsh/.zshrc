@@ -3,6 +3,8 @@ export VISUAL="nvim"
 
 export PATH="/usr/local/bin:$PATH"
 export PATH="/opt/homebrew/bin:$PATH"
+export PATH="$HOME/.cargo/bin:$PATH"
+export XDG_CONFIG_HOME="$HOME/.config"
 
 # zsh
 [ -f "$HOME/.config/zsh/aliases.zsh" ] && source "$HOME/.config/zsh/aliases.zsh"

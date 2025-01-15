@@ -1,7 +1,6 @@
 # common
 [common.files]
 wezterm = "~/.config/wezterm"
-nushell = "~/.config/nushell"
 starship = "~/.config"
 bottom = "~/.config/dotter"
 rust = "~/.cargo"
@@ -14,9 +13,11 @@ code-tools = "~/.config"
 # windows
 [ahk.files]
 "_windows/ahk" = "~\\2015m\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup"
+nushell = "~/.config/nushell"
 
 # mac
 [mac.files]
 _osx = "~/.config"
+nushell = "~/Application Support/nushell/"
 
 # linux

@@ -4,6 +4,30 @@ local nerdfonts = wezterm.nerdfonts
 local mux = wezterm.mux
 local F = {}
 
+-- Detect the platform
+function F.detect_os()
+	local os_name = package.config:sub(1, 1) -- Gets the path separator: '\' for Windows, '/' for Unix-like systems
+	if os_name == '\\' then
+	  return "windows"
+	elseif wezterm.target_triple:find("darwin") then
+	  return "macos"
+	else
+	  return "linux"
+	end
+end
+
+function F.get_default_program()
+	local os = F.detect_os()
+	if os == "macos" then
+		return "zsh" --"/Users/M269575/.cargo/bin/nu"
+	elseif os == "linux" then
+		return "nu"
+	elseif os == "windows" then
+		return "nu"
+	end
+end
+
+
 function F.path(...)
     local is_windows = wezterm.target_triple:find('windows') ~= nil
     local separator = is_windows and '\\' or '/'

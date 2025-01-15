@@ -24,7 +24,7 @@ local custom = {
 }
 
 -- Launch
-config.default_prog = { 'nu' }
+config.default_prog = { F.get_default_program() }
 config.automatically_reload_config = true
 
 -- Colors
