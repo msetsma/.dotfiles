@@ -15,6 +15,9 @@ $character
 
 add_newline = true
 
+[gcloud]
+disabled = true
+
 [character]
 success_symbol = '[](#a6e3a1)'
 error_symbol = '[](#f38ba8)'
