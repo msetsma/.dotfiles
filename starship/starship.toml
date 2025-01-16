@@ -33,16 +33,19 @@ min_time = 2_000
 format = "[ 󱦟 $duration ]($style)"
 style = "white"
 
-[git_metrics]
-disabled = false
-format = '(([ $added ]($added_style))([ $deleted ]($deleted_style)))'
-only_nonzero_diffs = true
-added_style = 'green'
-deleted_style = 'red'
-
 [git_branch]
 symbol = " "
-style = '#89b4fa'
+style = "#89b4fa"  # Catppuccin Blue
+
+[git_metrics]
+format = "[ $added]($added_style) [ $deleted]($deleted_style)"
+added_style = "fg:#a6e3a1"  # Catppuccin Green
+deleted_style = "fg:#f38ba8"  # Catppuccin Red
+only_nonzero_diffs = true
+
+[status]
+format = '$all'  # Removes brackets from status
+style = 'dimmed'
 
 [lua]
 format = " [lua](italic) [${symbol}${version}]($style)"

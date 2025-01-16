@@ -36,7 +36,7 @@ config.colors = {
     split = color_table.indexed[16] or color_table.ansi[2],
     tab_bar = { background = color_table.background },
 }
-wezterm.GLOBAL.color_table = color_table -- custom tab bar formatting
+wezterm.GLOBAL.color_table = color_table -- for tab bar formatting
 
 -- Window
 config.adjust_window_size_when_changing_font_size = false
