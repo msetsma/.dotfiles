@@ -42,7 +42,7 @@ wezterm.GLOBAL.color_table = color_table -- for tab bar formatting
 config.adjust_window_size_when_changing_font_size = false
 config.bold_brightens_ansi_colors = true
 config.text_background_opacity = 1.0
-config.window_background_opacity = 0.98
+config.window_background_opacity = 0.95
 config.window_decorations = 'RESIZE'
 config.window_padding = { -- will also add padding to nvim
     left = 0,
@@ -54,16 +54,12 @@ config.inactive_pane_hsb = {
     saturation = 0.9,
     brightness = 0.9,
 }
+config.macos_window_background_blur = 20
 
 -- Graphics
-config.front_end = wezterm.gui_platform_supports_opengl and 'WebGpu' or 'Software'
-config.webgpu_power_preference = 'HighPerformance'
 config.max_fps = 144
--- "LowPower" - use an integrated GPU
--- "HighPerformance" - use a discrete GPU
 
 -- Cursor
-config.bypass_mouse_reporting_modifiers = 'SHIFT'
 config.default_cursor_style = 'BlinkingBar'
 config.hide_mouse_cursor_when_typing = false
 
@@ -72,7 +68,7 @@ config.font = wezterm.font({
     family = 'FiraCode Nerd Font',
     weight = 'Medium',
 })
-config.font_size = 12
+config.font_size = F.get_os_font_size()
 config.harfbuzz_features = {
     'calt',
     'clig',
@@ -91,12 +87,10 @@ config.scrollback_lines = 10000
 config.alternate_buffer_wheel_scroll_speed = 5
 
 -- Tab
-config.enable_tab_bar = true
 config.hide_tab_bar_if_only_one_tab = false
 config.show_new_tab_button_in_tab_bar = false
 config.show_tab_index_in_tab_bar = true
-config.status_update_interval = 1000
-config.tab_bar_at_bottom = false
+config.status_update_interval = 500
 config.tab_max_width = 64
 config.use_fancy_tab_bar = false
 

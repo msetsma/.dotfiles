@@ -15,6 +15,17 @@ function F.detect_os()
     end
 end
 
+function F.get_os_font_size()
+    local os = F.detect_os()
+    if os == 'windows' then
+        return 12.0
+    elseif os == 'macos' then
+        return 16.0
+    else
+        return 12.0
+    end
+end
+
 function F.get_default_program()
     local os = F.detect_os()
     if os == 'macos' then
