@@ -17,6 +17,7 @@ return {
                 'toml',
                 'json',
                 'yaml',
+                'toml',
                 'markdown',
                 'bash',
                 'nu',

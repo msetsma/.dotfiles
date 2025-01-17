@@ -79,66 +79,86 @@ windows_alias = "windows-tools"
 mac_alias = "mac-tools"
 
 [tasks.linux-tools]
-script = ["echo '--- Installing Linux Tools ---'", "sudo apt-get update"]
+script = [
+    "echo --- Setup ---",
+    "sudo dnf5 install -y dnf-plugins-core",
+
+    "echo '--- Enabling COPR Repositories ---'",
+    "sudo dnf5 copr enable wezfurlong/wezterm-nightly -y",
+
+    "echo '--- Installing Linux Tools ---'",
+    "sudo dnf5 install -y lazygit neovim wezterm-nightly fzf ripgrep fd-find bat",
+
+    "echo '--- Installing Languages ---'",
+    "sudo dnf5 install -y python3 golang lua lua51 lua-devel luarocks nodejs",
+
+    "echo '--- Installing Dependencies ---'",
+    "sudo dnf5 install -y gcc gcc-c++ cmake fastfetch fontconfig",
+    "sudo dnf5 install -y fira-code-fonts",
+
+    "echo '--- Setting Environment Variables ---'",
+    "export XDG_CONFIG_HOME=\"$HOME/.config\"",  # Nushell home directory
+    "export YAZI_CONFIG_HOME=\"$HOME/.config/yazi\"",  # Yazi config file
+
+    "echo --- Installation Complete ---",
+]
 
 [tasks.windows-tools]
 script = [
-    "echo --- Checking if Scoop is installed ---",
+    "echo --- Scoop Setup ---",
     "where scoop >nul 2>nul || (echo Scoop is not installed. Please install Scoop first. && exit /b 1)",
+    "echo Adding Scoop buckets...",
     "scoop bucket add extras",
     "scoop bucket add nerd-fonts",
     "scoop bucket add versions",
-    "echo '--- Installing Windows Tools ---'",
-    "scoop install neovim",
-    "scoop install zoxide",
-    "scoop install yazi",
-    "scoop install neovim",
-    "scoop install wezterm-nightly",
-    "scoop install fzf",
-    "scoop install ripgrep",
-    "scoop install fd-find",
-    "scoop install fastfetch",
-    "scoop install firacode",
-    "scoop install python",
-    "scoop install lua",
-    "scoop install luarocks",
-    "scoop install stylua",
-    "scoop install go",
-    "echo --- Windows Only ---",
-    "scoop install autohotkey",
-    "scoop install cmake",
-    "scoop install gcc",
-    "scoop install gsudo",
-    "scoop shim add gcc ~\\scoop\\apps\\gcc\\current\\bin\\gcc.exe", # needed for nvim telescope fzf native
-    "echo '--- Setting Windows Environment Variables ---'",
-    'setx XDG_CONFIG_HOME "%USERPROFILE%\.config"',
-    'setx YAZI_CONFIG_HOME "%USERPROFILE%\.config\yazi"',
+
+    "echo --- Installing Tools ---",
+    "scoop install lazygit neovim yazi wezterm-nightly fzf ripgrep fd-find bat",
+
+    "echo --- Installing Languages ---",
+    "scoop install python go lua lua51 luarocks stylua node",
+
+    "echo --- Installing Dependencies ---",
+    "scoop install autohotkey gcc cmake fastfetch firacode",
+    "scoop shim add gcc ~\\scoop\\apps\\gcc\\current\\bin\\gcc.exe", # Needed for NVim Telescope FZF Native
+
+    "echo --- Setting Environment Variables ---",
+    'setx XDG_CONFIG_HOME "%USERPROFILE%\\.config"', # Nushell home directory
+    'setx YAZI_CONFIG_HOME "%USERPROFILE%\\.config\\yazi"', # Yazi config file
+
+    "echo --- Installation Complete ---",
 ]
 
 [tasks.mac-tools]
 script = [
     "[ -x \"$(command -v brew)\" ] || { echo 'Homebrew is not installed. Please install Homebrew first.'; exit 1; }",
-    "echo '--- Installing Mac Tools ---'",
-    "brew install yazi",
+     
+    "echo '--- Installing Tools ---'",
+    "brew install yazi lazygit bat nushell fzf ripgrep fd fastfetch cmake openssl",
     "brew install --cask wezterm@nightly",
-    "brew install openssl",
-    "brew install cmake",
-    "brew install nushell",
-    "brew install fzf",
-    "brew install ripgrep",
-    "brew install font-fira-code",
-    "brew install fd-find",
-    "brew install fastfetch",
-    "brew install lua",
-    "brew install luarocks",
-    "brew install go",
-    "brew install python",
+
+    "echo --- Installing Languages ---",
+    "brew install lua lua51 luarocks go python node":
+
+    "echo '--- Managing Fonts ---'",
+    "brew tap homebrew/cask-fonts",
+    "brew install --cask font-fira-code",
+
+    "echo '--- Setting Environment Variables ---'",
+    "export XDG_CONFIG_HOME=\"~/.config\"",
+    "export YAZI_CONFIG_HOME=\"~/.config/yazi\"",
+    
+    "echo '--- Installation Complete ---'"
 ]
+
 
 # Dotfiles Management
 [tasks.dotfiles]
 description = "Symlink all the .dotfiles depending on dotter/system.toml files"
-script = ["echo --- Creating Symlinks ---", "dotter"]
+script = [
+    "echo --- Creating Symlinks ---",
+    "dotter -v",
+]
 
 # ==========================
 # ==== Main Update Task ====
@@ -181,6 +201,8 @@ script = [
     "echo --- Updating Homebrew & Packages ---",
     "brew update",
     "brew upgrade",
+    "brew upgrade --cask wezterm@nightly --no-quarantine --greedy-latest",
+
 ]
 
 [tasks.update-mise]

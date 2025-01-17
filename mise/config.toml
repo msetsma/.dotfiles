@@ -2,3 +2,4 @@
 # languages
 python = "latest"
 go = "latest"
+lua = '5.1' # neovim
