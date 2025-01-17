@@ -41,12 +41,6 @@ return {
                     require('telescope.builtin').lsp_document_symbols,
                     { desc = 'LSP: [D]ocument [S]ymbols' }
                 )
-                vim.keymap.set(
-                    'n',
-                    '<leader>ws',
-                    require('telescope.builtin').lsp_dynamic_workspace_symbols,
-                    { desc = 'LSP: [W]orkspace [S]ymbols' }
-                )
                 vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, { desc = 'LSP: [R]e[n]ame' })
                 vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, { desc = 'LSP: [G]oto [D]eclaration' })
                 vim.keymap.set({ 'n', 'x' }, '<leader>ca', vim.lsp.buf.code_action, { desc = 'LSP: [C]ode [A]ction' })

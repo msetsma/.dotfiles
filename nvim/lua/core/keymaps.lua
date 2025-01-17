@@ -48,8 +48,8 @@ keymap.set('n', 'x', '"_x', opts) -- Delete character without copying to registe
 keymap.set('n', '<leader>fmt', vim.lsp.buf.format)
 
 -- Window Management
-keymap.set('n', '<leader>wv', '<C-w>v', opts) -- Split window vertically
-keymap.set('n', '<leader>wh', '<C-w>s', opts) -- Split window horizontally
-keymap.set('n', '<leader>we', '<C-w>=', opts) -- Equalize split window sizes
-keymap.set('n', '<leader>wx', ':close<CR>', opts) -- Close current split
+keymap.set('n', '<leader>wv', '<C-w>v', { desc = 'Split window vertically', unpack(opts) })
+keymap.set('n', '<leader>wh', '<C-w>s', { desc = 'Split window horizontally', unpack(opts) })
+keymap.set('n', '<leader>we', '<C-w>=', { desc = 'Equalize split window sizes', unpack(opts) })
+keymap.set('n', '<leader>wx', ':close<CR>', { desc = 'Close current split', unpack(opts) })
 keymap.set('n', '<leader>ws', helper.toggle_split_orientation, { desc = 'Window Orientation Switch' })

@@ -3,7 +3,7 @@
 wezterm = "~/.config/wezterm"
 starship = "~/.config"
 bottom = "~/.config/dotter"
-rust = "~/.cargo"
+cargo = "~/.cargo"
 mise = "~/.config/mise"
 yazi = "~/.config/yazi"
 fastfetch = "~/.config/fastfetch"

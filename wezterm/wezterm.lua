@@ -101,6 +101,7 @@ config.tab_max_width = 64
 config.use_fancy_tab_bar = false
 
 -- Keys Mapping
+config.enable_kitty_keyboard = true
 config.disable_default_key_bindings = true
 config.leader = { key = 'Delete', timeout_milliseconds = custom.timeout.leader }
 config.key_tables = K.tables()
