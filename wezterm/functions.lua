@@ -2,17 +2,25 @@ local wezterm = require('wezterm')
 local action = wezterm.action
 local nerdfonts = wezterm.nerdfonts
 local mux = wezterm.mux
+local colors = wezterm.GLOBAL.color_table
 local F = {}
 
 function F.detect_os()
-    local os_name = package.config:sub(1, 1) -- Gets the path separator: '\' for Windows, '/' for Unix-like systems
+    local os_name = package.config:sub(1, 1)
     if os_name == '\\' then
         return 'windows'
     elseif wezterm.target_triple:find('darwin') then
         return 'macos'
-    else
-        return 'linux'
     end
+    return 'linux'
+end
+
+function F.get_os_mod()
+    local os = F.detect_os()
+    if os == 'macos' then
+        return 'OPT'
+    end
+    return 'ALT'
 end
 
 function F.get_os_font_size()
@@ -21,20 +29,16 @@ function F.get_os_font_size()
         return 12.0
     elseif os == 'macos' then
         return 16.0
-    else
-        return 12.0
     end
+    return 12.0
 end
 
 function F.get_default_program()
     local os = F.detect_os()
     if os == 'macos' then
         return 'zsh' --"/Users/M269575/.cargo/bin/nu"
-    elseif os == 'linux' then
-        return 'nu'
-    elseif os == 'windows' then
-        return 'nu'
     end
+    return 'nu'
 end
 
 function F.path(...)
@@ -103,7 +107,6 @@ function F.get_tab_title(tab, tabs)
 end
 
 function F.set_tab_bar_status(window, pane, custom)
-    local colors = wezterm.GLOBAL.color_table
     local stat = window:active_workspace()
     local workspace_color = colors.ansi[3]
     local time = wezterm.strftime('%H:%M %m/%d')
@@ -327,6 +330,53 @@ function F.close_workspace(window, pane)
         }),
         pane
     )
+end
+
+function F.rename_workspace()
+    return action.PromptInputLine({
+        description = wezterm.format({
+            { Attribute = { Intensity = 'Bold' } },
+            { Foreground = { Color = colors.ansi[2] } },
+            { Text = 'Enter a new name for the workspace' },
+        }),
+        action = wezterm.action_callback(function(_, _, line)
+            if line then
+                mux.rename_workspace(mux.get_active_workspace(), line)
+            end
+        end),
+    })
+end
+
+function F.new_workspace()
+    return action.PromptInputLine({
+        description = wezterm.format({
+            { Attribute = { Intensity = 'Bold' } },
+            { Foreground = { Color = colors.ansi[2] } },
+            { Text = 'Enter name for the new workspace' },
+        }),
+        action = wezterm.action_callback(function(window, pane, line)
+            if line then
+                window:perform_action(action.SwitchToWorkspace({ name = line }), pane)
+            end
+        end),
+    })
+end
+
+-- TODO: needs work
+function F.show_workspace_launcher_action()
+    return wezterm.action_callback(function(window, _)
+        local workspaces = mux.get_workspace_names()
+        local items = {}
+        for _, name in ipairs(workspaces) do
+            table.insert(items, {
+                label = name,
+                action = wezterm.action_callback(function()
+                    mux.set_active_workspace(name)
+                end),
+            })
+        end
+        window:show_launcher_menu(items)
+    end)
 end
 
 return F

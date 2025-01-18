@@ -3,7 +3,6 @@ local K = require('keybinds')
 local F = require('functions')
 local config = wezterm.config_builder()
 
--- init selector
 local custom = {
     username = os.getenv('USER') or os.getenv('LOGNAME') or os.getenv('USERNAME'),
     hostname = {
@@ -30,21 +29,23 @@ config.automatically_reload_config = true
 -- Colors
 config.color_scheme = 'Catppuccin Mocha'
 local color_table = wezterm.color.get_builtin_schemes()[config.color_scheme]
+wezterm.GLOBAL.color_table = color_table -- for tab bar formatting
 config.colors = {
     compose_cursor = color_table.ansi[2],
     cursor_bg = color_table.indexed[16] or color_table.ansi[2],
     split = color_table.indexed[16] or color_table.ansi[2],
     tab_bar = { background = color_table.background },
 }
-wezterm.GLOBAL.color_table = color_table -- for tab bar formatting
 
 -- Window
+config.max_fps = 144
+config.macos_window_background_blur = 20
 config.adjust_window_size_when_changing_font_size = false
 config.bold_brightens_ansi_colors = true
 config.text_background_opacity = 1.0
 config.window_background_opacity = 0.95
 config.window_decorations = 'RESIZE'
-config.window_padding = { -- will also add padding to nvim
+config.window_padding = {
     left = 0,
     right = 0,
     top = 0,
@@ -54,10 +55,6 @@ config.inactive_pane_hsb = {
     saturation = 0.9,
     brightness = 0.9,
 }
-config.macos_window_background_blur = 20
-
--- Graphics
-config.max_fps = 144
 
 -- Cursor
 config.default_cursor_style = 'BlinkingBar'
