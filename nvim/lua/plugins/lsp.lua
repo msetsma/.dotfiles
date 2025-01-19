@@ -8,54 +8,8 @@ return {
         { 'saghen/blink.cmp' },
     },
     config = function()
-        vim.api.nvim_create_autocmd('LspAttach', {
-            group = vim.api.nvim_create_augroup('lsp-attach', { clear = true }),
-            callback = function()
-                vim.keymap.set(
-                    'n',
-                    'gd',
-                    require('telescope.builtin').lsp_definitions,
-                    { desc = 'LSP: [G]oto [D]efinition' }
-                )
-                vim.keymap.set(
-                    'n',
-                    'gr',
-                    require('telescope.builtin').lsp_references,
-                    { desc = 'LSP: [G]oto [R]eferences' }
-                )
-                vim.keymap.set(
-                    'n',
-                    'gI',
-                    require('telescope.builtin').lsp_implementations,
-                    { desc = 'LSP: [G]oto [I]mplementation' }
-                )
-                vim.keymap.set(
-                    'n',
-                    '<leader>D',
-                    require('telescope.builtin').lsp_type_definitions,
-                    { desc = 'LSP: Type [D]efinition' }
-                )
-                vim.keymap.set(
-                    'n',
-                    '<leader>ds',
-                    require('telescope.builtin').lsp_document_symbols,
-                    { desc = 'LSP: [D]ocument [S]ymbols' }
-                )
-                vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, { desc = 'LSP: [R]e[n]ame' })
-                vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, { desc = 'LSP: [G]oto [D]eclaration' })
-                vim.keymap.set({ 'n', 'x' }, '<leader>ca', vim.lsp.buf.code_action, { desc = 'LSP: [C]ode [A]ction' })
-                vim.keymap.set('n', '<leader>th', function() -- inlay hints can move your code
-                    vim.lsp.inlay_hint.enable(
-                        not vim.lsp.inlay_hint.is_enabled({ bufnr = vim.api.nvim_get_current_buf() })
-                    )
-                end, { desc = 'LSP: [T]oggle Inlay [H]ints' })
-            end,
-        })
         --`:help lspconfig-all` list of all the pre-configured LSPs
         local lsp_config = require('lspconfig')
-        lsp_config.nushell.setup({})
-
-        -- LSP Settings
         local lsp_mason_servers = {
             dockerls = {},
             jsonls = {},
@@ -120,25 +74,19 @@ return {
             },
         }
 
-        require('lspconfig').nushell.setup({
+        local ensure_installed = vim.tbl_keys(lsp_mason_servers)
+        require('mason').setup()
+        require('mason-tool-installer').setup({ ensure_installed = ensure_installed })
+
+        lsp_config.nushell.setup({
             cmd = { 'nu', '--lsp' },
             filetypes = { 'nu' },
             root_dir = require('lspconfig.util').find_git_ancestor,
             single_file_support = true,
+            capabilities = require('blink.cmp').get_lsp_capabilities(),
         })
 
-        -- Pass LSP Settings to Mason
         require('mason-lspconfig').setup({
-            ensure_installed = {
-                'lua_ls',
-                'rust_analyzer',
-                'pylsp',
-                'gopls',
-                'ruff',
-                'dockerls',
-                'jsonls',
-                'yamlls',
-            },
             handlers = {
                 function(server_name)
                     local server = lsp_mason_servers[server_name] or {}

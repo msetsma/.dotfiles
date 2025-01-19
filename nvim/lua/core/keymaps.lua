@@ -8,6 +8,8 @@ vim.g.maplocalleader = ' '
 
 -- Yank
 vim.keymap.set('n', '<leader>ya', ':%y<CR>', { desc = 'Yank entire file' })
+vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv") -- move line down
+vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv") -- move line up
 
 -- Search
 keymap.set('n', '<leader>nh', ':nohl<CR>', { desc = 'Clear search highlights' })
@@ -29,10 +31,10 @@ keymap.set('n', 'n', 'nzzzv', opts) -- Next search result and center
 keymap.set('n', 'N', 'Nzzzv', opts) -- Previous search result and center
 
 -- Resize Windows with Arrows
-keymap.set('n', '<Up>', ':resize -2<CR>', opts) -- Decrease height
-keymap.set('n', '<Down>', ':resize +2<CR>', opts) -- Increase height
-keymap.set('n', '<Left>', ':vertical resize +2<CR>', opts) -- Decrease width
-keymap.set('n', '<Right>', ':vertical resize -2<CR>', opts) -- Increase width
+keymap.set('n', '<c-Up>', ':resize -2<CR>', opts) -- Decrease height
+keymap.set('n', '<c-Down>', ':resize +2<CR>', opts) -- Increase height
+keymap.set('n', '<c-Left>', ':vertical resize +2<CR>', opts) -- Decrease width
+keymap.set('n', '<c-Right>', ':vertical resize -2<CR>', opts) -- Increase width
 
 -- Indentation in Visual Mode
 keymap.set('v', '<', '<gv', opts) -- Stay in indent mode (decrease indent)

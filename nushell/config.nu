@@ -19,4 +19,4 @@ source ~/.config/zoxide.nu
 source ~/.config/nushell/aliases.nu
 source ~/.config/nushell/functions.nu
 source ~/.config/nushell/keybinds.nu
-#use ~/.cache/starship/init.nu
+use ~/.cache/starship/init.nu
