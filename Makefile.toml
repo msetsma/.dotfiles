@@ -23,16 +23,18 @@
 description = "Set up the development environment"
 dependencies = [
     "install-rust",       # Install Rust and its components
-    "install-coreutils",  # Install platform-specific coreutils
     "install-tools",      # Install platform-specific tools
+    "install-coreutils",  # Install platform-specific coreutils
     "install-rust-tools", # Install additional Rust tools
     "dotfiles",           # Symlink dotfiles
 ]
 
-# Rust Configuration
 [tasks.install-rust]
 description = "Install Rust toolchain components."
-script = ["rustup component add clippy rustfmt"]
+script = [
+    "rustup component add clippy",
+    "rustup component add rustfmt"
+]
 
 [tasks.install-rust-tools]
 script = [
@@ -54,21 +56,18 @@ mac_alias = "mac-core-utils"
 [tasks.linux-core-utils]
 condition = { platforms = ["linux"] }
 script = [
-    "echo 'Installing coreutils for Linux...'",
-    "cargo install coreutils --features unix"
+   # not working "cargo install coreutils --features unix"
 ]
 
 [tasks.windows-core-utils]
 condition = { platforms = ["windows"] }
 script = [
-    "echo 'Installing coreutils for Windows...'",
     "cargo install coreutils --features windows"
 ]
 
 [tasks.mac-core-utils]
 condition = { platforms = ["mac"] }
 script = [
-    "echo 'Installing coreutils for macOS...'",
     "cargo install coreutils --features macos"
 ]
 
@@ -82,19 +81,20 @@ mac_alias = "mac-tools"
 script = [
     "echo --- Setup ---",
     "sudo dnf5 install -y dnf-plugins-core",
+    "sudo dnf5 install @c-development",
 
     "echo '--- Enabling COPR Repositories ---'",
     "sudo dnf5 copr enable wezfurlong/wezterm-nightly -y",
+    "sudo dnf5 copr enable atim/lazygit -y",
 
     "echo '--- Installing Linux Tools ---'",
-    "sudo dnf5 install -y lazygit neovim wezterm-nightly fzf ripgrep fd-find bat",
+    "sudo dnf5 install -y lazygit neovim fzf ripgrep fd-find bat wezterm --skip-unavailable",
 
     "echo '--- Installing Languages ---'",
-    "sudo dnf5 install -y python3 golang lua lua51 lua-devel luarocks nodejs",
+    "sudo dnf5 install -y python3 golang lua lua-devel luarocks nodejs --skip-unavailable",
 
     "echo '--- Installing Dependencies ---'",
-    "sudo dnf5 install -y gcc gcc-c++ cmake fastfetch fontconfig",
-    "sudo dnf5 install -y fira-code-fonts",
+    "sudo dnf5 install -y fira-code-fonts gcc gcc-c++ cmake fastfetch fontconfig --skip-unavailable",
 
     "echo '--- Setting Environment Variables ---'",
     "export XDG_CONFIG_HOME=\"$HOME/.config\"",  # Nushell home directory
@@ -125,8 +125,6 @@ script = [
     "echo --- Setting Environment Variables ---",
     'setx XDG_CONFIG_HOME "%USERPROFILE%\\.config"', # Nushell home directory
     'setx YAZI_CONFIG_HOME "%USERPROFILE%\\.config\\yazi"', # Yazi config file
-
-    "echo --- Installation Complete ---",
 ]
 
 [tasks.mac-tools]
@@ -138,7 +136,7 @@ script = [
     "brew install --cask wezterm@nightly",
 
     "echo --- Installing Languages ---",
-    "brew install lua lua51 luarocks go python node":
+    "brew install lua lua51 luarocks go python node",
 
     "echo '--- Managing Fonts ---'",
     "brew tap homebrew/cask-fonts",
@@ -147,10 +145,7 @@ script = [
     "echo '--- Setting Environment Variables ---'",
     "export XDG_CONFIG_HOME=\"~/.config\"",
     "export YAZI_CONFIG_HOME=\"~/.config/yazi\"",
-    
-    "echo '--- Installation Complete ---'"
 ]
-
 
 # Dotfiles Management
 [tasks.dotfiles]
