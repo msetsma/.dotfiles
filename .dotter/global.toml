@@ -1,6 +1,4 @@
-# common
 [common.files]
-wezterm = "~/.config/wezterm"
 starship = "~/.config"
 bottom = "~/.config/dotter"
 cargo = "~/.cargo"
@@ -10,14 +8,18 @@ fastfetch = "~/.config/fastfetch"
 nvim = "~/.config/nvim"
 code-tools = "~/.config"
 
-# windows
-[ahk.files]
+[windows.files]
 "_windows/ahk" = "~\\2015m\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup"
 nushell = "~/.config/nushell"
+wezterm = "~/.config/wezterm"
 
 # mac
 [mac.files]
-_osx = "~/.config"
-nushell = "~/Application Support/nushell/"
+"_osx/karabiner" = "~/.config/karabiner"
+"_osx/zsh" = "~/.config/zsh"
+wezterm = "~/.config/wezterm"
 
-# linux
+# fedora
+[fedora.files]
+"_unix/zsh" = "~/.config/zsh"
+ghostty = "~/.config/ghostty"

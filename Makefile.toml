@@ -84,11 +84,11 @@ script = [
     "sudo dnf5 install @c-development",
 
     "echo '--- Enabling COPR Repositories ---'",
-    "sudo dnf5 copr enable wezfurlong/wezterm-nightly -y",
     "sudo dnf5 copr enable atim/lazygit -y",
 
     "echo '--- Installing Linux Tools ---'",
-    "sudo dnf5 install -y lazygit neovim fzf ripgrep fd-find bat wezterm --skip-unavailable",
+    "sudo dnf5 install -y lazygit neovim fzf ripgrep fd-find bat --skip-unavailable",
+    'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"',
 
     "echo '--- Installing Languages ---'",
     "sudo dnf5 install -y python3 golang lua lua-devel luarocks nodejs --skip-unavailable",
@@ -97,10 +97,7 @@ script = [
     "sudo dnf5 install -y fira-code-fonts gcc gcc-c++ cmake fastfetch fontconfig --skip-unavailable",
 
     "echo '--- Setting Environment Variables ---'",
-    "export XDG_CONFIG_HOME=\"$HOME/.config\"",  # Nushell home directory
     "export YAZI_CONFIG_HOME=\"$HOME/.config/yazi\"",  # Yazi config file
-
-    "echo --- Installation Complete ---",
 ]
 
 [tasks.windows-tools]
@@ -132,8 +129,9 @@ script = [
     "[ -x \"$(command -v brew)\" ] || { echo 'Homebrew is not installed. Please install Homebrew first.'; exit 1; }",
      
     "echo '--- Installing Tools ---'",
-    "brew install yazi lazygit bat nushell fzf ripgrep fd fastfetch cmake openssl",
+    "brew install yazi lazygit bat fzf ripgrep fd fastfetch cmake openssl",
     "brew install --cask wezterm@nightly",
+    'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"',
 
     "echo --- Installing Languages ---",
     "brew install lua lua51 luarocks go python node",
@@ -143,7 +141,6 @@ script = [
     "brew install --cask font-fira-code",
 
     "echo '--- Setting Environment Variables ---'",
-    "export XDG_CONFIG_HOME=\"~/.config\"",
     "export YAZI_CONFIG_HOME=\"~/.config/yazi\"",
 ]
 

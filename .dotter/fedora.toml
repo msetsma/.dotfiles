@@ -1,1 +1,1 @@
-packages = [ "common", ]
+packages = [ "common", "fedora" ]
