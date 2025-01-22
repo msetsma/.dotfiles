@@ -35,10 +35,10 @@ end
 
 function F.get_default_program()
     local os = F.detect_os()
-    if os == 'macos' then
-        return 'zsh' --"/Users/M269575/.cargo/bin/nu"
+    if os == 'windows' then
+        return 'powershell.exe -NoLogo'
     end
-    return 'nu'
+    return 'zsh'
 end
 
 function F.path(...)

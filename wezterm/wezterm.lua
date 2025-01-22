@@ -10,7 +10,7 @@ local custom = {
         work = 'pc-xxxxxx',
     },
     timeout = {
-        key = 3000,
+        key = 2000,
         leader = 2000,
     },
     default_workspaces = {
@@ -27,7 +27,7 @@ config.default_prog = { F.get_default_program() }
 config.automatically_reload_config = true
 
 -- Colors
-config.color_scheme = 'Catppuccin Mocha'
+config.color_scheme = 'tokyonight'
 local color_table = wezterm.color.get_builtin_schemes()[config.color_scheme]
 wezterm.GLOBAL.color_table = color_table -- for tab bar formatting
 config.colors = {
@@ -41,9 +41,8 @@ config.colors = {
 config.max_fps = 144
 config.macos_window_background_blur = 20
 config.adjust_window_size_when_changing_font_size = false
-config.bold_brightens_ansi_colors = true
 config.text_background_opacity = 1.0
-config.window_background_opacity = 0.95
+config.window_background_opacity = 0.97
 config.window_decorations = 'RESIZE'
 config.window_padding = {
     left = 0,
@@ -56,32 +55,13 @@ config.inactive_pane_hsb = {
     brightness = 0.9,
 }
 
--- Cursor
-config.default_cursor_style = 'BlinkingBar'
-config.hide_mouse_cursor_when_typing = false
-
 -- Font & ligatures
-config.font = wezterm.font({
-    family = 'FiraCode Nerd Font',
-    weight = 'Medium',
-})
+config.font = wezterm.font('JetBrains Mono', { weight = 'Bold' })
 config.font_size = F.get_os_font_size()
-config.harfbuzz_features = {
-    'calt',
-    'clig',
-    'liga',
-    'dlig',
-    'ss01',
-    'ss02',
-    'ss03',
-    'cv30',
-    'cv24',
-}
 
 -- Scrolling
 config.enable_scroll_bar = false
 config.scrollback_lines = 10000
-config.alternate_buffer_wheel_scroll_speed = 5
 
 -- Tab
 config.hide_tab_bar_if_only_one_tab = false

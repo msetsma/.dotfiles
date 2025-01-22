@@ -102,18 +102,17 @@ script = [
 
 [tasks.windows-tools]
 script = [
-    "echo --- Scoop Setup ---",
-    "where scoop >nul 2>nul || (echo Scoop is not installed. Please install Scoop first. && exit /b 1)",
-    "echo Adding Scoop buckets...",
-    "scoop bucket add extras",
-    "scoop bucket add nerd-fonts",
-    "scoop bucket add versions",
+#    "echo --- Scoop Setup ---",
+#    "echo Adding Scoop buckets...",
+#    "scoop bucket add extras || true",
+#    "scoop bucket add nerd-fonts || true",
+#    "scoop bucket add versions || true",
 
     "echo --- Installing Tools ---",
-    "scoop install lazygit neovim yazi wezterm-nightly fzf ripgrep fd-find bat",
+    "scoop install lazygit neovim yazi wezterm-nightly fzf ripgrep bat",
 
     "echo --- Installing Languages ---",
-    "scoop install python go lua lua51 luarocks stylua node",
+    "scoop install python go lua lua51 luarocks stylua",
 
     "echo --- Installing Dependencies ---",
     "scoop install autohotkey gcc cmake fastfetch firacode",
