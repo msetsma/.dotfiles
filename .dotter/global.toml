@@ -9,16 +9,13 @@ nvim = "~/.config/nvim"
 "code-tools/lua" = "~/.config"
 "code-tools/ruff" = "~/.config"
 
-[windows.files]
-"_windows/ahk" = "~\\2015m\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup"
-nushell = "~/.config/nushell"
-wezterm = "~/.config/wezterm"
-
 # mac
 [mac.files]
 "_osx/karabiner" = "~/.config/karabiner"
 "_osx/zsh" = "~/.config/zsh"
-wezterm = "~/.config/wezterm"
+aerospace = "~/.config/aerospace"
+ghostty = "~/.config/ghostty"
+sketchybar = "~/.config/sketchybar"
 
 # fedora
 [fedora.files]

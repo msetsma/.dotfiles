@@ -23,6 +23,17 @@ apply_osx_system_defaults() {
     # Do not rearrange spaces automatically
     defaults write com.apple.dock "mru-spaces" -bool false
 
+    # disable displays have seprate spaces
+    defaults write com.apple.dock expose-group-apps -bool true && killall Dock
+
+    # group windows by application 
+    defaults write com.apple.dock expose-group-apps -bool true && killall Dock
+
+    # allow drag with ctrl + cmd any where in window
+    defaults write -g NSWindowShouldDragOnGesture -bool true
+
+    # disable windows opening animations
+    defaults write -g NSAutomaticWindowAnimationsEnabled -bool false
 
 if [ "$(basename "$0")" = "$(basename "${BASH_SOURCE[0]}")" ]; then
     apply_osx_system_defaults
