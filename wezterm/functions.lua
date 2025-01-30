@@ -5,6 +5,11 @@ local mux = wezterm.mux
 local colors = wezterm.GLOBAL.color_table
 local F = {}
 
+function F.is_vim(pane)
+    -- this is set by the plugin, and unset on ExitPre in Neovim
+    return pane:get_user_vars().IS_NVIM == 'true'
+end
+
 function F.detect_os()
     local os_name = package.config:sub(1, 1)
     if os_name == '\\' then
@@ -36,7 +41,7 @@ end
 function F.get_default_program()
     local os = F.detect_os()
     if os == 'windows' then
-        return 'powershell.exe -NoLogo'
+        return 'nu'
     end
     return 'zsh'
 end

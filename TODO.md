@@ -2,12 +2,9 @@
 
 ## Wezterm
 
-- better keymaps for window splitting (tables)
-- diff zoom levels for operating systems
-- explore smart icons in tabs (seems to work with zsh but not nu)
+- better keymaps (windows & tabs)
 - tab bar:
   - remove elements by size of window
-  - zen mode
 
 ## NeoVim
 

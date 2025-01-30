@@ -11,12 +11,12 @@ local custom = {
     },
     timeout = {
         key = 2000,
-        leader = 2000,
+        leader = 3000,
     },
     default_workspaces = {
         default = 'main',
         repositories = {
-            { name = 'main', path = wezterm.home_dir },
+            { name = 'home', path = wezterm.home_dir },
             { name = 'dotfiles', path = F.path(wezterm.home_dir, '.dotfiles') },
         },
     },
@@ -42,7 +42,7 @@ config.max_fps = 144
 config.macos_window_background_blur = 20
 config.adjust_window_size_when_changing_font_size = false
 config.text_background_opacity = 1.0
-config.window_background_opacity = 0.97
+config.window_background_opacity = 1.0
 config.window_decorations = 'RESIZE'
 config.window_padding = {
     left = 0,

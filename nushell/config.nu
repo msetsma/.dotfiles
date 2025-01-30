@@ -18,4 +18,7 @@ $env.LS_COLORS = (vivid generate catppuccin-mocha | str trim)
 source ~/.config/nushell/aliases.nu
 source ~/.config/nushell/functions.nu
 source ~/.config/nushell/keybinds.nu
-# use ~/.cache/starship/init.nu
+
+
+mkdir ($nu.data-dir | path join "vendor/autoload")
+starship init nu | save -f ($nu.data-dir | path join "vendor/autoload/starship.nu")

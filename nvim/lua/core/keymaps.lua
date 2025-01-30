@@ -24,7 +24,7 @@ keymap.set(
 keymap.set('n', '<Tab>', ':bnext<CR>', opts) -- Go to next buffer
 keymap.set('n', '<S-Tab>', ':bprevious<CR>', opts) -- Go to previous buffer
 keymap.set('n', '<leader>bx', ':bdelete!<CR>', opts) -- Close buffer
-keymap.set('n', '<leader>bn', '<cmd>enew<CR>', opts) -- New buffer
+keymap.set('n', '<leader>bo', ':%bdelete|edit#|bdelete#<CR>', opts) -- Close all but active buffer
 
 -- Find and Center
 keymap.set('n', 'n', 'nzzzv', opts) -- Next search result and center
