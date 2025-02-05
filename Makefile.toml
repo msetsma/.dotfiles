@@ -125,14 +125,9 @@ script = [
 
 [tasks.mac-tools]
 script = [
-    "[ -x \"$(command -v brew)\" ] || { echo 'Homebrew is not installed. Please install Homebrew first.'; exit 1; }",
-
     "echo '--- Installing Tools ---'",
-    "brew tap FelixKratz/formulae",
-    "brew install borders"
-    "brew install yazi lazygit bat fzf ripgrep fd fastfetch cmake openssl",
-    "brew install --cask ghostty",
-    "brew install --cask nikitabobko/tap/aerospace@0.12.0"
+    "brew install yazi lazygit bat fzf ripgrep fd fastfetch cmake openssl nvim",
+    "brew install --cask nikitabobko/tap/aerospace",
     'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"',
 
     "echo --- Installing Languages ---",

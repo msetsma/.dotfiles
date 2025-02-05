@@ -19,8 +19,7 @@ wezterm = "~/.config/wezterm"
 "_osx/karabiner" = "~/.config/karabiner"
 "_osx/zsh" = "~/.config/zsh"
 aerospace = "~/.config/aerospace"
-ghostty = "~/.config/ghostty"
-sketchybar = "~/.config/sketchybar"
+wezterm = "~/.config/wezterm"
 
 # fedora
 [fedora.files]
