@@ -1,20 +1,28 @@
-# common
 [common.files]
-wezterm = "~/.config/wezterm"
-nushell = "~/.config/nushell"
 starship = "~/.config"
-bottom = "~/.config/dotter"
-rust = "~/.cargo"
+cargo = "~/.cargo"
 mise = "~/.config/mise"
-vivid = "~/.config/vivid"
 yazi = "~/.config/yazi"
 fastfetch = "~/.config/fastfetch"
 nvim = "~/.config/nvim"
+"code-tools/lua" = "~/.config"
+"code-tools/ruff" = "~/.config"
 
-# windows
-[ahk.files]
-"_windows/ahk" = "~\\2015m\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup"
+[windows.files]
+"_windows/ahk" = "C:\\Users\\2015m\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup" 
+"_windows/komorebi" = "~/.config/komorebi"
+nushell = "~/.config/nushell"
+wezterm = "~/.config/wezterm"
 
-# osx
+# mac
+[mac.files]
+"_osx/karabiner" = "~/.config/karabiner"
+"_osx/zsh" = "~/.config/zsh"
+aerospace = "~/.config/aerospace"
+ghostty = "~/.config/ghostty"
+sketchybar = "~/.config/sketchybar"
 
-# linux 
+# fedora
+[fedora.files]
+"_unix/zsh" = "~/.config/zsh"
+ghostty = "~/.config/ghostty"

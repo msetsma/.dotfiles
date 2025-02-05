@@ -1,0 +1,7 @@
+[manager]
+keymap = [
+    { on = "o", run = "open", desc = "Open file/directory" },
+    { on = "q", run = "quit", desc = "Quit Yazi" },
+    { on = "/", run = "search", desc = "Search files" },
+    { on = "p", run = "toggle", desc = "Toggle preview" }
+]

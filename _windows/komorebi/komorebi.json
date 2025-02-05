@@ -1,0 +1,63 @@
+{
+  "$schema": "https://raw.githubusercontent.com/LGUG2Z/komorebi/v0.1.33/schema.json",
+  "app_specific_configuration_path": "$Env:USERPROFILE/.config/komorebi/applications.json",
+  "window_hiding_behaviour": "Cloak",
+  "cross_monitor_move_behaviour": "Insert",
+  "default_workspace_padding": 0,
+  "default_container_padding": 0,
+  "border": false,
+  "border_width": 0,
+  "transparency": false,
+  "transparency_alpha": 250,
+  "border_offset": 0,
+  "theme": {
+    "palette": "Base16",
+    "name": "TokyoNightDark",
+    "accent": "Base0D"
+  },
+  "stackbar": {
+    "height": 40,
+    "mode": "OnStack",
+    "tabs": {
+      "width": 300
+    }
+  },
+  "monitors": [
+    {
+      "workspaces": [
+        {
+          "name": "main",
+          "layout": "BSP"
+        },
+        {
+          "name": "2",
+          "layout": "BSP"
+        },
+        {
+          "name": "3",
+          "layout": "BSP"
+        }
+      ]
+    },
+    {
+      "workspaces": [
+        {
+          "name": "1",
+          "layout": "Rows"
+        },
+        {
+          "name": "2",
+          "layout": "Rows"
+        },
+        {
+          "name": "3",
+          "layout": "Rows"
+        }
+      ]
+    }
+  ],
+  "bar_configurations": [
+    "C:/Users/2015m/.config/komorebi/komorebi.bar.monitor1.json",
+    "C:/Users/2015m/.config/komorebi/komorebi.bar.monitor2.json"
+  ]
+}
