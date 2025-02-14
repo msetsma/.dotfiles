@@ -1,5 +1,7 @@
+ZSH_THEME=""
 export EDITOR="nvim"
 export VISUAL="nvim"
+
 
 export PATH="/usr/local/bin:$PATH"
 export PATH="/opt/homebrew/bin:$PATH"
@@ -29,5 +31,5 @@ export FZF_CTRL_T_OPTS="
 export FZF_DEFAULT_COMMAND='rg --hidden -l ""' # Include hidden files
 
 # Starship Prompt
-export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
+export PATH="$HOME/.config/starship:$PATH"
 eval "$(starship init zsh)"

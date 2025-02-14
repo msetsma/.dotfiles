@@ -27,7 +27,7 @@ config.default_prog = { F.get_default_program() }
 config.automatically_reload_config = true
 
 -- Colors
-config.color_scheme = 'tokyonight'
+config.color_scheme = 'Tokyo Night Storm (Gogh)'
 local color_table = wezterm.color.get_builtin_schemes()[config.color_scheme]
 wezterm.GLOBAL.color_table = color_table -- for tab bar formatting
 config.colors = {
@@ -38,12 +38,13 @@ config.colors = {
 }
 
 -- Window
+config.native_macos_fullscreen_mode = false
 config.max_fps = 144
 config.macos_window_background_blur = 20
 config.adjust_window_size_when_changing_font_size = false
 config.text_background_opacity = 1.0
-config.window_background_opacity = 1.0
-config.window_decorations = 'RESIZE'
+config.window_background_opacity = 0.9
+config.window_decorations = 'INTEGRATED_BUTTONS|RESIZE'
 config.window_padding = {
     left = 0,
     right = 0,
@@ -56,7 +57,7 @@ config.inactive_pane_hsb = {
 }
 
 -- Font & ligatures
-config.font = wezterm.font('JetBrains Mono', { weight = 'Bold' })
+config.font = wezterm.font('FiraCode Nerd Font', { weight = 'Medium' })
 config.font_size = F.get_os_font_size()
 
 -- Scrolling
