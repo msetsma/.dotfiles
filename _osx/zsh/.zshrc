@@ -2,7 +2,6 @@ ZSH_THEME=""
 export EDITOR="nvim"
 export VISUAL="nvim"
 
-
 export PATH="/usr/local/bin:$PATH"
 export PATH="/opt/homebrew/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
@@ -11,6 +10,9 @@ export XDG_CONFIG_HOME="$HOME/.config"
 # zsh
 [ -f "$HOME/.config/zsh/aliases.zsh" ] && source "$HOME/.config/zsh/aliases.zsh"
 [ -f "$HOME/.config/zsh/functions.zsh" ] && source "$HOME/.config/zsh/functions.zsh"
+
+# bash scripts
+source_folder_contents "$HOME/.config/bash"
 
 # zsh plugins
 source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
