@@ -1,10 +1,39 @@
+# -------------------------
+# Core settings
+# -------------------------
+line-length = 120         # Black-compatible default
+target-version = "py311"  # or "py310", "py39" depending on your runtime
+
+# -------------------------
+# Linting rules
+# -------------------------
+[lint]
+# Start with the main rule families
 select = [
-    "ALL",
+    "E",    # pycodestyle (PEP8)
+    "F",    # pyflakes (logic errors, unused vars, etc.)
+    "I",    # isort (import sorting)
+    "B",    # flake8-bugbear (common pitfalls)
+    "UP",   # pyupgrade (modern syntax)
+    "C90",  # mccabe complexity
+    "PLR",  # pylint refactor rules (branches, args, statements)
 ]
 
-ignore = [
-    "E501",
-]
+[lint.per-file-ignores]
+"__init__.py" = ["F401"]  # allow unused imports in package __init__.py
+
+[lint.mccabe]
+max-complexity = 8  # flag overly complex functions
+
+# -------------------------
+# Formatting rules
+# -------------------------
+[format]
+quote-style = "single"          # enforce single quotes
+indent-style = "space"          # always spaces, not tabs
+skip-magic-trailing-comma = false
+line-ending = "lf"              # normalize to LF
+docstring-code-format = true    # format code inside docstrings
 
 # Exclude a variety of commonly ignored directories.
 exclude = [
@@ -36,14 +65,3 @@ exclude = [
     "venv",
     "__init__.py",
 ]
-
-[lint]
-select = ["E", "F"]
-
-[lint.per-file-ignores]
-# Allow unused imports in __init__.py files.
-"__init__.py" = ["F401"]
-
-[format]
-quote-style = "single"
-    

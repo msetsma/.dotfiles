@@ -1,19 +1,22 @@
 # ==============================================================================
-# How to Use
+# Makefile.toml - Main Installation & Setup Tasks
 # ==============================================================================
-# To initialize the environment:
-#     $ cargo make init
+# This file handles initial setup and tool installation.
+# For daily operations and utilities, see Makefile.utils.toml
 #
-# To update tools and dependencies:
-#     $ cargo make update
+# Quick start:
+#     $ cargo make help               # Show most common commands
+#     $ cargo make init               # Initial setup
+#     $ cargo make deploy-and-backup  # Deploy dotfiles + git backup
 #
-# To check for updates:
-#     $ cargo make check-outdated
-#
-# You can also run individual tasks as needed. Examples:
-#     $ cargo make install-rust       # Install Rust and components
-#     $ cargo make install-tools      # Install platform-specific tools
+# More commands:
+#     $ cargo make update             # Update all tools
+#     $ cargo make info               # See all available commands
+#     $ cargo make doctor             # Check system health
 # ==============================================================================
+
+# Import utility tasks
+extend = "Makefile.utils.toml"
 
 
 # ==========================
@@ -49,15 +52,8 @@ script = [
 
 # Platform-Specific Coreutils Installation
 [tasks.install-coreutils]
-linux_alias = "linux-core-utils"
 windows_alias = "windows-core-utils"
 mac_alias = "mac-core-utils"
-
-[tasks.linux-core-utils]
-condition = { platforms = ["linux"] }
-script = [
-   # not working "cargo install coreutils --features unix"
-]
 
 [tasks.windows-core-utils]
 condition = { platforms = ["windows"] }
@@ -73,32 +69,8 @@ script = [
 
 # Platform-Specific Tool Installation
 [tasks.install-tools]
-linux_alias = "linux-tools"
 windows_alias = "windows-tools"
 mac_alias = "mac-tools"
-
-[tasks.linux-tools]
-script = [
-    "echo --- Setup ---",
-    "sudo dnf5 install -y dnf-plugins-core",
-    "sudo dnf5 install @c-development",
-
-    "echo '--- Enabling COPR Repositories ---'",
-    "sudo dnf5 copr enable atim/lazygit -y",
-
-    "echo '--- Installing Linux Tools ---'",
-    "sudo dnf5 install -y lazygit neovim fzf ripgrep fd-find bat --skip-unavailable",
-    'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"',
-
-    "echo '--- Installing Languages ---'",
-    "sudo dnf5 install -y python3 golang lua lua-devel luarocks nodejs --skip-unavailable",
-
-    "echo '--- Installing Dependencies ---'",
-    "sudo dnf5 install -y fira-code-fonts gcc gcc-c++ cmake fastfetch fontconfig --skip-unavailable",
-
-    "echo '--- Setting Environment Variables ---'",
-    "export YAZI_CONFIG_HOME=\"$HOME/.config/yazi\"",  # Yazi config file
-]
 
 [tasks.windows-tools]
 script = [
@@ -118,6 +90,20 @@ script = [
     "scoop install autohotkey gcc cmake fastfetch firacode",
     "scoop shim add gcc ~\\scoop\\apps\\gcc\\current\\bin\\gcc.exe", # Needed for NVim Telescope FZF Native
 
+    "echo --- Installing Python Package Manager ---",
+    "python -m pip install --user pipx",
+    "python -m pipx ensurepath",
+
+    "echo --- Installing Scoopfile (if exists) ---",
+    "if exist %USERPROFILE%\\.dotfiles\\scoopfile.json (",
+    "  for /f \"tokens=1\" %%i in (%USERPROFILE%\\.dotfiles\\scoopfile.json) do scoop install %%i 2>nul || echo Skipping %%i",
+    ")",
+
+    "echo --- Installing pipx packages (if exists) ---",
+    "if exist %USERPROFILE%\\.dotfiles\\pipx-requirements.txt (",
+    "  for /f %%p in (%USERPROFILE%\\.dotfiles\\pipx-requirements.txt) do pipx install %%p 2>nul || echo Skipping %%p",
+    ")",
+
     "echo --- Setting Environment Variables ---",
     'setx XDG_CONFIG_HOME "%USERPROFILE%\\.config"', # Nushell home directory
     'setx YAZI_CONFIG_HOME "%USERPROFILE%\\.config\\yazi"', # Yazi config file
@@ -130,12 +116,28 @@ script = [
     "brew install --cask nikitabobko/tap/aerospace",
     'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"',
 
-    "echo --- Installing Languages ---",
+    "echo '--- Installing Languages ---'",
     "brew install lua lua51 luarocks go python node",
 
     "echo '--- Managing Fonts ---'",
     "brew tap homebrew/cask-fonts",
     "brew install --cask font-fira-code",
+
+    "echo '--- Installing Python Package Manager ---'",
+    "python3 -m pip install --user pipx",
+    "python3 -m pipx ensurepath",
+
+    "echo '--- Installing Brewfile (if exists) ---'",
+    "if [ -f ~/.dotfiles/Brewfile ]; then",
+    "  brew bundle --file=~/.dotfiles/Brewfile || echo 'Some Brewfile packages may have failed'",
+    "fi",
+
+    "echo '--- Installing pipx packages (if exists) ---'",
+    "if [ -f ~/.dotfiles/pipx-requirements.txt ]; then",
+    "  while read package; do",
+    "    pipx install $package 2>/dev/null || echo \"Skipping $package (may already be installed)\"",
+    "  done < ~/.dotfiles/pipx-requirements.txt",
+    "fi",
 
     "echo '--- Setting Environment Variables ---'",
     "export YAZI_CONFIG_HOME=\"~/.config/yazi\"",
@@ -170,12 +172,8 @@ script = [
 
 # Platform-Specific Tools Update
 [tasks.update-platform-tools]
-linux_alias = "update-linux-tools"
 windows_alias = "update-windows-tools"
 mac_alias = "update-mac-tools"
-
-[tasks.update-linux-tools]
-script = []
 
 [tasks.update-windows-tools]
 script = [
@@ -213,15 +211,8 @@ script = [
 ]
 
 [tasks.check-package-managers]
-linux_alias = "check-outdated-linux"
 windows_alias = "check-outdated-windows"
 mac_alias = "check-outdated-mac"
-
-# TODO
-[tasks.check-outdated-linux]
-script = [
-    "echo --- Checking for outdated pacman packages ---",
-]
 
 [tasks.check-outdated-windows]
 script = [

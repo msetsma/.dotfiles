@@ -59,3 +59,5 @@ build/
 .dotter/cache
 
 target/
+
+.DS_Store

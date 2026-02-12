@@ -1,0 +1,35 @@
+{
+    "env": {
+        "CLAUDE_CODE_ENABLE_TELEMETRY": "1"
+    },
+    "includeCoAuthoredBy": false,
+    "permissions": {
+        "deny": [
+            "Read(./.env)",
+            "Read(./.env.*)",
+            "Read(./secrets/**)",
+            "Read(./credentials.*)",
+            "Read(./.credentials.*)",
+            "Read(./build)"
+        ]
+    },
+    "enabledPlugins": {},
+    "alwaysThinkingEnabled": true,
+    "mcpServers": {
+        "context7": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@upstash/context7-mcp@latest"
+            ]
+        },
+        "sequential-thinking": {
+            "type": "stdio",
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-sequential-thinking"
+            ]
+        }
+    }
+}

@@ -1,80 +1,20 @@
-# Get editor completions based on the config schema
-"$schema" = 'https://starship.rs/config-schema.json'
-
-format = """
-$directory\
-$git_branch\
-$git_metrics\
-$fill\
-$rust\
-$python\
-$lua\
-$golang\
-$cmd_duration\
-$line_break\
-$character
-"""
-
-add_newline = true
-
-[character]
-success_symbol = '[](#a6e3a1)'
-error_symbol = '[](#f38ba8)'
-
-[directory]
-truncation_length = 3
-truncate_to_repo = true
-style = '#cba6f7'
-home_symbol = "~ "
-
-[cmd_duration]
-min_time = 2_000
-format = "[ 󱦟 $duration ]($style)"
-style = "white"
-
-[git_branch]
-symbol = " "
-style = "#89b4fa"  # Catppuccin Blue
-
-[git_metrics]
-format = "[ $added]($added_style) [ $deleted]($deleted_style)"
-added_style = "fg:#a6e3a1"  # Catppuccin Green
-deleted_style = "fg:#f38ba8"  # Catppuccin Red
-only_nonzero_diffs = true
-
-[lua]
-format = " [lua](italic) [${symbol}${version}]($style)"
-version_format = "${raw}"
-symbol = " "
-
-[python]  
-symbol = " "
-format = '[${symbol}${pyenv_prefix}(${version}) ${virtualenv}]($style)'
-
-[rust]
-symbol = "󱘗 "
-format = '[${symbol}${version}]($style)'
-
-[package]
-symbol = "󰏗 "
-format = '[${symbol}${version}]($style)'
-
-[golang]
-symbol = " "
-format = " [${symbol}${version}]($style)"
-
-[fill]
-symbol = ' '
-style = '$style'
-
 [aws]
 symbol = "  "
 
 [buf]
 symbol = " "
 
+[bun]
+symbol = " "
+
 [c]
 symbol = " "
+
+[cpp]
+symbol = " "
+
+[cmake]
+symbol = " "
 
 [conda]
 symbol = " "
@@ -84,6 +24,12 @@ symbol = " "
 
 [dart]
 symbol = " "
+
+[deno]
+symbol = " "
+
+[directory]
+read_only = " 󰌾"
 
 [docker_context]
 symbol = " "
@@ -100,8 +46,17 @@ symbol = " "
 [fossil_branch]
 symbol = " "
 
+[gcloud]
+symbol = "  "
+
+[git_branch]
+symbol = " "
+
 [git_commit]
 tag_symbol = '  '
+
+[golang]
+symbol = " "
 
 [guix_shell]
 symbol = " "
@@ -126,6 +81,9 @@ symbol = " "
 
 [kotlin]
 symbol = " "
+
+[lua]
+symbol = " "
 
 [memory_usage]
 symbol = "󰍛 "
@@ -153,6 +111,7 @@ Amazon = " "
 Android = " "
 Arch = " "
 Artix = " "
+CachyOS = " "
 CentOS = " "
 Debian = " "
 DragonFly = " "
@@ -174,6 +133,7 @@ MidnightBSD = " "
 Mint = " "
 NetBSD = " "
 NixOS = " "
+Nobara = " "
 OpenBSD = "󰈺 "
 openSUSE = " "
 OracleLinux = "󰌷 "
@@ -190,6 +150,9 @@ Unknown = " "
 Void = " "
 Windows = "󰍲 "
 
+[package]
+symbol = "󰏗 "
+
 [perl]
 symbol = " "
 
@@ -199,11 +162,20 @@ symbol = " "
 [pijul_channel]
 symbol = " "
 
+[pixi]
+symbol = "󰏗 "
+
+[python]
+symbol = " "
+
 [rlang]
 symbol = "󰟔 "
 
 [ruby]
 symbol = " "
+
+[rust]
+symbol = "󱘗 "
 
 [scala]
 symbol = " "

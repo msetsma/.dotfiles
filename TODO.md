@@ -1,20 +1,14 @@
 # TODO
 
-## Wezterm
-
-- better keymaps (windows & tabs)
-- tab bar:
-  - remove elements by size of window
-
-## NeoVim
-
-- lsp: spelling
-- explore mini.nvim vs stacks
-- Replace NeoTree with Oil
-- floating windows: command, search, etc
-- line swapping and blank line keymaps
-
 ## Mac
 
-- custom Karabiner-Elements for wezterm
-  - this will allow copy pasting with remapped keys & still interacting with Neovim and wezterm in the way I expect
+---
+
+- Figure out what on Mac that isnt saved in the .dotfiles
+  - Homebrew installs
+  - Python install with pipx
+  - Claude Code install and configuration
+
+- Consider using nushell again
+  - This would require a rework of scripts
+  - Would make cross platform development better

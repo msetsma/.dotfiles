@@ -1,0 +1,113 @@
+start-at-login = true
+after-startup-command = [
+    "exec-and-forget borders active_color=0xffe1e3e4 inactive_color=0xff494d64 width=5.0",
+]
+enable-normalization-flatten-containers = true
+enable-normalization-opposite-orientation-for-nested-containers = true
+accordion-padding = 24
+default-root-container-layout = "tiles"
+default-root-container-orientation = "auto"
+on-focused-monitor-changed = ["move-mouse monitor-lazy-center"]
+automatically-unhide-macos-hidden-apps = true
+
+[key-mapping]
+preset = "qwerty"
+
+[gaps]
+inner.horizontal = 10
+inner.vertical = 10
+outer.left = 10
+outer.bottom = 10
+outer.top = 10
+outer.right = 10
+
+# App-specific window rules
+[[on-window-detected]]
+if.app-id = "com.mitchellh.ghostty"
+run = ["layout floating"]
+
+[[on-window-detected]]
+if.app-id = "com.microsoft.VSCode"
+run = ["move-node-to-workspace 1"]
+
+[[on-window-detected]]
+if.app-id = "com.vscodium"
+run = ["move-node-to-workspace 1"]
+
+[[on-window-detected]]
+if.app-id = "com.microsoft.teams"
+run = ["move-node-to-workspace 2"]
+
+[[on-window-detected]]
+if.app-id = "md.obsidian"
+run = ["move-node-to-workspace 3"]
+
+[[on-window-detected]]
+if.app-id = "com.anthropic.claude"
+run = ["move-node-to-workspace 2"]
+
+[mode.main.binding]
+# Launch/Focus Apps
+ctrl-alt-cmd-c = '''exec-and-forget open -a "VSCode"'''
+ctrl-alt-cmd-t = '''exec-and-forget open -a "Ghostty"'''
+ctrl-alt-cmd-b = '''exec-and-forget open -a "Firefox"'''
+ctrl-alt-cmd-m = '''exec-and-forget open -a "Microsoft Teams"'''
+ctrl-alt-cmd-n = '''exec-and-forget open -a "Obsidian"'''
+ctrl-alt-cmd-l = '''exec-and-forget open -a "Claude"'''
+# Layout controls
+alt-slash = "layout tiles horizontal vertical"
+alt-comma = "layout accordion horizontal vertical"
+# Focus controls (vim-style)
+alt-h = "focus left"
+alt-j = "focus down"
+alt-k = "focus up"
+alt-l = "focus right"
+# Move windows
+alt-shift-h = "move left"
+alt-shift-j = "move down"
+alt-shift-k = "move up"
+alt-shift-l = "move right"
+# Resize windows
+alt-minus = "resize smart -50"
+alt-equal = "resize smart +50"
+# ===================== Enhanced Workspaces ==============================
+# Quick workspace access (semantic shortcuts)
+alt-d = "workspace 1"                    # Development workspace
+alt-shift-d = "move-node-to-workspace 1"
+alt-c = "workspace 2"                    # Communication workspace
+alt-shift-c = "move-node-to-workspace 2"
+# Traditional workspace numbers
+alt-1 = "workspace 1" # Development Core (VSCode, Terminal, Local browser)
+alt-2 = "workspace 2" # Communication (Teams, Claude, Slack)
+alt-3 = "workspace 3" # Documentation (Obsidian, Research browser, PDFs)
+alt-4 = "workspace 4" # Monitoring/Tools (Git clients, Docker, DB tools)
+alt-5 = "workspace 5" # Overflow/Testing (Additional browsers, APIs, temp apps)
+alt-6 = "workspace 6" # General overflow
+# Move windows to workspaces
+alt-shift-1 = "move-node-to-workspace 1"
+alt-shift-2 = "move-node-to-workspace 2"
+alt-shift-3 = "move-node-to-workspace 3"
+alt-shift-4 = "move-node-to-workspace 4"
+alt-shift-5 = "move-node-to-workspace 5"
+alt-shift-6 = "move-node-to-workspace 6"
+# Quick navigation
+alt-tab = "workspace-back-and-forth"
+alt-shift-tab = "move-workspace-to-monitor --wrap-around next"
+# ===================== Development-Specific Shortcuts ==================
+# IDE/Terminal split for ultrawide
+alt-backslash = "resize smart -300"        # Make IDE 2/3, terminal 1/3
+alt-shift-backslash = "resize smart +300"  # Reset split
+alt-semicolon = "focus right"
+alt-shift-semicolon = "focus left"
+alt-shift-space = "layout floating tiling"
+alt-f = "fullscreen"
+
+# Organize workspaces across monitors (run after plugging in external)
+alt-shift-o = [
+    "move-workspace-to-monitor --workspace 1 1", # Dev to external
+    "move-workspace-to-monitor --workspace 3 1", # Docs to external
+    "move-workspace-to-monitor --workspace 4 1", # Tools to external
+    "move-workspace-to-monitor --workspace 2 2", # Comm to laptop
+    "move-workspace-to-monitor --workspace 5 2", # Overflow to laptop
+    "move-workspace-to-monitor --workspace 6 2", # Misc to laptop
+]

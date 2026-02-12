@@ -1,0 +1,358 @@
+# ==============================================================================
+# Makefile.utils.toml - Utility Commands for Daily Operations
+# ==============================================================================
+# This file contains ongoing maintenance and utility tasks.
+# Imported by main Makefile.toml via the extend directive.
+#
+# Usage examples:
+#     $ cargo make brew-export       # Export Homebrew packages to Brewfile
+#     $ cargo make pipx-list         # List installed pipx packages
+#     $ cargo make doctor            # Check system health
+#     $ cargo make clean             # Cleanup caches and temp files
+# ==============================================================================
+
+
+# ====================================
+# === Package Manager Utilities ===
+# ====================================
+
+# ---------- macOS: Homebrew ----------
+
+[tasks.brew-export]
+description = "Export current Homebrew packages to Brewfile"
+condition = { platforms = ["mac"] }
+script = [
+    "echo '--- Exporting Homebrew packages to Brewfile ---'",
+    "brew bundle dump --file=~/.dotfiles/Brewfile --force",
+    "echo 'Brewfile created at ~/.dotfiles/Brewfile'",
+    "echo 'To install from this file later: cargo make brew-import'",
+]
+
+[tasks.brew-import]
+description = "Install Homebrew packages from Brewfile"
+condition = { platforms = ["mac"] }
+script = [
+    "echo '--- Installing from Brewfile ---'",
+    "brew bundle --file=~/.dotfiles/Brewfile",
+]
+
+[tasks.brew-cleanup]
+description = "Cleanup old Homebrew versions and caches"
+condition = { platforms = ["mac"] }
+script = [
+    "echo '--- Cleaning up Homebrew ---'",
+    "brew cleanup -s",
+    "brew autoremove",
+    "rm -rf $(brew --cache)",
+    "echo 'Homebrew cleanup complete'",
+]
+
+[tasks.brew-doctor]
+description = "Run Homebrew doctor to check for issues"
+condition = { platforms = ["mac"] }
+script = [
+    "echo '--- Running Homebrew doctor ---'",
+    "brew doctor",
+]
+
+# ---------- Windows: Scoop ----------
+
+[tasks.scoop-export]
+description = "Export current Scoop packages to scoopfile.json"
+condition = { platforms = ["windows"] }
+script = [
+    "echo --- Exporting Scoop packages to scoopfile.json ---",
+    "scoop export > %USERPROFILE%\\.dotfiles\\scoopfile.json",
+    "echo Scoopfile created at ~/.dotfiles/scoopfile.json",
+    "echo To install from this file later: cargo make scoop-import",
+]
+
+[tasks.scoop-import]
+description = "Install Scoop packages from scoopfile.json"
+condition = { platforms = ["windows"] }
+script = [
+    "echo --- Installing from scoopfile.json ---",
+    "if exist %USERPROFILE%\\.dotfiles\\scoopfile.json (",
+    "  for /f \"tokens=1\" %%i in (%USERPROFILE%\\.dotfiles\\scoopfile.json) do scoop install %%i",
+    ") else (",
+    "  echo No scoopfile.json found. Run: cargo make scoop-export",
+    ")",
+]
+
+[tasks.scoop-cleanup]
+description = "Cleanup old Scoop versions and caches"
+condition = { platforms = ["windows"] }
+script = [
+    "echo --- Cleaning up Scoop ---",
+    "scoop cleanup *",
+    "scoop cache rm *",
+    "echo Scoop cleanup complete",
+]
+
+[tasks.scoop-doctor]
+description = "Run Scoop checkup to check for issues"
+condition = { platforms = ["windows"] }
+script = [
+    "echo --- Running Scoop checkup ---",
+    "scoop checkup",
+]
+
+# ---------- Cross-Platform Aliases ----------
+
+[tasks.pkg-export]
+description = "Export packages (platform-specific)"
+mac_alias = "brew-export"
+windows_alias = "scoop-export"
+
+[tasks.pkg-import]
+description = "Import packages (platform-specific)"
+mac_alias = "brew-import"
+windows_alias = "scoop-import"
+
+[tasks.pkg-cleanup]
+description = "Cleanup packages (platform-specific)"
+mac_alias = "brew-cleanup"
+windows_alias = "scoop-cleanup"
+
+[tasks.pkg-doctor]
+description = "Check package manager health (platform-specific)"
+mac_alias = "brew-doctor"
+windows_alias = "scoop-doctor"
+
+
+# =============================
+# === Python/pipx Utilities ===
+# =============================
+
+[tasks.pipx-list]
+description = "List all installed pipx packages"
+script = [
+    "echo '--- Installed pipx packages ---'",
+    "pipx list",
+]
+
+[tasks.pipx-export]
+description = "Export pipx packages to requirements file"
+script = [
+    "echo '--- Exporting pipx packages ---'",
+    "pipx list --short > ~/.dotfiles/pipx-requirements.txt",
+    "echo 'Pipx packages exported to ~/.dotfiles/pipx-requirements.txt'",
+]
+
+[tasks.pipx-install]
+description = "Install pipx packages from requirements file"
+script = [
+    "echo '--- Installing pipx packages from requirements file ---'",
+    "if [ -f ~/.dotfiles/pipx-requirements.txt ]; then",
+    "  while read package; do",
+    "    pipx install $package || echo \"Failed to install $package\"",
+    "  done < ~/.dotfiles/pipx-requirements.txt",
+    "else",
+    "  echo 'No pipx-requirements.txt found. Run: cargo make pipx-export'",
+    "fi",
+]
+
+
+# ==========================
+# === Dotfile Utilities ===
+# ==========================
+
+[tasks.deploy]
+description = "Deploy dotfiles via dotter (alias for 'dotfiles' task)"
+script = [
+    "echo '--- Deploying dotfiles with dotter ---'",
+    "dotter -v",
+    "echo '✓ Dotfiles deployed successfully'",
+]
+
+[tasks.dotfiles-check]
+description = "Validate dotfiles configuration without deploying"
+script = [
+    "echo '--- Checking dotfiles configuration ---'",
+    "dotter -v --dry-run || dotter --dry-run",
+]
+
+[tasks.dotfiles-backup]
+description = "Backup current configs before deployment"
+script = [
+    "echo '--- Backing up current configs ---'",
+    "mkdir -p ~/dotfiles-backup-$(date +%Y%m%d-%H%M%S)",
+    "echo 'Backup created at ~/dotfiles-backup-$(date +%Y%m%d-%H%M%S)'",
+    "echo 'Note: This is a placeholder. Customize based on your needs.'",
+]
+
+
+# ==========================
+# === Git Utilities ===
+# ==========================
+
+[tasks.backup]
+description = "Quick git backup - add all, commit with auto-generated message, and push"
+script = [
+    "echo '--- Backing up dotfiles to git ---'",
+    "git add .",
+    "git commit -m \"$(git status --short | cut -c4- | cut -d'/' -f1 | sort -u | tr '\\n' ', ' | sed 's/, $//')\"",
+    "git push",
+    "echo '✓ Backup complete'",
+]
+
+[tasks.backup-with-message]
+description = "Git backup with custom message (use: cargo make backup-with-message -- \"your message\")"
+script = [
+    "echo '--- Backing up dotfiles to git ---'",
+    "git add .",
+    "git commit -m \"${@}\"",
+    "git push",
+    "echo '✓ Backup complete'",
+]
+
+[tasks.deploy-and-backup]
+description = "Deploy dotfiles with dotter, then backup to git"
+dependencies = ["deploy"]
+script = [
+    "echo ''",
+    "echo '--- Now backing up to git ---'",
+    "git add .",
+    "git commit -m \"$(git status --short | cut -c4- | cut -d'/' -f1 | sort -u | tr '\\n' ', ' | sed 's/, $//')\" || echo 'No changes to commit'",
+    "git push || echo 'Nothing to push'",
+    "echo '✓ Deploy and backup complete'",
+]
+
+
+# ==========================
+# === General Utilities ===
+# ==========================
+
+[tasks.clean]
+description = "Cleanup caches and temporary files"
+script = [
+    "echo '--- Cleaning up caches ---'",
+    "cargo clean 2>/dev/null || true",
+    "echo 'Removing Cargo cache...'",
+    "rm -rf ~/.cargo/registry/cache",
+    "echo 'Cleanup complete'",
+]
+
+[tasks.doctor]
+description = "Check system health and verify tools are installed"
+script = [
+    "echo '=== System Health Check ==='",
+    "echo ''",
+    "echo '--- Checking essential tools ---'",
+    "command -v cargo >/dev/null 2>&1 && echo '✓ cargo installed' || echo '✗ cargo not found'",
+    "command -v rustc >/dev/null 2>&1 && echo '✓ rustc installed' || echo '✗ rustc not found'",
+    "command -v dotter >/dev/null 2>&1 && echo '✓ dotter installed' || echo '✗ dotter not found'",
+    "command -v mise >/dev/null 2>&1 && echo '✓ mise installed' || echo '✗ mise not found'",
+    "command -v nvim >/dev/null 2>&1 && echo '✓ neovim installed' || echo '✗ neovim not found'",
+    "command -v fzf >/dev/null 2>&1 && echo '✓ fzf installed' || echo '✗ fzf not found'",
+    "command -v eza >/dev/null 2>&1 && echo '✓ eza installed' || echo '✗ eza not found'",
+    "command -v bat >/dev/null 2>&1 && echo '✓ bat installed' || echo '✗ bat not found'",
+    "command -v rg >/dev/null 2>&1 && echo '✓ ripgrep installed' || echo '✗ ripgrep not found'",
+    "command -v lazygit >/dev/null 2>&1 && echo '✓ lazygit installed' || echo '✗ lazygit not found'",
+    "echo ''",
+    "echo '--- Platform-specific tools ---'",
+    "if [[ \"$OSTYPE\" == \"darwin\"* ]]; then",
+    "  command -v brew >/dev/null 2>&1 && echo '✓ homebrew installed' || echo '✗ homebrew not found'",
+    "  command -v aerospace >/dev/null 2>&1 && echo '✓ aerospace installed' || echo '✗ aerospace not found'",
+    "fi",
+    "if [[ \"$OSTYPE\" == \"msys\" ]] || [[ \"$OSTYPE\" == \"win32\" ]]; then",
+    "  command -v scoop >/dev/null 2>&1 && echo '✓ scoop installed' || echo '✗ scoop not found'",
+    "fi",
+    "echo ''",
+    "echo '--- Environment variables ---'",
+    "echo \"XDG_CONFIG_HOME: ${XDG_CONFIG_HOME:-not set}\"",
+    "echo \"YAZI_CONFIG_HOME: ${YAZI_CONFIG_HOME:-not set}\"",
+    "echo ''",
+    "echo '=== Health check complete ==='",
+]
+
+[tasks.help]
+description = "Show the most commonly used commands"
+script = [
+    "echo ''",
+    "echo '╔════════════════════════════════════════════════════════════════╗'",
+    "echo '║                    Dotfiles Quick Reference                    ║'",
+    "echo '╚════════════════════════════════════════════════════════════════╝'",
+    "echo ''",
+    "echo '📦 INSTALLATION & SETUP'",
+    "echo '  cargo make init              Initial setup (run once)'",
+    "echo '  cargo make update            Update all tools & packages'",
+    "echo ''",
+    "echo '🚀 MOST USED COMMANDS'",
+    "echo '  cargo make deploy            Deploy dotfiles with dotter'",
+    "echo '  cargo make backup            Quick git backup'",
+    "echo '  cargo make deploy-and-backup Deploy + backup (all-in-one!)'",
+    "echo ''",
+    "echo '📦 PACKAGE MANAGEMENT'",
+    "echo '  cargo make pkg-export        Export packages (cross-platform)'",
+    "echo '  cargo make pkg-import        Import packages (cross-platform)'",
+    "echo '  cargo make brew-export       Export Homebrew (macOS)'",
+    "echo '  cargo make scoop-export      Export Scoop (Windows)'",
+    "echo ''",
+    "echo '🐍 PYTHON'",
+    "echo '  cargo make pipx-list         List pipx packages'",
+    "echo '  cargo make pipx-export       Export pipx packages'",
+    "echo ''",
+    "echo '🔧 UTILITIES'",
+    "echo '  cargo make doctor            Check system health'",
+    "echo '  cargo make clean             Cleanup caches'",
+    "echo '  cargo make info              Show detailed information'",
+    "echo ''",
+    "echo 'For a complete list of all commands, run: cargo make info'",
+    "echo ''",
+]
+
+[tasks.info]
+description = "Display system and dotfiles information"
+script = [
+    "echo '=== Dotfiles Information ==='",
+    "echo ''",
+    "echo 'Repository: ~/.dotfiles'",
+    "echo \"Platform: $(uname -s)\"",
+    "echo \"Architecture: $(uname -m)\"",
+    "echo ''",
+    "echo 'Available tasks:'",
+    "echo '  Installation:'",
+    "echo '    cargo make init              - Initial setup'",
+    "echo '    cargo make update            - Update all tools'",
+    "echo '    cargo make check-outdated    - Check for updates'",
+    "echo ''",
+    "echo '  Package Managers:'",
+    "echo '    cargo make pkg-export        - Export packages (cross-platform)'",
+    "echo '    cargo make pkg-import        - Import packages (cross-platform)'",
+    "echo '    cargo make pkg-cleanup       - Cleanup old versions (cross-platform)'",
+    "echo '    cargo make pkg-doctor        - Check for issues (cross-platform)'",
+    "echo ''",
+    "echo '  Homebrew (macOS):'",
+    "echo '    cargo make brew-export       - Export to Brewfile'",
+    "echo '    cargo make brew-import       - Install from Brewfile'",
+    "echo '    cargo make brew-cleanup      - Cleanup old versions'",
+    "echo '    cargo make brew-doctor       - Check for issues'",
+    "echo ''",
+    "echo '  Scoop (Windows):'",
+    "echo '    cargo make scoop-export      - Export to scoopfile.json'",
+    "echo '    cargo make scoop-import      - Install from scoopfile.json'",
+    "echo '    cargo make scoop-cleanup     - Cleanup old versions'",
+    "echo '    cargo make scoop-doctor      - Check for issues'",
+    "echo ''",
+    "echo '  Python/pipx:'",
+    "echo '    cargo make pipx-list         - List packages'",
+    "echo '    cargo make pipx-export       - Export to file'",
+    "echo '    cargo make pipx-install      - Install from file'",
+    "echo ''",
+    "echo '  Dotfiles:'",
+    "echo '    cargo make deploy            - Deploy dotfiles with dotter'",
+    "echo '    cargo make dotfiles          - Deploy dotfiles (same as above)'",
+    "echo '    cargo make dotfiles-check    - Validate config'",
+    "echo ''",
+    "echo '  Git:'",
+    "echo '    cargo make backup            - Quick backup (auto-commit message)'",
+    "echo '    cargo make backup-with-message -- \"msg\" - Backup with custom message'",
+    "echo '    cargo make deploy-and-backup - Deploy dotfiles + git backup'",
+    "echo ''",
+    "echo '  Utilities:'",
+    "echo '    cargo make clean             - Cleanup caches'",
+    "echo '    cargo make doctor            - System health check'",
+    "echo '    cargo make info              - This information'",
+    "echo ''",
+]

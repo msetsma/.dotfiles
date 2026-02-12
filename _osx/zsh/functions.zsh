@@ -1,13 +1,19 @@
 rld() {
     echo "Reloading Zsh configuration..."
-
-    if [[ -n "$ZDOTDIR" ]]; then
-        source "$ZDOTDIR/.zshrc"
-    else
-        source "$HOME/.zshrc"
-    fi
-
     exec zsh
+}
+
+update() {
+    echo "Updating Homebrew and installed packages..."
+    brew update && brew upgrade && (brew cleanup || true)
+    
+    echo "Updating Rust toolchain..."
+    rustup update
+    
+    echo "Updating Cargo packages..."
+    cargo install $(cargo install --list | grep -E '^\w' | cut -d' ' -f1)
+    
+    echo "All updates completed."
 }
 
 # Function to source all .sh or .zsh files in a given directory
@@ -19,12 +25,7 @@ source_folder_contents() {
     fi
 
     local target_dir="$1"
-
-    # Resolve the path (handles ~ and other expansions in Zsh)
-    # Using the = operator to expand the path before further processing
     target_dir=${=target_dir}
-
-    # Add a trailing slash if it's missing, for consistent globbing
     [[ "$target_dir" != */ ]] && target_dir="$target_dir/"
 
     # Check if the target is a valid directory and exists
@@ -69,4 +70,94 @@ source_folder_contents() {
     else
         return 0
     fi
+}
+
+# Get Azure Function App info interactively
+az-func-info() {
+    # Check if Azure CLI is installed
+    if ! command -v az &> /dev/null; then
+        echo "Error: Azure CLI not installed"
+        return 1
+    fi
+
+    # Check if logged in
+    if ! az account show &> /dev/null; then
+        echo "Error: Not logged into Azure CLI. Run 'az login'"
+        return 1
+    fi
+
+    # Check if fzf is installed
+    if ! command -v fzf &> /dev/null; then
+        echo "Error: fzf not installed (brew install fzf)"
+        return 1
+    fi
+
+    echo "Fetching function apps..."
+    
+    # Get list of function apps with resource group for context
+    local func_list=$(az functionapp list --query "[].{name:name, rg:resourceGroup}" -o tsv)
+    
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to fetch function apps from Azure"
+        return 1
+    fi
+    
+    if [ -z "$func_list" ]; then
+        echo "No function apps found in current subscription"
+        local current_sub=$(az account show --query name -o tsv)
+        echo "Current subscription: $current_sub"
+        echo ""
+        echo "Available subscriptions:"
+        az account list --query "[].{name:name, id:id, isDefault:isDefault}" -o table
+        return 1
+    fi
+
+    # Let user select with fzf (shows name and resource group)
+    local selection=$(echo "$func_list" | fzf --prompt="Select Function App: " --height=40% --layout=reverse --header="NAME | RESOURCE GROUP")
+    
+    if [ -z "$selection" ]; then
+        echo "No selection made"
+        return 0
+    fi
+
+    # Extract function app name and resource group
+    local func_name=$(echo "$selection" | awk '{print $1}')
+    local rg=$(echo "$selection" | awk '{print $2}')
+    
+    echo "Getting info for: $func_name"
+    echo "================================"
+    
+    echo "Resource Group: $rg"
+    
+    # Get location
+    local location=$(az functionapp show -n "$func_name" -g "$rg" --query location -o tsv 2>/dev/null)
+    echo "Location: $location"
+    
+    # Get app service plan
+    local asp=$(az functionapp show -n "$func_name" -g "$rg" --query appServicePlanId -o tsv 2>/dev/null | awk -F'/' '{print $NF}')
+    echo "App Service Plan: $asp"
+    
+    # Get storage account from app settings
+    local storage=$(az functionapp config appsettings list -n "$func_name" -g "$rg" --query "[?name=='AzureWebJobsStorage'].value" -o tsv 2>/dev/null | rg -o 'AccountName=([^;]+)' -r '$1')
+    echo "Storage Account: $storage"
+    
+    # Get subscription ID
+    local sub_id=$(az account show --query id -o tsv 2>/dev/null)
+    echo "Subscription ID: $sub_id"
+    
+    # Get function app URL
+    local url=$(az functionapp show -n "$func_name" -g "$rg" --query defaultHostName -o tsv 2>/dev/null)
+    echo "URL: https://$url"
+
+    
+    echo "================================"
+    echo ""
+    echo "Config snippet for pipelines/config.yml:"
+    echo "  environment_name:"
+    echo "    azureSubscription: 'your-service-connection'"
+    echo "    resourceGroup: '$rg'"
+    echo "    location: '$location'"
+    echo "    functionAppName: '$func_name'"
+    echo "    storageAccountName: '$storage'"
+    echo "    appServicePlanName: '$asp'"
 }

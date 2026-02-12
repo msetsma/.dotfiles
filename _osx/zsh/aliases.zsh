@@ -4,10 +4,10 @@ alias home='cd $home'
 alias dotfiles='cd ~/.dotfiles'
 alias dev='cd ~/dev'
 alias mlops='cd ~/dev/mlops'
-alias copy='| copy'
+alias copy='| pbcopy'
 
 # EZA - better ls
-alias ls='eza -1ah --group-directories-first --git-repos-no-status --icons'
+alias ls='eza -1ah --group-directories-first --git-repos-no-status --icons --all'
 alias lt='eza --icons --tree --level=1 --group-directories-first -h --long --no-permissions --no-user --no-time'
 alias lt1='eza --icons --tree --level=1 --group-directories-first -h --long --no-permissions --no-user --no-time'
 alias lt2='eza --icons --tree --level=2 --group-directories-first -h --long --no-permissions --no-user --no-time'
@@ -18,16 +18,12 @@ alias ltcopy='eza --tree | pbcopy'
 # git
 alias gfc='git_fzf_checkout'
 
-# python
-# alias py='python3.13'
-# alias python='python3.13'
-# alias venv='manage_project_venv'
+
+# because microsoft is dumb
+alias az='PYTHONWARNINGS="ignore::UserWarning" az'
 
 # databricks
 alias db='databricks'
 
 # azure
 alias repo='open $(az repos show --repository $(basename "$PWD") --query webUrl -o tsv)'
-
-# reload .zsh
-alias reload='source ~/.zshrc'

@@ -1,4 +1,21 @@
-theme = tokyonight
+theme = Catppuccin Mocha
 window-decoration = true
-font-size = 20
+font-size = 14
 confirm-close-surface = false
+background-opacity = .8
+background-blur = 20
+
+# Add padding around the terminal content (in pixels)
+window-padding-x = 20
+window-padding-y = 0
+
+
+# Global keybinding to summon a temp terminal
+# https://ghostty.org/docs/config/reference#quick-terminal-size
+quick-terminal-screen = main
+quick-terminal-size = 75%,75%
+quick-terminal-animation-duration = .01
+quick-terminal-position = center
+keybind = global:cmd+grave_accent=toggle_quick_terminal
+quick-terminal-space-behavior = remain
+keybind = shift+enter=text:\x1b\r
