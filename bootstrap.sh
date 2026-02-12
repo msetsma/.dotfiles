@@ -1,39 +1,50 @@
 #!/bin/bash
 
-# Bootstrap script to set up WezTerm and Zsh configurations
+. scripts/init/utils.sh
+. scripts/init/init.sh
+. scripts/init/install_homebrew.sh
+. scripts/init/set_osx_defaults.sh
+. scripts/init/create_symlinks.sh
 
-# Exit immediately if a command exits with a non-zero status
-set -e
+info "Dotfiles intallation initialized..."
+read -p "Install apps? [y/n] " install_apps
+read -p "Overwrite existing dotfiles? [y/n] " overwrite_dotfiles
 
-# Variables
-DOTFILES_DIR="$HOME/.dotfiles"
-ZSH_DIR="$HOME/.zsh"
+if [[ "$install_apps" == "y" ]]; then
+    printf "\n"
+    info "===================="
+    info "Prerequisites"
+    info "===================="
 
-# Function to create a symbolic link
-create_symlink() {
-  local source_file="$1"
-  local target_file="$2"
+    install_xcode
+    install_homebrew
 
-  # Check if the target file already exists
-  if [ -L "$target_file" ]; then
-    echo "Symlink already exists: $target_file"
-  elif [ -e "$target_file" ]; then
-    echo "File exists and will be backed up: $target_file"
-    mv "$target_file" "$target_file.backup"
-    ln -s "$source_file" "$target_file"
-    echo "Created symlink: $source_file -> $target_file (original backed up)"
-  else
-    ln -s "$source_file" "$target_file"
-    echo "Created symlink: $source_file -> $target_file"
-  fi
-}
+    printf "\n"
+    info "===================="
+    info "Apps"
+    info "===================="
 
-# Create the .zsh directory if it doesn't exist
-mkdir -p "$ZSH_DIR"
+    run_brew_bundle
+fi
 
-# WezTerm configuration
-create_symlink "$DOTFILES_DIR/wezterm/wezterm.lua" "$HOME/.wezterm.lua"
+printf "\n"
+info "===================="
+info "OSX System Defaults"
+info "===================="
 
+# register_keyboard_shortcuts
+apply_osx_system_defaults
 
+printf "\n"
+info "===================="
+info "Symbolic Links"
+info "===================="
 
-echo "Setup complete!"
+chmod +x ./scripts/init/create_symlinks.sh
+if [[ "$overwrite_dotfiles" == "y" ]]; then
+    warning "Deleting existing dotfiles..."
+    ./scripts/init/create_symlinks.sh --delete --include-files
+fi
+./scripts/init/create_symlinks.sh --create
+
+success "Dotfiles set up successfully."
