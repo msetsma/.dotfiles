@@ -1,0 +1,52 @@
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# macOS resource fork files
+._*
+
+# macOS trash files
+.Trashes
+.Trash-*
+
+# WezTerm configuration files
+wezterm.log
+wezterm-creds.json
+wezterm-ssh-agent.sock
+wezterm-icon-cache
+.cache/wezterm
+
+# If you keep WezTerm config in a specific folder
+.config/wezterm/*.log
+.config/wezterm/.temp
+
+# Starship prompt configuration
+.starship
+
+# Starship cache files
+.cache/starship
+
+# Ignore specific WezTerm settings or logs (if applicable)
+wezterm-*.*  # Example: wezterm-errors.txt or other temp files
+
+# General backup and temporary files
+*.bak
+*.swp
+*.swo
+*.tmp
+*.old
+*.backup
+
+# General IDE or text editor settings
+.idea/
+.vscode/
+*.code-workspace
+
+# Optional: Other common global ignores
+node_modules/
+.env
+.env.local
+venv/
+dist/
+build/
