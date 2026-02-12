@@ -1,228 +1,130 @@
 local wezterm = require('wezterm')
 local F = require('functions')
-local mux = wezterm.mux
 local action = wezterm.action
+local OS_MOD = F.get_os_mod()
+
 local K = {}
 
--- helper functions
-local function rename_tab_action(colors)
-    return action.PromptInputLine({
-        description = wezterm.format({
-            { Attribute = { Intensity = 'Bold' } },
-            { Foreground = { Color = colors.indexed[16] } },
-            { Text = 'Renaming tab title:' },
-        }),
-        action = wezterm.action_callback(function(window, _, line)
-            if line then
-                window:active_tab():set_title(line)
-            end
-        end),
-    })
+function K.keybinds(custom)
+    return {
+        -- Clipboard Operations
+        { key = 'c', mods = 'CTRL', action = wezterm.action.CopyTo('Clipboard') },
+        { key = 'v', mods = 'CTRL', action = wezterm.action.PasteFrom('Clipboard') },
+
+        -- Wezterm
+        { key = 'p', mods = 'LEADER', action = action.ActivateCommandPalette },
+        { key = 'q', mods = 'LEADER', action = action.QuitApplication },
+
+        -- Search
+        { key = '/', mods = 'LEADER', action = action.Search({ CaseInSensitiveString = '' }) },
+
+        -- Font Size Adjustments
+        { key = '0', mods = 'CTRL', action = action.ResetFontSize },
+        { key = '-', mods = 'CTRL', action = action.DecreaseFontSize },
+        { key = '_', mods = 'CTRL|SHIFT', action = action.IncreaseFontSize },
+
+        -- Opacity Controls
+        { key = '0', mods = 'ALT', action = action.EmitEvent('opacity-reset') },
+        { key = '-', mods = 'ALT', action = action.EmitEvent('opacity-decrease') },
+        { key = '_', mods = 'ALT|SHIFT', action = action.EmitEvent('opacity-increase') },
+
+        -- Signals
+        { key = 'Backspace', mods = 'CTRL', action = wezterm.action({ SendString = '\x03' }) }, -- Send cancel signal (Ctrl+C)
+
+        -- Tab Management
+        { key = 'n', mods = OS_MOD, action = action.SpawnTab('DefaultDomain') },
+        { key = 'l', mods = OS_MOD, action = action.ActivateTabRelative(1) }, -- right
+        { key = 'h', mods = OS_MOD, action = action.ActivateTabRelative(-1) }, -- left
+        { key = 'x', mods = OS_MOD, action = action.CloseCurrentTab({ confirm = false }) },
+        { key = '.', mods = OS_MOD, action = action.ShowLauncherArgs({ flags = 'TABS' }) },
+
+        -- Workspace/Mux managment
+        { key = 'l', mods = 'LEADER', action = action.SwitchWorkspaceRelative(1) },
+        { key = 'h', mods = 'LEADER', action = action.SwitchWorkspaceRelative(-1) },
+        { key = 'r', mods = 'LEADER', action = F.rename_workspace() },
+        { key = 'w', mods = 'LEADER', action = F.show_workspace_launcher_action() },
+        { key = 'x', mods = 'LEADER', action = wezterm.action_callback(F.close_workspace) },
+        { key = '.', mods = 'LEADER', action = action.ShowLauncherArgs({ flags = 'WORKSPACES' }) },
+        { key = 'n', mods = 'LEADER', action = F.new_workspace() },
+
+        -- Key Tables
+        {
+            key = 'm',
+            mods = 'LEADER',
+            action = action.ActivateKeyTable({
+                name = 'move',
+                one_shot = false,
+            }),
+        },
+        {
+            key = 's',
+            mods = 'LEADER',
+            action = action.ActivateKeyTable({
+                name = 'split',
+                one_shot = true,
+                until_unknown = true,
+                timeout_milliseconds = custom.timeout.key,
+            }),
+        },
+        {
+            key = 't',
+            mods = 'LEADER',
+            action = action.ActivateKeyTable({
+                name = 'tabs',
+                one_shot = false,
+            }),
+        },
+        {
+            key = 'w',
+            mods = 'LEADER',
+            action = action.ActivateKeyTable({
+                name = 'windows',
+                one_shot = false,
+            }),
+        },
+        {
+            key = 'c',
+            mods = 'LEADER',
+            action = action.ActivateKeyTable({
+                name = 'commands',
+                one_shot = true,
+                until_unknown = true,
+                timeout_milliseconds = custom.timeout.key,
+            }),
+        },
+    }
 end
 
-local function rename_workspace_action(colors)
-    return action.PromptInputLine({
-        description = wezterm.format({
-            { Attribute = { Intensity = 'Bold' } },
-            { Foreground = { Color = colors.indexed[16] } },
-            { Text = 'Renaming session/workspace:' },
-        }),
-        action = wezterm.action_callback(function(_, _, line)
-            if line then
-                mux.rename_workspace(mux.get_active_workspace(), line)
-            end
-        end),
-    })
-end
-
-local function switch_previous_workspace_action()
-    return action.Multiple({
-        wezterm.action_callback(function(window, pane)
-            F.switch_previous_workspace(window, pane)
-        end),
-        action.EmitEvent('set-previous-workspace'),
-    })
-end
-
-local function switch_workspace_relative_action(direction)
-    return action.Multiple({
-        action.SwitchWorkspaceRelative(direction),
-        action.EmitEvent('set-previous-workspace'),
-    })
-end
-
-local function show_workspace_launcher_action()
-    return wezterm.action_callback(function(window, _)
-        local workspaces = mux.get_workspace_names()
-        local items = {}
-        for _, name in ipairs(workspaces) do
-            table.insert(items, { label = name, action = wezterm.action_callback(function()
-                mux.set_active_workspace(name)
-            end) })
-        end
-        window:show_launcher_menu(items)
-    end)
-end
-
-
-
-function K.keybinds(custom, colors)
-	local keybinds = {
-		{
-			key = 'o',
-			mods = 'LEADER',
-			action = action.ActivateKeyTable({
-				name = 'open',
-				one_shot = false,
-				until_unknown = true,
-				timeout_milliseconds = custom.timeout.key,
-			}),
-		},
-		{
-			key = 'm',
-			mods = 'LEADER',
-			action = action.ActivateKeyTable({
-				name = 'move',
-				one_shot = false,
-				until_unknown = false,
-				timeout_milliseconds = custom.timeout.key,
-			}),
-		},
-		{
-			key = 'r',
-			mods = 'LEADER',
-			action = action.ActivateKeyTable({
-				name = 'resize',
-				one_shot = false,
-				until_unknown = true,
-				timeout_milliseconds = custom.timeout.key,
-			}),
-		},
-
-		-- Clipboard Operations
-		{ key = 'c', mods = 'CTRL', action = wezterm.action.CopyTo('Clipboard') },    -- Copy to clipboard
-		{ key = 'v', mods = 'CTRL', action = wezterm.action.PasteFrom('Clipboard') }, -- Paste from clipboard
-
-		-- Search
-		{ key = '/', mods = 'LEADER', action = action.Search({ CaseInSensitiveString = '' }) }, -- Search with case-insensitive string
-
-		-- Split Management
-		{ key = '|', mods = 'LEADER|SHIFT', action = action.SplitHorizontal({ domain = 'CurrentPaneDomain' }) }, -- Split pane horizontally
-		{ key = '-', mods = 'LEADER', action = action.SplitVertical({ domain = 'CurrentPaneDomain' }) },         -- Split pane vertically
-
-		-- Pane Navigation
-		{ key = 'k', mods = 'ALT', action = action.ActivatePaneDirection('Down') },  -- Move to the pane below
-		{ key = 'j', mods = 'ALT', action = action.ActivatePaneDirection('Left') },  -- Move to the pane to the left
-		{ key = 'l', mods = 'ALT', action = action.ActivatePaneDirection('Right') }, -- Move to the pane to the right
-		{ key = 'i', mods = 'ALT', action = action.ActivatePaneDirection('Up') },    -- Move to the pane above
-
-		-- Scrolling
-		{ key = 'k', mods = 'SHIFT', action = action.ScrollByLine(1) },  -- Scroll down by one line
-		{ key = 'i', mods = 'SHIFT', action = action.ScrollByLine(-1) }, -- Scroll up by one line
-
-		-- Command Palette
-		{ key = 'p', mods = 'LEADER', action = action.ActivateCommandPalette }, -- Open command palette
-
-		-- Application Control
-		{ key = 'q', mods = 'LEADER', action = action.QuitApplication }, -- Quit application
-
-		-- Font Size Adjustments
-		{ key = '0', mods = 'CTRL',       action = action.ResetFontSize },    -- Reset font size
-		{ key = '-', mods = 'CTRL',       action = action.DecreaseFontSize }, -- Decrease font size
-		{ key = '_', mods = 'CTRL|SHIFT', action = action.IncreaseFontSize }, -- Increase font size
-
-		-- Opacity Controls
-		{ key = '0', mods = 'ALT', action = action.EmitEvent('opacity-reset') },    -- Reset opacity
-		{ key = '-', mods = 'ALT', action = action.EmitEvent('opacity-decrease') }, -- Decrease opacity
-		{ key = '_', mods = 'ALT|SHIFT', action = action.EmitEvent('opacity-increase') }, -- Increase opacity
-
-		-- Signals
-		{ key = 'Backspace', mods = 'CTRL', action = wezterm.action({ SendString = '\x03' }) }, -- Send cancel signal (Ctrl+C)
-
-		-- Tab Management
-		{ key = 't', mods = 'ALT',   action = action.SpawnTab('DefaultDomain') },           -- Spawn a new tab
-		{ key = 'j', mods = 'ALT',    action = action.ActivateTabRelative(-1) },              -- Move to the previous tab
-		{ key = 'l', mods = 'ALT',    action = action.ActivateTabRelative(1) },               -- Move to the next tab
-		{ key = 'l', mods = 'ALT',    action = action.ActivateTabRelative(1) },
-		{ key = '.', mods = 'ALT', action = rename_tab_action(colors) },
-		{ key = 'w', mods = 'ALT',    action = action.ShowLauncherArgs({ flags = 'TABS' }) }, -- Show launcher (tabs)
-
-		-- Workspace/Mux managment
-		{ key = 'j', mods = 'CTRL',  action = switch_workspace_relative_action(-1) },
-		{ key = 'l', mods = 'CTRL', action = switch_workspace_relative_action(1) },
-		{ key = 'o', mods = 'CTRL', action = switch_previous_workspace_action() },
-		{ key = '.', mods = 'CTRL', action = rename_workspace_action(colors) },
-		{ key = 'w', mods = 'CTRL', action = show_workspace_launcher_action()},
-	}
-
-	-- ALT + N to change tab
-	for i = 1, 9 do
-		table.insert(keybinds, {
-			key = tostring(i),
-			mods = 'ALT',
-			action = action.ActivateTab(i - 1),
-		})
-	end
-
-	return keybinds
-end
-
+-- TODO: neovim and wezterm keytables have some issues.
 function K.tables()
-	return {
-		move = {
-			{ key = "r", action = action.RotatePanes("CounterClockwise") },
-			{ key = "s", action = action.PaneSelect },
-			{ key = "Enter", action = "PopKeyTable" },
-			{ key = "Escape", action = "PopKeyTable" },
-			{ key = "LeftArrow", mods = "SHIFT", action = action.MoveTabRelative(-1) },
-			{ key = "RightArrow", mods = "SHIFT", action = action.MoveTabRelative(1) },
-		},
-	
-		resize = {
-			{ key = "DownArrow", action = action.AdjustPaneSize({ "Down", 1 }) },
-			{ key = "LeftArrow", action = action.AdjustPaneSize({ "Left", 1 }) },
-			{ key = "RightArrow", action = action.AdjustPaneSize({ "Right", 1 }) },
-			{ key = "UpArrow", action = action.AdjustPaneSize({ "Up", 1 }) },
-			{ key = "Enter", action = "PopKeyTable" },
-			{ key = "Escape", action = "PopKeyTable" },
-		},
-	
-		open = {
-			{
-				key = "g",
-				action = action({
-					QuickSelectArgs = {
-						label = "execute 'gcloud auth login --remote-bootstrap'",
-						patterns = { 'gcloud auth login --remote-bootstrap=".*"' },
-						scope_lines = 30,
-						action = action.EmitEvent("trigger-gcloud-auth"),
-					},
-				}),
-			},
-			{
-				key = "p",
-				action = action.SpawnCommandInNewWindow({
-					label = "open current path on file manager",
-					args = { "xdg-open", "." },
-				}),
-			},
-			{
-				key = "u",
-				action = action({
-					QuickSelectArgs = {
-						label = "open URL on browser",
-						patterns = { "https?://\\S+" },
-						scope_lines = 30,
-						action = wezterm.action_callback(function(window, pane)
-							local url = window:get_selection_text_for_pane(pane)
-							wezterm.log_info("opening: " .. url)
-							wezterm.open_with(url)
-						end),
-					},
-				}),
-			},
-		},
-	}
+    return {
+        commands = {},
+        move = {
+            { key = 's', action = action.PaneSelect },
+            { key = 'r', action = action.RotatePanes('CounterClockwise') },
+            { key = 'h', action = action.MoveTabRelative(-1) },
+            { key = 'l', action = action.MoveTabRelative(1) },
+            { key = 'Escape', action = 'PopKeyTable' },
+        },
+        panes = {
+            { key = 'h', action = action.ActivatePaneDirection('Left') },
+            { key = 'j', action = action.ActivatePaneDirection('Down') },
+            { key = 'k', action = action.ActivatePaneDirection('Up') },
+            { key = 'l', action = action.ActivatePaneDirection('Right') },
+            { key = 'Escape', action = 'PopKeyTable' },
+        },
+        split = {
+            { key = 'h', action = action.SplitHorizontal({ domain = 'CurrentPaneDomain' }) },
+            { key = 'v', action = action.SplitVertical({ domain = 'CurrentPaneDomain' }) },
+        },
+        windows = {
+            { key = 'UpArrow', action = action.AdjustPaneSize({ 'Up', 1 }) },
+            { key = 'DownArrow', action = action.AdjustPaneSize({ 'Down', 1 }) },
+            { key = 'LeftArrow', action = action.AdjustPaneSize({ 'Left', 1 }) },
+            { key = 'RightArrow', action = action.AdjustPaneSize({ 'Right', 1 }) },
+            { key = 'Escape', action = 'PopKeyTable' },
+        },
+    }
 end
 
 return K

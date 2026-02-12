@@ -22,4 +22,4 @@ alias lta='eza --icons --tree --group-directories-first -h --long --no-permissio
 alias ltcopy='eza --tree | pbcopy'
 
 # reload .zsh
-alias reload='source ~/.zshrc'
+alias reload='source ~/.zshrc; aerospace reload-config'

@@ -16,32 +16,30 @@
 # ==============================================================================
 
 
-
 # ==========================
 # ==== Main Setup Task =====
 # ==========================
 [tasks.init]
 description = "Set up the development environment"
 dependencies = [
-    "install-rust",            # Install Rust and its components
-    "install-coreutils",       # Install platform-specific coreutils
-    "install-tools",           # Install platform-specific tools
-    "install-rust-tools",      # Install additional Rust tools                
-    "dotfiles"                 # Symlink dotfiles
+    "install-rust",       # Install Rust and its components
+    "install-tools",      # Install platform-specific tools
+    "install-coreutils",  # Install platform-specific coreutils
+    "install-rust-tools", # Install additional Rust tools
+    "dotfiles",           # Symlink dotfiles
 ]
 
-# Rust Configuration
 [tasks.install-rust]
 description = "Install Rust toolchain components."
 script = [
-    "rustup component add clippy rustfmt"
+    "rustup component add clippy",
+    "rustup component add rustfmt"
 ]
 
 [tasks.install-rust-tools]
 script = [
     "cargo install mise",
     "cargo install dotter",
-    "cargo install nushell",
     "cargo install cargo-update",
     "cargo install vivid",
     "cargo install eza",
@@ -58,22 +56,19 @@ mac_alias = "mac-core-utils"
 [tasks.linux-core-utils]
 condition = { platforms = ["linux"] }
 script = [
-  "echo 'Installing coreutils for Linux...'",
-  "cargo install coreutils --features unix"
+   # not working "cargo install coreutils --features unix"
 ]
 
 [tasks.windows-core-utils]
 condition = { platforms = ["windows"] }
 script = [
-  "echo 'Installing coreutils for Windows...'",
-  "cargo install coreutils --features windows"
+    "cargo install coreutils --features windows"
 ]
 
 [tasks.mac-core-utils]
 condition = { platforms = ["mac"] }
 script = [
-  "echo 'Installing coreutils for macOS...'",
-  "cargo install coreutils --features macos"
+    "cargo install coreutils --features macos"
 ]
 
 # Platform-Specific Tool Installation
@@ -84,61 +79,78 @@ mac_alias = "mac-tools"
 
 [tasks.linux-tools]
 script = [
-  "echo '--- Installing Linux Tools ---'",
-  "sudo apt-get update" 
+    "echo --- Setup ---",
+    "sudo dnf5 install -y dnf-plugins-core",
+    "sudo dnf5 install @c-development",
+
+    "echo '--- Enabling COPR Repositories ---'",
+    "sudo dnf5 copr enable atim/lazygit -y",
+
+    "echo '--- Installing Linux Tools ---'",
+    "sudo dnf5 install -y lazygit neovim fzf ripgrep fd-find bat --skip-unavailable",
+    'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"',
+
+    "echo '--- Installing Languages ---'",
+    "sudo dnf5 install -y python3 golang lua lua-devel luarocks nodejs --skip-unavailable",
+
+    "echo '--- Installing Dependencies ---'",
+    "sudo dnf5 install -y fira-code-fonts gcc gcc-c++ cmake fastfetch fontconfig --skip-unavailable",
+
+    "echo '--- Setting Environment Variables ---'",
+    "export YAZI_CONFIG_HOME=\"$HOME/.config/yazi\"",  # Yazi config file
 ]
 
 [tasks.windows-tools]
 script = [
-  "echo --- Checking if Scoop is installed ---",
-  "where scoop >nul 2>nul || (echo Scoop is not installed. Please install Scoop first. && exit /b 1)",
-  "echo '--- Setting Windows Environment Variables ---'",
-  'setx XDG_CONFIG_HOME "%USERPROFILE%\.config"',
-  'setx YAZI_CONFIG_HOME "%USERPROFILE%\.config\yazi"',
-  "echo '--- Installing Windows Tools ---'",
-  "scoop bucket add extras", 
-  "scoop bucket add nerd-fonts",
-  "scoop install firacode",
-  "scoop install autohotkey",
-  "scoop install zoxide",
-  "scoop install yazi",
-  "scoop install neovim",
-  "scoop install wezterm",
-  "scoop install fzf",
-  "scoop install ripgrep",
-  "scoop install gsudo",
-  "scoop install fd-find",
-  "scoop install fastfetch",
-  "scoop install python",
-  "scoop install go",
+#    "echo --- Scoop Setup ---",
+#    "echo Adding Scoop buckets...",
+#    "scoop bucket add extras || true",
+#    "scoop bucket add nerd-fonts || true",
+#    "scoop bucket add versions || true",
+
+    "echo --- Installing Tools ---",
+    "scoop install lazygit neovim yazi wezterm-nightly fzf ripgrep bat",
+
+    "echo --- Installing Languages ---",
+    "scoop install python go lua lua51 luarocks stylua",
+
+    "echo --- Installing Dependencies ---",
+    "scoop install autohotkey gcc cmake fastfetch firacode",
+    "scoop shim add gcc ~\\scoop\\apps\\gcc\\current\\bin\\gcc.exe", # Needed for NVim Telescope FZF Native
+
+    "echo --- Setting Environment Variables ---",
+    'setx XDG_CONFIG_HOME "%USERPROFILE%\\.config"', # Nushell home directory
+    'setx YAZI_CONFIG_HOME "%USERPROFILE%\\.config\\yazi"', # Yazi config file
 ]
 
 [tasks.mac-tools]
 script = [
-  "echo '--- Installing Homebrew ---'",
-  '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"',
-  "echo '--- Checking if Homebrew is installed ---'",
-  "[ -x \"$(command -v brew)\" ] || { echo 'Homebrew is not installed. Please install Homebrew first.'; exit 1; }",
-  "echo '--- Installing Mac Tools ---'",
-  "brew install xcode-select --install",
-  "brew install zoxide",
-  "brew install yazi",
-  "brew install wezterm",
-  "brew install fzf",
-  "brew install ripgrep",
-  "brew install font-fira-code",
-  "brew install fd-find",
-  "brew install fastfetch"
-  "brew install go",
-  "brew install python",
+    "[ -x \"$(command -v brew)\" ] || { echo 'Homebrew is not installed. Please install Homebrew first.'; exit 1; }",
+
+    "echo '--- Installing Tools ---'",
+    "brew tap FelixKratz/formulae",
+    "brew install borders"
+    "brew install yazi lazygit bat fzf ripgrep fd fastfetch cmake openssl",
+    "brew install --cask ghostty",
+    "brew install --cask nikitabobko/tap/aerospace@0.12.0"
+    'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"',
+
+    "echo --- Installing Languages ---",
+    "brew install lua lua51 luarocks go python node",
+
+    "echo '--- Managing Fonts ---'",
+    "brew tap homebrew/cask-fonts",
+    "brew install --cask font-fira-code",
+
+    "echo '--- Setting Environment Variables ---'",
+    "export YAZI_CONFIG_HOME=\"~/.config/yazi\"",
 ]
 
-# Dotfiles Management
 [tasks.dotfiles]
 description = "Symlink all the .dotfiles depending on dotter/system.toml files"
 script = [
     "echo --- Creating Symlinks ---",
-    "dotter",
+    "dotter -v",
 ]
 
 # ==========================
@@ -150,14 +162,14 @@ dependencies = [
     "update-rust",           # Update Rust toolchain and components
     "update-platform-tools", # Update platform-specific tools
     "update-mise",           # Update mise configurations
-    "dotfiles"               # Take the chance to validate the dotfiles
+    "dotfiles",              # Take the chance to validate the dotfiles
 ]
 
 # Rust Toolchain Update
 [tasks.update-rust]
 script = [
     "rustup self update",
-    "rustup update",  
+    "rustup update",
     "cargo install-update -a"
 ]
 
@@ -168,12 +180,7 @@ windows_alias = "update-windows-tools"
 mac_alias = "update-mac-tools"
 
 [tasks.update-linux-tools]
-script = [
-    "echo --- Updating package database ---",
-    "sudo pacman -Sy",
-    "echo --- Upgrading installed packages ---",
-    "sudo pacman -Su --noconfirm" 
-]
+script = []
 
 [tasks.update-windows-tools]
 script = [
@@ -187,13 +194,12 @@ script = [
     "echo --- Updating Homebrew & Packages ---",
     "brew update",
     "brew upgrade",
+    "brew upgrade --cask wezterm@nightly --no-quarantine --greedy-latest",
+
 ]
 
 [tasks.update-mise]
-script = [
-    "echo --- Updating Global Mise Packages ---",
-    "mise install",
-]
+script = ["echo --- Updating Global Mise Packages ---", "mise install"]
 
 # ================================
 # ==== Check for Updates Task ====
@@ -201,14 +207,14 @@ script = [
 [tasks.check-outdated]
 description = "Set up the development environment"
 dependencies = [
-    "check-outdated-rust",     # Check rustup for updates
-    "check-package-managers",  # Check platform specific updates
+    "check-outdated-rust",    # Check rustup for updates
+    "check-package-managers", # Check platform specific updates
 ]
 
 [tasks.check-outdated-rust]
 script = [
     "echo --- Checking for available updates (without applying) ---",
-    "rustup update --no-self-update || echo 'Rustup is up-to-date'"
+    "rustup update --no-self-update || echo 'Rustup is up-to-date'",
 ]
 
 [tasks.check-package-managers]
@@ -216,20 +222,20 @@ linux_alias = "check-outdated-linux"
 windows_alias = "check-outdated-windows"
 mac_alias = "check-outdated-mac"
 
+# TODO
 [tasks.check-outdated-linux]
 script = [
     "echo --- Checking for outdated pacman packages ---",
-    "pacman -Qu || echo 'No outdated packages found or not running on Arch-based Linux'"
 ]
 
 [tasks.check-outdated-windows]
 script = [
     "echo --- Checking for outdated Scoop packages ---",
-    "scoop status || echo 'Scoop not found or not running on Windows'"
+    "scoop status || echo 'Scoop not found or not running on Windows'",
 ]
 
 [tasks.check-outdated-mac]
 script = [
     "echo --- Checking for outdated Homebrew packages ---",
-    "brew outdated || echo 'No outdated packages found or not running on macOS'"
+    "brew outdated || echo 'No outdated packages found or not running on macOS'",
 ]
