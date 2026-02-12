@@ -1,19 +1,42 @@
 emulate -L zsh
 setopt pipefail
 
+# Helper: Generate cache file path with hash
+_gitnav_cache_path() {
+  local dir="$1"
+  local hash
+  hash=$(echo "$dir" | md5sum | cut -d' ' -f1 2>/dev/null || echo "$dir" | md5 | cut -d' ' -f1)
+  echo "${TMPDIR:-/tmp}/gitnav_cache_${USER}_${hash}.txt"
+}
+
+# Helper: Check if cache file is still valid
+_gitnav_cache_valid() {
+  local cache_file="$1"
+  local ttl="$2"
+
+  [[ ! -f "$cache_file" ]] && return 1
+
+  local cache_age file_mtime current_time
+  current_time=$(date +%s)
+  file_mtime=$(stat -f%m "$cache_file" 2>/dev/null || stat -c%Y "$cache_file" 2>/dev/null || echo 0)
+  cache_age=$((current_time - file_mtime))
+
+  (( cache_age < ttl ))
+}
+
 local selected cache_file cache_ttl=300 current_dir force_refresh=0
-current_dir=$(pwd)
+current_dir="$HOME"
 
 # Support -f flag to force refresh
 if [[ "$1" == "-f" ]] || [[ "$1" == "--force" ]]; then
   force_refresh=1
 fi
 
-cache_file="${TMPDIR:-/tmp}/gitnav_cache_${USER}_$(echo "$current_dir" | md5sum | cut -d' ' -f1 2>/dev/null || echo "$current_dir" | md5 | cut -d' ' -f1).txt"
+cache_file=$(_gitnav_cache_path "$current_dir")
 
 # Check cache validity (5 min TTL)
 local use_cache=0
-if (( force_refresh == 0 )) && [[ -f "$cache_file" ]] && (( $(date +%s) - $(stat -f%m "$cache_file" 2>/dev/null || stat -c%Y "$cache_file" 2>/dev/null || echo 0) < cache_ttl )); then
+if (( force_refresh == 0 )) && _gitnav_cache_valid "$cache_file" "$cache_ttl"; then
   use_cache=1
 fi
 
@@ -21,11 +44,12 @@ local listing
 if (( use_cache )); then
   listing=$(<"$cache_file")
 else
+  echo "running without cache"
   # Find .git directories and extract parent path efficiently with sed
   # Remove /.git/ suffix (with trailing slash from fd) to get actual repo paths
   # Format: name\trelative_path\tfull_path (sorted by name)
   local repos_raw repo_path rel_path repo_name
-  repos_raw=$(fd -t d -H -I '^\.git$' . --max-depth 5 2>/dev/null | sed 's|/\.git/$||')
+  repos_raw=$(fd -t d -H -I '^\.git$' "$current_dir" --max-depth 5 2>/dev/null | sed 's|/\.git/$||')
 
   [[ -z "$repos_raw" ]] && {
     print -P "%F{yellow}No Git repositories found in $current_dir%f"
@@ -67,6 +91,11 @@ selected=$(
           if git rev-parse --git-dir >/dev/null 2>&1; then
             branch=$(git branch --show-current 2>/dev/null)
             [[ -n "$branch" ]] && echo -e "\033[1;33mBranch:\033[0m $branch" || echo -e "\033[1;33mBranch:\033[0m (detached HEAD)"
+
+            # Show last commit date and time
+            last_commit=$(git log -1 --format="%cr (%cd)" --date=format:"%Y-%m-%d %H:%M" 2>/dev/null)
+            [[ -n "$last_commit" ]] && echo -e "\033[1;35mLast Activity:\033[0m $last_commit"
+
             echo ""
             echo -e "\033[1;35mStatus:\033[0m"
             git status -sb 2>/dev/null | head -10

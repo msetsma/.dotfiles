@@ -47,13 +47,17 @@ source "$HOME/.config/zsh/aliases.zsh"
 
 # Autoload functions
 fpath=($HOME/.config/zsh/functions $fpath)
-autoload -Uz rld update source_folder_contents gitnav _use_databricks db-check-env
+for func_file in $HOME/.config/zsh/functions/*; do
+  [[ -f "$func_file" ]] && autoload -Uz ${func_file:t}
+done
 
 # starship
 eval "$(starship init zsh)"
 
+# zellij
+eval "$(zellij setup --generate-auto-start zsh)"
+
+
 fpath+=$(brew --prefix)/share/zsh/site-functions
-
-
 
 source /Users/msetsma/.config/broot/launcher/bash/br

@@ -1,0 +1,86 @@
+emulate -L zsh
+setopt pipefail
+
+local archive_dir="${HOME}/ARCHIVE"
+
+# Create archive directory if it doesn't exist
+if [[ ! -d "$archive_dir" ]]; then
+  mkdir -p "$archive_dir" || {
+    print -P "%F{red}Error: Could not create archive directory%f"
+    return 1
+  }
+  print -P "%F{green}✓%f Created archive directory: %F{cyan}${archive_dir}%f"
+fi
+
+# List all items in current directory (excluding . and ..)
+local items
+items=$(eza -1a --group-directories-first --color=always 2>/dev/null) || {
+  print -P "%F{red}Error: Could not list directory contents%f"
+  return 1
+}
+
+[[ -z "$items" ]] && {
+  print -P "%F{yellow}No items found in current directory%f"
+  return 1
+}
+
+# Use fzf to select items (multi-select enabled)
+local selected
+selected=$(
+  echo "$items" |
+    fzf --multi \
+        --prompt='Select items to archive > ' \
+        --header='Select files/folders (Tab for multi-select, ↑/↓, ⏎, Esc)' \
+        --preview='
+          item={}
+          if [[ -d "$item" ]]; then
+            echo -e "\033[1;36mDirectory:\033[0m $item"
+            echo ""
+            eza --icons --tree --level=2 --group-directories-first "$item" 2>/dev/null || echo "(empty or inaccessible)"
+          elif [[ -f "$item" ]]; then
+            echo -e "\033[1;36mFile:\033[0m $item"
+            echo ""
+            file_info=$(file -b "$item" 2>/dev/null)
+            echo -e "\033[1;33mType:\033[0m $file_info"
+            echo -e "\033[1;33mSize:\033[0m $(du -h "$item" 2>/dev/null | cut -f1)"
+            echo ""
+            if file "$item" | grep -q "text"; then
+              bat --style=numbers --color=always "$item" 2>/dev/null || cat "$item" 2>/dev/null | head -50
+            fi
+          else
+            echo "Unknown item type"
+          fi
+        ' \
+        --preview-window=right:60%:wrap \
+        --layout=reverse \
+        --height=90% \
+        --border \
+        --ansi
+)
+
+[[ -z "$selected" ]] && {
+  print -P "%F{yellow}No items selected%f"
+  return 0
+}
+
+# Move selected items to archive
+local count=0
+local failed=0
+echo "$selected" | while IFS= read -r item; do
+  if [[ -e "$item" ]]; then
+    if mv "$item" "$archive_dir/"; then
+      print -P "%F{green}✓%f Archived: %F{cyan}$item%f"
+      ((count++))
+    else
+      print -P "%F{red}✗%f Failed to archive: %F{red}$item%f"
+      ((failed++))
+    fi
+  else
+    print -P "%F{yellow}⚠%f  Item not found: %F{yellow}$item%f"
+    ((failed++))
+  fi
+done
+
+# Summary
+print -P "\n%F{green}Archive complete:%f $count items moved to %F{cyan}${archive_dir}%f"
+[[ $failed -gt 0 ]] && print -P "%F{red}Failed:%f $failed items"

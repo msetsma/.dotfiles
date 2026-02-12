@@ -1,4 +1,4 @@
-theme = Catppuccin Mocha
+theme = Catppuccin Macchiato
 window-decoration = true
 font-size = 14
 confirm-close-surface = false
@@ -6,15 +6,15 @@ background-opacity = .9
 background-blur = 20
 
 # Add padding around the terminal content (in pixels)
-window-padding-x = 10
-window-padding-y = 5
+window-padding-x = 0
+window-padding-y = 0
 
 
 # Global keybinding to summon a temp terminal
 # https://ghostty.org/docs/config/reference#quick-terminal-size
 quick-terminal-screen = main
 quick-terminal-size = 1000px,700px
-quick-terminal-animation-duration = .2
+quick-terminal-animation-duration = .02
 quick-terminal-position = center
 quick-terminal-space-behavior = remain
 
