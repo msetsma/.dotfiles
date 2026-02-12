@@ -8,16 +8,13 @@ rld() {
     fi
 
     exec zsh
-    echo "Done"
 }
-
 
 # Function to source all .sh or .zsh files in a given directory
 # Usage: source_folder_contents /path/to/folder
 source_folder_contents() {
     # Check for the correct number of arguments
     if [ $# -ne 1 ]; then
-        echo "Usage: source_folder_contents /path/to/folder"
         return 1
     fi
 
@@ -36,8 +33,6 @@ source_folder_contents() {
         return 1
     fi
 
-    echo "Sourcing files in '$target_dir'..."
-
     local sourced_count=0
     local error_count=0
     local file_found=false # Flag to check if any files were considered
@@ -51,7 +46,6 @@ source_folder_contents() {
         # Check if the file exists and is a regular file
         if [ -f "$script_file" ]; then # <--- This is line ~39/40/41 depending on formatting
             file_found=true # Indicate we found at least one file to consider
-            echo "  Sourcing: $script_file"
             # *** CHANGED THIS LINE BACK TO JUST 'source' ***
             if source "$script_file"; then # <--- This is line ~43 in your error message
                 ((sourced_count++))
@@ -67,13 +61,6 @@ source_folder_contents() {
        setopt nonomatch # Was originally off
     else
        setopt nomatch # Was originally on (or not explicitly set, which defaults to on)
-    fi
-
-    # Provide feedback on the result
-    if [ "$file_found" = false ]; then
-         echo "No .sh or .zsh files found in '$target_dir'."
-    else
-         echo "Finished sourcing. Sourced $sourced_count file(s), encountered $error_count error(s)."
     fi
 
     # Return status code: 0 for success (or no errors), 1 for errors during sourcing

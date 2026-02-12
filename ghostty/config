@@ -1,7 +1,4 @@
 theme = tokyonight
 window-decoration = true
-window-padding-x = 0
-window-padding-y = 0 
-font-family = "JetBrainsMono Nerd Font Propo"
 font-size = 20
 confirm-close-surface = false

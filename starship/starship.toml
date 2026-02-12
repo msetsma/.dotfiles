@@ -49,9 +49,7 @@ symbol = " "
 
 [python]  
 symbol = " "
-format = '[${symbol}${pyenv_prefix}(${version})${virtualenv}]($style)'
-pyenv_version_name = true
-pyenv_prefix = ''
+format = '[${symbol}${pyenv_prefix}(${version}) ${virtualenv}]($style)'
 
 [rust]
 symbol = "󱘗 "

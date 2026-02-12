@@ -1,4 +1,4 @@
-# 
+#!/bin/bash
 
 # --- Custom venv Manager Function ---
 # This function manages a Python virtual environment (.venv)
