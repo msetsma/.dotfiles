@@ -17,9 +17,9 @@ wezterm = "~/.config/wezterm"
 # mac
 [mac.files]
 "_osx/zsh" = "~/.config/zsh"
-"_osx/skhd" = "~"
-aerospace = "~/.config/aerospace"
+"_osx/bash" = "~/.config/bash"
 wezterm = "~/.config/wezterm"
+ghostty = "~/.config/ghostty"
 
 # fedora
 [fedora.files]

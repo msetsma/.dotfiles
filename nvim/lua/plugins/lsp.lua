@@ -6,13 +6,22 @@ return {
         { 'williamboman/mason-lspconfig.nvim' },
         { 'WhoIsSethDaniel/mason-tool-installer.nvim' },
         { 'saghen/blink.cmp' },
+        { 'b0o/schemastore.nvim' },
     },
     config = function()
         --`:help lspconfig-all` list of all the pre-configured LSPs
         local lsp_config = require('lspconfig')
         local lsp_mason_servers = {
             dockerls = {},
-            jsonls = {},
+            jsonls = {
+                settings = {
+                    json = {
+                        validate = { enable = true },
+                        format = { enable = true },
+                        schemas = require('schemastore').json.schemas(),
+                    },
+                },
+            },
             yamlls = {},
             gopls = {
                 settings = {

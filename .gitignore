@@ -51,6 +51,7 @@ node_modules/
 venv/
 dist/
 build/
+.venv/
 
 # dotter
 .dotter/local.toml

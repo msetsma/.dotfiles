@@ -8,7 +8,7 @@ return {
             enabled = true,
             fps = 144,
         },
-        bigfile = { enabled = true },
+        bigfile = { enabled = false },
         bufdelete = { enabled = true },
         dashboard = { enabled = true },
         indent = { enabled = true },
