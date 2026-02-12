@@ -18,7 +18,7 @@ config.default_cursor_style = "BlinkingBar"
 
 -- Font settings
 config.font = wezterm.font_with_fallback({
-    "Fira Code",        -- Main font
+    "FiraCode Nerd Font",        -- Main font
     "Noto Color Emoji", -- Emoji support
 })
 config.harfbuzz_features = { "calt=1", "clig=1", "liga=1" }
