@@ -1,17 +1,16 @@
 # 
 
-# --- Custom Venv Manager Function ---
+# --- Custom venv Manager Function ---
 # This function manages a Python virtual environment (.venv)
 # in the current directory. It's designed to be called by an alias.
 # Add the alias 'alias venv="manage_project_venv"' after this function definition.
 
 manage_project_venv() {
-    # --- Configuration (Local to Function) ---
+    # Configuration
     local venv_dir=".venv"
     local requirements_file="requirements.txt"
     local python_cmd="python3"
 
-    # --- Terminal Colors (Local to Function) ---
     local VENV_COLOR_RED='\033[0;31m'
     local VENV_COLOR_GREEN='\033[0;32m'
     local VENV_COLOR_YELLOW='\033[0;33m'
