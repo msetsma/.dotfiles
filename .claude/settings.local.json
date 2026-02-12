@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(cargo make:*)"
+      "Bash(cargo make:*)",
+      "Bash(python3 -m pytest:*)",
+      "Bash(./venv/bin/python -m pytest:*)",
+      "Bash(make test:*)"
     ],
     "deny": [],
     "ask": []

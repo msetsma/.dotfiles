@@ -16,8 +16,7 @@ alias lta='eza --icons --tree --group-directories-first -h --long --no-permissio
 alias ltcopy='eza --tree | pbcopy'
 
 # git
-alias gfc='git_fzf_checkout'
-
+alias gitfzf='~/.config/bash/git_fzf_checkout.sh'
 
 # because microsoft is dumb
 alias az='PYTHONWARNINGS="ignore::UserWarning" az'

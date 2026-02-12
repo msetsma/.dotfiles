@@ -23,32 +23,12 @@ outer.right = 10
 
 # App-specific window rules
 [[on-window-detected]]
-if.app-id = "com.mitchellh.ghostty"
+if.app-id = "com.shottr"
 run = ["layout floating"]
-
-[[on-window-detected]]
-if.app-id = "com.microsoft.VSCode"
-run = ["move-node-to-workspace 1"]
-
-[[on-window-detected]]
-if.app-id = "com.vscodium"
-run = ["move-node-to-workspace 1"]
-
-[[on-window-detected]]
-if.app-id = "com.microsoft.teams"
-run = ["move-node-to-workspace 2"]
-
-[[on-window-detected]]
-if.app-id = "md.obsidian"
-run = ["move-node-to-workspace 3"]
-
-[[on-window-detected]]
-if.app-id = "com.anthropic.claude"
-run = ["move-node-to-workspace 2"]
 
 [mode.main.binding]
 # Launch/Focus Apps
-ctrl-alt-cmd-c = '''exec-and-forget open -a "VSCode"'''
+ctrl-alt-cmd-c = '''exec-and-forget open -a "Visual Studio Code"'''
 ctrl-alt-cmd-t = '''exec-and-forget open -a "Ghostty"'''
 ctrl-alt-cmd-b = '''exec-and-forget open -a "Firefox"'''
 ctrl-alt-cmd-m = '''exec-and-forget open -a "Microsoft Teams"'''
@@ -70,6 +50,7 @@ alt-shift-l = "move right"
 # Resize windows
 alt-minus = "resize smart -50"
 alt-equal = "resize smart +50"
+
 # ===================== Enhanced Workspaces ==============================
 # Quick workspace access (semantic shortcuts)
 alt-d = "workspace 1"                    # Development workspace

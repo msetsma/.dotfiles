@@ -2,20 +2,22 @@ theme = Catppuccin Mocha
 window-decoration = true
 font-size = 14
 confirm-close-surface = false
-background-opacity = .8
+background-opacity = .9
 background-blur = 20
 
 # Add padding around the terminal content (in pixels)
-window-padding-x = 20
-window-padding-y = 0
+window-padding-x = 10
+window-padding-y = 5
 
 
 # Global keybinding to summon a temp terminal
 # https://ghostty.org/docs/config/reference#quick-terminal-size
 quick-terminal-screen = main
-quick-terminal-size = 75%,75%
-quick-terminal-animation-duration = .01
+quick-terminal-size = 1000px,700px
+quick-terminal-animation-duration = .2
 quick-terminal-position = center
-keybind = global:cmd+grave_accent=toggle_quick_terminal
 quick-terminal-space-behavior = remain
+
+# Keybinds
+keybind = global:cmd+grave_accent=toggle_quick_terminal
 keybind = shift+enter=text:\x1b\r

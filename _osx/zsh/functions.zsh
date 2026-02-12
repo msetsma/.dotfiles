@@ -72,92 +72,102 @@ source_folder_contents() {
     fi
 }
 
-# Get Azure Function App info interactively
-az-func-info() {
-    # Check if Azure CLI is installed
-    if ! command -v az &> /dev/null; then
-        echo "Error: Azure CLI not installed"
-        return 1
-    fi
+gitnav() {
+  emulate -L zsh
+  setopt pipefail
 
-    # Check if logged in
-    if ! az account show &> /dev/null; then
-        echo "Error: Not logged into Azure CLI. Run 'az login'"
-        return 1
-    fi
+  local selected cache_file cache_ttl=300 current_dir force_refresh=0
+  current_dir=$(pwd)
 
-    # Check if fzf is installed
-    if ! command -v fzf &> /dev/null; then
-        echo "Error: fzf not installed (brew install fzf)"
-        return 1
-    fi
+  # Support -f flag to force refresh
+  if [[ "$1" == "-f" ]] || [[ "$1" == "--force" ]]; then
+    force_refresh=1
+  fi
 
-    echo "Fetching function apps..."
-    
-    # Get list of function apps with resource group for context
-    local func_list=$(az functionapp list --query "[].{name:name, rg:resourceGroup}" -o tsv)
-    
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to fetch function apps from Azure"
-        return 1
-    fi
-    
-    if [ -z "$func_list" ]; then
-        echo "No function apps found in current subscription"
-        local current_sub=$(az account show --query name -o tsv)
-        echo "Current subscription: $current_sub"
-        echo ""
-        echo "Available subscriptions:"
-        az account list --query "[].{name:name, id:id, isDefault:isDefault}" -o table
-        return 1
-    fi
+  cache_file="${TMPDIR:-/tmp}/gitnav_cache_${USER}_$(echo "$current_dir" | md5sum | cut -d' ' -f1 2>/dev/null || echo "$current_dir" | md5 | cut -d' ' -f1).txt"
 
-    # Let user select with fzf (shows name and resource group)
-    local selection=$(echo "$func_list" | fzf --prompt="Select Function App: " --height=40% --layout=reverse --header="NAME | RESOURCE GROUP")
-    
-    if [ -z "$selection" ]; then
-        echo "No selection made"
-        return 0
+  # Check cache validity (5 min TTL)
+  local use_cache=0
+  if (( force_refresh == 0 )) && [[ -f "$cache_file" ]] && (( $(date +%s) - $(stat -f%m "$cache_file" 2>/dev/null || stat -c%Y "$cache_file" 2>/dev/null || echo 0) < cache_ttl )); then
+    use_cache=1
+  fi
+
+  local listing
+  if (( use_cache )); then
+    listing=$(<"$cache_file")
+  else
+    # Find .git directories and extract parent path efficiently with sed
+    # Remove /.git/ suffix (with trailing slash from fd) to get actual repo paths
+    # Format: name\trelative_path\tfull_path (sorted by name)
+    local repos_raw repo_path rel_path repo_name
+    repos_raw=$(fd -t d -H -I '^\.git$' . --max-depth 5 2>/dev/null | sed 's|/\.git/$||')
+
+    [[ -z "$repos_raw" ]] && {
+      print -P "%F{yellow}No Git repositories found in $current_dir%f"
+      return 1
+    }
+
+    # Build listing efficiently with process substitution
+    listing=$(
+      echo "$repos_raw" | while IFS= read -r repo_path; do
+        repo_name="$(basename "$repo_path")"
+        rel_path="${repo_path#./}"
+        [[ "$rel_path" == "$repo_path" ]] && rel_path="$repo_path" || rel_path="./$rel_path"
+        printf "%s\t%s\t%s\n" "$repo_name" "$rel_path" "$repo_path"
+      done | sort -t$'\t' -k1,1
+    )
+
+    # Cache the results
+    echo "$listing" > "$cache_file"
+  fi
+
+  [[ -z "$listing" ]] && {
+    print -P "%F{yellow}No Git repositories found in $current_dir%f"
+    return 1
+  }
+
+  # FZF picker with preview
+  selected=$(
+    echo "$listing" |
+      fzf --prompt='Select repo > ' \
+          --header='Name → Path (↑/↓ navigate, ⏎ select, Esc cancel)' \
+          --delimiter='\t' \
+          --with-nth=1,2 \
+          --preview='
+            repo_path={3}
+            cd "$repo_path" 2>/dev/null || exit 0
+            echo -e "\033[1;36mRepository:\033[0m $(basename "$repo_path")"
+            echo -e "\033[1;36mLocation:\033[0m $repo_path"
+            echo ""
+            if git rev-parse --git-dir >/dev/null 2>&1; then
+              branch=$(git branch --show-current 2>/dev/null)
+              [[ -n "$branch" ]] && echo -e "\033[1;33mBranch:\033[0m $branch" || echo -e "\033[1;33mBranch:\033[0m (detached HEAD)"
+              echo ""
+              echo -e "\033[1;35mStatus:\033[0m"
+              git status -sb 2>/dev/null | head -10
+              echo ""
+              echo -e "\033[1;32mRecent commits:\033[0m"
+              git log --oneline --color=always -5 2>/dev/null
+            fi
+          ' \
+          --preview-window=right:60%:wrap \
+          --layout=reverse \
+          --height=90% \
+          --border \
+          --no-sort |
+      cut -f3
+  )
+
+  [[ -n "$selected" ]] && {
+    cd "$selected" || return
+    local rel_display="${selected#$current_dir/}"
+    [[ "$rel_display" == "$selected" ]] && rel_display="$selected"
+    print -P "\n%F{green}✓%f Navigated to: %F{cyan}$rel_display%f"
+
+    # Show quick git info
+    if git rev-parse --git-dir >/dev/null 2>&1; then
+      local branch=$(git branch --show-current 2>/dev/null)
+      [[ -n "$branch" ]] && print -P "  Branch: %F{yellow}$branch%f"
     fi
-
-    # Extract function app name and resource group
-    local func_name=$(echo "$selection" | awk '{print $1}')
-    local rg=$(echo "$selection" | awk '{print $2}')
-    
-    echo "Getting info for: $func_name"
-    echo "================================"
-    
-    echo "Resource Group: $rg"
-    
-    # Get location
-    local location=$(az functionapp show -n "$func_name" -g "$rg" --query location -o tsv 2>/dev/null)
-    echo "Location: $location"
-    
-    # Get app service plan
-    local asp=$(az functionapp show -n "$func_name" -g "$rg" --query appServicePlanId -o tsv 2>/dev/null | awk -F'/' '{print $NF}')
-    echo "App Service Plan: $asp"
-    
-    # Get storage account from app settings
-    local storage=$(az functionapp config appsettings list -n "$func_name" -g "$rg" --query "[?name=='AzureWebJobsStorage'].value" -o tsv 2>/dev/null | rg -o 'AccountName=([^;]+)' -r '$1')
-    echo "Storage Account: $storage"
-    
-    # Get subscription ID
-    local sub_id=$(az account show --query id -o tsv 2>/dev/null)
-    echo "Subscription ID: $sub_id"
-    
-    # Get function app URL
-    local url=$(az functionapp show -n "$func_name" -g "$rg" --query defaultHostName -o tsv 2>/dev/null)
-    echo "URL: https://$url"
-
-    
-    echo "================================"
-    echo ""
-    echo "Config snippet for pipelines/config.yml:"
-    echo "  environment_name:"
-    echo "    azureSubscription: 'your-service-connection'"
-    echo "    resourceGroup: '$rg'"
-    echo "    location: '$location'"
-    echo "    functionAppName: '$func_name'"
-    echo "    storageAccountName: '$storage'"
-    echo "    appServicePlanName: '$asp'"
+  }
 }
