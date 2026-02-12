@@ -2,7 +2,9 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
 format = """
-$all\
+$directory\
+$git_branch\
+$git_metrics\
 $fill\
 $rust\
 $python\
@@ -14,9 +16,6 @@ $character
 """
 
 add_newline = true
-
-[gcloud]
-disabled = true
 
 [character]
 success_symbol = '[](#a6e3a1)'
@@ -42,10 +41,6 @@ format = "[ $added]($added_style) [ $deleted]($deleted_style)"
 added_style = "fg:#a6e3a1"  # Catppuccin Green
 deleted_style = "fg:#f38ba8"  # Catppuccin Red
 only_nonzero_diffs = true
-
-[status]
-format = '$all'  # Removes brackets from status
-style = 'dimmed'
 
 [lua]
 format = " [lua](italic) [${symbol}${version}]($style)"

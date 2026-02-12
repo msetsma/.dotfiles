@@ -27,6 +27,7 @@ return {
                         'markdown',
                         'bash',
                         'nu',
+                        'terraform',
                     },
                     sync_install = false,
                     auto_install = true,
@@ -36,7 +37,7 @@ return {
                     textobjects = {
                         select = {
                             enable = true,
-                            lookahead = true, -- Automatically jump forward to textobj, similar to targets.vim
+                            lookahead = true, -- Automatically jump forward to textobj, similar to targets.vim""
                             keymaps = {
                                 -- You can use the capture groups defined in textobjects.scm
                                 ['aa'] = '@parameter.outer',

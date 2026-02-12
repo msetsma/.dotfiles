@@ -12,6 +12,7 @@ function K.keybinds(custom)
         { key = 'v', mods = 'CTRL', action = wezterm.action.PasteFrom('Clipboard') },
 
         -- Wezterm
+        { key = 'Enter', mods = 'CMD|SHIFT', action = wezterm.action.ToggleFullScreen },
         { key = 'p', mods = 'LEADER', action = action.ActivateCommandPalette },
         { key = 'q', mods = 'LEADER', action = action.QuitApplication },
 

@@ -4,6 +4,13 @@ local opt = vim.opt
 opt.relativenumber = true
 opt.number = true
 
+-- Line Wrap
+opt.linebreak = true -- Break lines at word boundaries instead of mid-word
+opt.breakindent = true -- Maintain indentation when breaking lines
+opt.wrap = true -- Enable line wrapping
+opt.sidescrolloff = 0 -- No extra horizontal padding around the cursor
+opt.sidescroll = 1 -- Minimal horizontal scroll step
+
 -- Indentation
 opt.autoindent = true
 opt.smartindent = true
@@ -24,8 +31,7 @@ opt.splitright = true
 opt.clipboard = 'unnamedplus' -- Sync clipboard between OS and Neovim
 opt.backspace = 'indent,eol,start' -- Allow unrestricted backspacing
 opt.mouse = 'a'
-opt.whichwrap = 'bs<>[]hl' -- Allow specified keys to wrap lines
--- opt.undodir = os.getenv("HOME") .. "/.vim/undodir"
+opt.undodir = os.getenv('HOME') .. '/.vim/undodir'
 
 -- Searching
 opt.ignorecase = true

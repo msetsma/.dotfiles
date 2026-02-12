@@ -75,6 +75,8 @@ return {
         }
 
         local ensure_installed = vim.tbl_keys(lsp_mason_servers)
+
+        table.insert(ensure_installed, { 'azure-pipelines-language-server', 'terraform-ls' })
         require('mason').setup()
         require('mason-tool-installer').setup({ ensure_installed = ensure_installed })
 

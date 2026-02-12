@@ -16,8 +16,8 @@ wezterm = "~/.config/wezterm"
 
 # mac
 [mac.files]
-"_osx/karabiner" = "~/.config/karabiner"
 "_osx/zsh" = "~/.config/zsh"
+"_osx/skhd" = "~"
 aerospace = "~/.config/aerospace"
 wezterm = "~/.config/wezterm"
 
