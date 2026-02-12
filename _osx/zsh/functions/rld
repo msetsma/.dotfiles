@@ -1,0 +1,2 @@
+echo "Reloading Zsh configuration..."
+exec zsh

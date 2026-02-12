@@ -1,0 +1,10 @@
+echo "Updating Homebrew and installed packages..."
+brew update && brew upgrade && (brew cleanup || true)
+
+echo "Updating Rust toolchain..."
+rustup update
+
+echo "Updating Cargo packages..."
+cargo install $(cargo install --list | grep -E '^\w' | cut -d' ' -f1)
+
+echo "All updates completed."

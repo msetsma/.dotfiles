@@ -1,0 +1,15 @@
+local env=$1
+export DATABRICKS_HOST=$(security find-generic-password -a ${USER} -s "databricks-${env}-host" -w 2>/dev/null)
+export DATABRICKS_TOKEN=$(security find-generic-password -a ${USER} -s "databricks-${env}-token" -w 2>/dev/null)
+
+if [ -z "$DATABRICKS_HOST" ] || [ -z "$DATABRICKS_TOKEN" ]; then
+  echo "Error: ${env} credentials not found in Keychain"
+  echo "Add them with:"
+  echo "  security add-generic-password -a \${USER} -s databricks-${env}-host -w"
+  echo "  security add-generic-password -a \${USER} -s databricks-${env}-token -w"
+  unset DATABRICKS_HOST DATABRICKS_TOKEN DATABRICKS_ENV
+  return 1
+fi
+
+export DATABRICKS_ENV="${env}"
+echo "Using Databricks ${env}"

@@ -130,9 +130,9 @@ gitnav() {
   selected=$(
     echo "$listing" |
       fzf --prompt='Select repo > ' \
-          --header='Name → Path (↑/↓ navigate, ⏎ select, Esc cancel)' \
+          --header='Repository (↑/↓, ⏎, Esc)' \
           --delimiter='\t' \
-          --with-nth=1,2 \
+          --with-nth=1 \
           --preview='
             repo_path={3}
             cd "$repo_path" 2>/dev/null || exit 0
@@ -170,4 +170,87 @@ gitnav() {
       [[ -n "$branch" ]] && print -P "  Branch: %F{yellow}$branch%f"
     fi
   }
+}
+
+# Helper function for Databricks environment switching
+_use_databricks() {
+  local env=$1
+  export DATABRICKS_HOST=$(security find-generic-password -a ${USER} -s "databricks-${env}-host" -w 2>/dev/null)
+  export DATABRICKS_TOKEN=$(security find-generic-password -a ${USER} -s "databricks-${env}-token" -w 2>/dev/null)
+  
+  if [ -z "$DATABRICKS_HOST" ] || [ -z "$DATABRICKS_TOKEN" ]; then
+    echo "Error: ${env} credentials not found in Keychain"
+    echo "Add them with:"
+    echo "  security add-generic-password -a \${USER} -s databricks-${env}-host -w"
+    echo "  security add-generic-password -a \${USER} -s databricks-${env}-token -w"
+    unset DATABRICKS_HOST DATABRICKS_TOKEN DATABRICKS_ENV
+    return 1
+  fi
+  
+  export DATABRICKS_ENV="${env}"
+  echo "Using Databricks ${env}"
+}
+
+# Wrapper functions
+db-prod() {
+  _use_databricks "prod"
+}
+db-qa() {
+  _use_databricks "qa"
+}
+db-dev() {
+  _use_databricks "dev"
+}
+
+# Check current Databricks environment variables and keychain credentials
+db-check-env() {
+  echo "Databricks Environment Status:"
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo ""
+
+  # Check currently active environment
+  echo "Active Environment:"
+  if [ -n "$DATABRICKS_ENV" ]; then
+    echo "  Environment: ${DATABRICKS_ENV}"
+    echo "  Host:        ${DATABRICKS_HOST}"
+    local token_preview="${DATABRICKS_TOKEN:0:8}..."
+    echo "  Token:       ${token_preview}"
+  else
+    echo "  (none - run db-prod, db-qa, or db-dev)"
+  fi
+
+  echo ""
+  echo "Keychain Credentials:"
+
+  # Check each environment in keychain
+  local envs=("prod" "qa" "dev")
+  local missing_envs=()
+
+  for env in "${envs[@]}"; do
+    local host=$(security find-generic-password -a ${USER} -s "databricks-${env}-host" -w 2>/dev/null)
+    local token=$(security find-generic-password -a ${USER} -s "databricks-${env}-token" -w 2>/dev/null)
+
+    if [ -n "$host" ] && [ -n "$token" ]; then
+      echo "  ${env}: ✓"
+    else
+      echo "  ${env}: ✗"
+      missing_envs+=("${env}")
+    fi
+  done
+
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+  if [ ${#missing_envs[@]} -eq 0 ]; then
+    echo "Status: All environments configured ✓"
+    return 0
+  else
+    echo "Status: Missing credentials for: ${missing_envs[*]}"
+    echo ""
+    echo "Add missing credentials with:"
+    for env in "${missing_envs[@]}"; do
+      echo "  security add-generic-password -a \${USER} -s databricks-${env}-host -w"
+      echo "  security add-generic-password -a \${USER} -s databricks-${env}-token -w"
+    done
+    return 1
+  fi
 }

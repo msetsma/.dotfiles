@@ -23,6 +23,9 @@ alias az='PYTHONWARNINGS="ignore::UserWarning" az'
 
 # databricks
 alias db='databricks'
+alias db-prod='_use_databricks prod'
+alias db-qa='_use_databricks qa'
+alias db-dev='_use_databricks dev'
 
 # azure
 alias repo='open $(az repos show --repository $(basename "$PWD") --query webUrl -o tsv)'

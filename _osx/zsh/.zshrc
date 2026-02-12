@@ -42,10 +42,12 @@ export FZF_DEFAULT_COMMAND='rg --hidden -l ""' # Include hidden files
 eval "$(uv generate-shell-completion zsh)"
 eval "$(uvx --generate-shell-completion zsh)"
 
-# Load Variables and Functions
-# source_folder_contents "$HOME/.config/bash/"
+# Load aliases
 source "$HOME/.config/zsh/aliases.zsh"
-source "$HOME/.config/zsh/functions.zsh"
+
+# Autoload functions
+fpath=($HOME/.config/zsh/functions $fpath)
+autoload -Uz rld update source_folder_contents gitnav _use_databricks db-check-env
 
 # starship
 eval "$(starship init zsh)"

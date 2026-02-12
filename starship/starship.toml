@@ -1,3 +1,57 @@
+# ~/.config/starship.toml
+
+# Timeout for commands (ms)
+command_timeout = 500
+
+# Format - customize order of modules (left side)
+format = """
+$username\
+$hostname\
+$directory\
+$git_branch\
+$git_status\
+$python\
+$rust\
+$golang\
+$docker_context\
+$fill\
+$custom\
+$line_break\
+$character"""
+
+[character]
+success_symbol = "[➜](bold green)"
+error_symbol = "[➜](bold red)"
+
+[directory]
+truncation_length = 3
+truncate_to_repo = false
+style = "bold cyan"
+read_only = " 󰌾"
+
+[git_branch]
+symbol = " "
+
+[git_status]
+style = "bold yellow"
+conflicted = "🏳"
+ahead = "⇡${count}"
+behind = "⇣${count}"
+diverged = "⇕⇡${ahead_count}⇣${behind_count}"
+untracked = "?${count}"
+stashed = "$"
+modified = "!${count}"
+staged = "+${count}"
+renamed = "»${count}"
+deleted = "✘${count}"
+
+# Your custom Databricks module
+[custom.databricks]
+command = "echo $DATABRICKS_ENV"
+when = "test -n \"$DATABRICKS_ENV\""
+format = "[◆ DB:$output]($style) "
+style = "bold blue"
+
 [aws]
 symbol = "  "
 
@@ -28,12 +82,6 @@ symbol = " "
 [deno]
 symbol = " "
 
-[directory]
-read_only = " 󰌾"
-
-[docker_context]
-symbol = " "
-
 [elixir]
 symbol = " "
 
@@ -48,9 +96,6 @@ symbol = " "
 
 [gcloud]
 symbol = "  "
-
-[git_branch]
-symbol = " "
 
 [git_commit]
 tag_symbol = '  '
