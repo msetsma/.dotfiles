@@ -1,0 +1,4 @@
+[tools]
+# languages
+python = "latest"
+go = "latest"

@@ -1,8 +1,19 @@
 # ----------------------------------------
+# Secrets & Tokens
+# ----------------------------------------
+if [ -f ~/.env ]; then
+    export $(grep -v '^#' ~/.env | xargs)
+fi
+
+# ----------------------------------------
 # Aliases
 # ----------------------------------------
 [ -f "$HOME/.config/zsh/aliases.zsh" ] && source "$HOME/.config/zsh/aliases.zsh"
 
+# ----------------------------------------
+# Functions
+# ----------------------------------------
+[ -f "$HOME/.config/zsh/functions.zsh" ] && source "$HOME/.config/zsh/functions.zsh"
 
 # ----------------------------------------
 # Homebrew Configuration
@@ -16,7 +27,21 @@ export HOMEBREW_NO_AUTO_UPDATE=1
 # ----------------------------------------
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)" # Initialize pyenv
+eval "$(pyenv init --path)"
+eval "$(pyenv init -)"
+
+
+# ----------------------------------------
+# Go
+# ----------------------------------------
+export GOPATH=$HOME/go
+export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
+
+
+# ----------------------------------------
+# Rust
+# ----------------------------------------
+. "$HOME/.cargo/env"
 
 
 # ----------------------------------------
