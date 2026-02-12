@@ -7,6 +7,9 @@
 # To update tools and dependencies:
 #     $ cargo make update
 #
+# To check for updates:
+#     $ cargo make check-outdated
+#
 # You can also run individual tasks as needed. Examples:
 #     $ cargo make install-rust       # Install Rust and components
 #     $ cargo make install-tools      # Install platform-specific tools
@@ -27,7 +30,7 @@ dependencies = [
     "dotfiles"                 # Symlink dotfiles
 ]
 
-# Rust Configuration (rust is dependency for this entire make file)
+# Rust Configuration
 [tasks.install-rust]
 description = "Install Rust toolchain components."
 script = [
@@ -99,6 +102,7 @@ script = [
   "scoop install autohotkey",
   "scoop install zoxide",
   "scoop install yazi",
+  "scoop install neovim",
   "scoop install wezterm",
   "scoop install fzf",
   "scoop install ripgrep",
@@ -152,7 +156,8 @@ dependencies = [
 # Rust Toolchain Update
 [tasks.update-rust]
 script = [
-    "rustup update",     
+    "rustup self update",
+    "rustup update",  
     "cargo install-update -a"
 ]
 
@@ -164,8 +169,10 @@ mac_alias = "update-mac-tools"
 
 [tasks.update-linux-tools]
 script = [
-    "sudo apt-get update -y",
-    "sudo apt-get upgrade -y",
+    "echo --- Updating package database ---",
+    "sudo pacman -Sy",
+    "echo --- Upgrading installed packages ---",
+    "sudo pacman -Su --noconfirm" 
 ]
 
 [tasks.update-windows-tools]
@@ -186,4 +193,43 @@ script = [
 script = [
     "echo --- Updating Global Mise Packages ---",
     "mise install",
+]
+
+# ================================
+# ==== Check for Updates Task ====
+# ================================
+[tasks.check-outdated]
+description = "Set up the development environment"
+dependencies = [
+    "check-outdated-rust",     # Check rustup for updates
+    "check-package-managers",  # Check platform specific updates
+]
+
+[tasks.check-outdated-rust]
+script = [
+    "echo --- Checking for available updates (without applying) ---",
+    "rustup update --no-self-update || echo 'Rustup is up-to-date'"
+]
+
+[tasks.check-package-managers]
+linux_alias = "check-outdated-linux"
+windows_alias = "check-outdated-windows"
+mac_alias = "check-outdated-mac"
+
+[tasks.check-outdated-linux]
+script = [
+    "echo --- Checking for outdated pacman packages ---",
+    "pacman -Qu || echo 'No outdated packages found or not running on Arch-based Linux'"
+]
+
+[tasks.check-outdated-windows]
+script = [
+    "echo --- Checking for outdated Scoop packages ---",
+    "scoop status || echo 'Scoop not found or not running on Windows'"
+]
+
+[tasks.check-outdated-mac]
+script = [
+    "echo --- Checking for outdated Homebrew packages ---",
+    "brew outdated || echo 'No outdated packages found or not running on macOS'"
 ]
