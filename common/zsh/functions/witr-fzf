@@ -3,6 +3,13 @@
 # Live preview shows witr output for the highlighted process.
 # Select a process to run a full witr inspection on it.
 # Deps: fzf, witr (brew install fzf witr)
+# macOS only — witr and ps -m are not available on Linux
+
+if ! (( IS_MAC )); then
+  echo "witr-fzf is only available on macOS"
+  return 1
+fi
+
 local selected
 selected=$(ps aux -m \
 | awk 'NR>1 {

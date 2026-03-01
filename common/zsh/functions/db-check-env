@@ -2,7 +2,6 @@ echo "Databricks Environment Status:"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
-# Check currently active environment
 echo "Active Environment:"
 if [ -n "$DATABRICKS_ENV" ]; then
   echo "  Environment: ${DATABRICKS_ENV}"
@@ -14,17 +13,22 @@ else
 fi
 
 echo ""
-echo "Keychain Credentials:"
+echo "Stored Credentials:"
 
-# Check each environment in keychain
 local envs=("prod" "qa" "dev")
 local missing_envs=()
 
 for env in "${envs[@]}"; do
-  local host=$(security find-generic-password -a ${USER} -s "databricks-${env}-host" -w 2>/dev/null)
-  local token=$(security find-generic-password -a ${USER} -s "databricks-${env}-token" -w 2>/dev/null)
+  local found=0
+  if (( IS_MAC )); then
+    local host=$(security find-generic-password -a ${USER} -s "databricks-${env}-host" -w 2>/dev/null)
+    local token=$(security find-generic-password -a ${USER} -s "databricks-${env}-token" -w 2>/dev/null)
+    [[ -n "$host" && -n "$token" ]] && found=1
+  else
+    [[ -f "$HOME/.config/databricks/.env-${env}" ]] && found=1
+  fi
 
-  if [ -n "$host" ] && [ -n "$token" ]; then
+  if (( found )); then
     echo "  ${env}: ✓"
   else
     echo "  ${env}: ✗"
@@ -40,10 +44,17 @@ if [ ${#missing_envs[@]} -eq 0 ]; then
 else
   echo "Status: Missing credentials for: ${missing_envs[*]}"
   echo ""
-  echo "Add missing credentials with:"
-  for env in "${missing_envs[@]}"; do
-    echo "  security add-generic-password -a \${USER} -s databricks-${env}-host -w"
-    echo "  security add-generic-password -a \${USER} -s databricks-${env}-token -w"
-  done
+  if (( IS_MAC )); then
+    echo "Add missing credentials with:"
+    for env in "${missing_envs[@]}"; do
+      echo "  security add-generic-password -a \${USER} -s databricks-${env}-host -w"
+      echo "  security add-generic-password -a \${USER} -s databricks-${env}-token -w"
+    done
+  else
+    echo "Create env files at ~/.config/databricks/.env-<env>"
+    echo "Contents:"
+    echo "  export DATABRICKS_HOST=https://..."
+    echo "  export DATABRICKS_TOKEN=dapi..."
+  fi
   return 1
 fi

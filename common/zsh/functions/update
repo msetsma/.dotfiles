@@ -1,0 +1,18 @@
+if (( IS_MAC )); then
+  echo "Updating Homebrew and installed packages..."
+  brew update && brew upgrade && (brew cleanup || true)
+elif command -v apt &>/dev/null; then
+  echo "Updating apt packages..."
+  sudo apt update && sudo apt upgrade -y
+fi
+
+echo "Updating Rust toolchain..."
+rustup update
+
+echo "Updating Cargo packages..."
+cargo install-update -a
+
+echo "Updating mise runtimes..."
+mise upgrade
+
+echo "All updates completed."

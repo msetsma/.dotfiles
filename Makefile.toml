@@ -54,6 +54,7 @@ script = [
 [tasks.install-coreutils]
 windows_alias = "windows-core-utils"
 mac_alias = "mac-core-utils"
+linux_alias = "linux-core-utils"
 
 [tasks.windows-core-utils]
 condition = { platforms = ["windows"] }
@@ -67,10 +68,17 @@ script = [
     "cargo install coreutils --features macos"
 ]
 
+[tasks.linux-core-utils]
+condition = { platforms = ["linux"] }
+script = [
+    "echo '--- Linux coreutils provided by system ---'",
+]
+
 # Platform-Specific Tool Installation
 [tasks.install-tools]
 windows_alias = "windows-tools"
 mac_alias = "mac-tools"
+linux_alias = "linux-tools"
 
 [tasks.windows-tools]
 script = [
@@ -132,6 +140,40 @@ script = [
     "export YAZI_CONFIG_HOME=\"~/.config/yazi\"",
 ]
 
+[tasks.linux-tools]
+condition = { platforms = ["linux"] }
+script = [
+    "echo '--- Installing WSL2/Linux tools via apt ---'",
+    "sudo apt update",
+    "sudo apt install -y zsh fzf ripgrep fd-find bat neovim cmake curl git",
+
+    "echo '--- Installing Oh My Zsh ---'",
+    'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended 2>/dev/null || true',
+
+    "echo '--- Installing Oh My Zsh Plugins ---'",
+    "git clone https://github.com/Aloxaf/fzf-tab ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-tab 2>/dev/null || true",
+    "git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions 2>/dev/null || true",
+    "git clone https://github.com/zsh-users/zsh-syntax-highlighting ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting 2>/dev/null || true",
+    "git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-completions 2>/dev/null || true",
+
+    "echo '--- Installing wslu (WSL utilities) ---'",
+    "sudo apt install -y wslu 2>/dev/null || true",
+
+    "echo '--- Installing Python Package Manager ---'",
+    "python3 -m pip install --user pipx 2>/dev/null || true",
+    "python3 -m pipx ensurepath 2>/dev/null || true",
+
+    "echo '--- Installing pipx packages (if exists) ---'",
+    "if [ -f ~/.dotfiles/pipx-requirements.txt ]; then",
+    "  while read package; do",
+    "    pipx install $package 2>/dev/null || echo \"Skipping $package\"",
+    "  done < ~/.dotfiles/pipx-requirements.txt",
+    "fi",
+
+    "echo '--- Setting default shell to zsh ---'",
+    "chsh -s $(which zsh) 2>/dev/null || echo 'Run: chsh -s $(which zsh) manually'",
+]
+
 [tasks.dotfiles]
 description = "Symlink all the .dotfiles depending on dotter/system.toml files"
 script = [
@@ -163,6 +205,7 @@ script = [
 [tasks.update-platform-tools]
 windows_alias = "update-windows-tools"
 mac_alias = "update-mac-tools"
+linux_alias = "update-linux-tools"
 
 [tasks.update-windows-tools]
 script = [
@@ -178,6 +221,13 @@ script = [
     "brew upgrade",
     "brew upgrade --cask wezterm@nightly --no-quarantine --greedy-latest",
 
+]
+
+[tasks.update-linux-tools]
+condition = { platforms = ["linux"] }
+script = [
+    "echo '--- Updating apt packages ---'",
+    "sudo apt update && sudo apt upgrade -y",
 ]
 
 [tasks.update-mise]
@@ -202,6 +252,7 @@ script = [
 [tasks.check-package-managers]
 windows_alias = "check-outdated-windows"
 mac_alias = "check-outdated-mac"
+linux_alias = "check-outdated-linux"
 
 [tasks.check-outdated-windows]
 script = [
@@ -213,4 +264,11 @@ script = [
 script = [
     "echo --- Checking for outdated Homebrew packages ---",
     "brew outdated || echo 'No outdated packages found or not running on macOS'",
+]
+
+[tasks.check-outdated-linux]
+condition = { platforms = ["linux"] }
+script = [
+    "echo '--- Checking for upgradeable apt packages ---'",
+    "apt list --upgradeable 2>/dev/null || echo 'apt not available'",
 ]

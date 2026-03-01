@@ -53,6 +53,9 @@ dist/
 build/
 .venv/
 
+# Databricks credentials (WSL2/Linux env files)
+.config/databricks/
+
 # dotter
 .dotter/local.toml
 .dotter/cache.toml

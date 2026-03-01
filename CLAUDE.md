@@ -2,48 +2,91 @@
 
 This document helps AI assistants (like Claude) understand and work effectively with this dotfiles repository.
 
-## Repository Overview
+## Architecture
 
-This is a cross-platform dotfiles repository managed by **dotter** (a dotfile symlink manager) with platform-specific configurations for macOS, Windows, and Linux. The repo emphasizes modern, performance-focused tools (many Rust-based) and uses **cargo-make** for automation.
+This repo is **unix-first**. The core dev environment (zsh, neovim, CLI tools) targets unix, and Windows gets there via WSL2. Both platforms converge on the same `common/` configs.
+
+```
+macOS:    native apps (Ghostty, AeroSpace) --> unix backend (zsh, neovim, zellij)
+Windows:  native apps (WezTerm, AHK)       --> WSL2 --> unix backend (zsh, neovim, zellij)
+```
 
 **Owner**: msetsma
-**Primary Platform**: macOS (currently active)
-**Secondary Platform**: Windows (via Scoop)
+**Primary Platform**: macOS
+**Secondary Platform**: Windows (native GUI + WSL2 for dev)
 **Management Tools**: dotter, cargo-make, mise
 
-**Note**: Linux support discontinued - partial implementation remains in Makefile.toml but is not actively maintained
+### Directory model
+
+| Directory  | Purpose | Used by | Dotter package |
+|------------|---------|---------|----------------|
+| `common/`  | Base layer -- shell, editors, dev tools, linters | All platforms | `common` |
+| `macos/`   | macOS-only GUI apps (aerospace, ghostty, borders) | macOS only | `mac` |
+| `windows/` | Windows-only GUI apps (wezterm, ahk, komorebi) | Windows host only | `windows` |
+
+### Platform layers
+
+| Layer | macOS | Windows |
+|-------|-------|---------|
+| GUI apps | Ghostty, AeroSpace, borders | WezTerm, AHK, (komorebi undecided) |
+| Terminal | Ghostty (native) | WezTerm -> WSL2 |
+| Shell | zsh (oh-my-zsh) | zsh via WSL2 (oh-my-zsh) |
+| Dev tools | neovim, zellij, fzf, eza, bat, rg | same, via WSL2 |
+| Package mgr | Homebrew | Scoop (Windows host) + apt (WSL2) |
+
+### Platform detection
+
+`common/zsh/platform.zsh` sets `PLATFORM` and boolean flags used throughout shell configs:
+
+- `IS_MAC` (1/0) -- macOS (Darwin)
+- `IS_WSL` (1/0) -- WSL2 (detects via `/proc/version`)
+- `IS_LINUX` (1/0) -- generic Linux
+
+Platform-specific behavior gated by `(( IS_MAC ))` / `(( IS_WSL ))`:
+- **Clipboard**: `pbcopy` (mac), `clip.exe` (WSL2), `xclip` (linux) -- abstracted as `_clip` function
+- **URL open**: `open` (mac), `wslview` (WSL2), `xdg-open` (linux) -- aliased as `open`
+- **Credentials**: macOS Keychain `security` CLI vs `~/.config/databricks/.env-{env}` files
+- **PATH**: `/opt/homebrew/bin` (mac) vs standard linux paths + optional linuxbrew
 
 ## Repository Structure
 
 ``` text
 .dotfiles/
-├── unix/               # ALL macOS-specific configs
-│   ├── aerospace/      # AeroSpace window manager
+├── common/             # Base layer (all platforms)
 │   ├── bash/           # Bash config
-│   ├── borders/        # Window border visual effects
 │   ├── bottom/         # System monitor config
-│   ├── ghostty/        # Primary terminal emulator
-│   ├── sketchybar/     # macOS status bar
-│   ├── zellij/         # Terminal multiplexer
-│   └── zsh/            # Zsh config (active shell)
-├── windows/            # ALL Windows-specific configs
-│   ├── ahk/            # AutoHotkey scripts
-│   ├── komorebi/       # Tiling window manager
-│   ├── nushell/        # Nushell config
-│   ├── wezterm/        # Terminal emulator
-│   └── whkdrc/         # Hotkey daemon config
-├── shared/             # Cross-platform (dotter-managed)
 │   ├── cargo/          # Rust/Cargo configuration
 │   ├── fastfetch/      # System info tool
 │   ├── linters/        # ruff.toml, stylua.toml
 │   ├── mise/           # Runtime version manager
 │   ├── nvim/           # Neovim configuration (lazy.nvim)
-│   └── starship/       # Shell prompt
-├── night-tab/          # Browser new tab page backup (not dotter-managed)
-├── scripts/            # Helper scripts (not dotter-managed)
-├── Brewfile            # Homebrew packages (not dotter-managed)
+│   ├── starship/       # Shell prompt
+│   ├── zellij/         # Terminal multiplexer
+│   └── zsh/            # Zsh config (active shell on both platforms)
+│       ├── .zshrc      # Main config (sources platform.zsh first)
+│       ├── .zshenv     # Environment vars
+│       ├── platform.zsh # Platform detection (IS_MAC, IS_WSL, IS_LINUX)
+│       ├── aliases.zsh  # Aliases with platform abstractions (_clip, open)
+│       └── functions/   # Autoloaded functions
+├── macos/              # macOS-only GUI apps
+│   ├── aerospace/      # AeroSpace tiling window manager
+│   ├── borders/        # Window border visual effects
+│   └── ghostty/        # Terminal emulator
+├── windows/            # Windows-native GUI apps (host side only)
+│   ├── ahk/            # AutoHotkey scripts
+│   ├── komorebi/       # Tiling window manager (undecided)
+│   ├── nushell/        # Nushell config
+│   ├── wezterm/        # Terminal emulator
+│   └── whkdrc/         # Hotkey daemon config
 ├── .dotter/            # Dotter configuration
-├── Makefile.toml       # Cargo-make automation
+│   ├── global.toml     # Symlink mappings: [common], [mac], [windows], [linux]
+│   ├── mitch-pc.toml   # Windows machine (packages: common + windows)
+│   ├── APF1YN4YGV37.toml # macOS machine (packages: common + mac)
+│   └── mitch-wsl.toml  # WSL2 machine (packages: common + linux)
+├── Brewfile            # Homebrew packages (macOS)
+├── Makefile.toml       # Cargo-make setup/install tasks
+├── Makefile.utils.toml # Cargo-make utility tasks
+├── .gitattributes      # Line ending enforcement (LF for shell, CRLF for Windows scripts)
 └── README.md           # User-facing documentation
 ```
 
@@ -51,116 +94,59 @@ This is a cross-platform dotfiles repository managed by **dotter** (a dotfile sy
 
 ### Management & Configuration
 
-- **[.dotter/global.toml](.dotter/global.toml)**: Controls which dotfiles get symlinked to which locations per platform
-- **[Makefile.toml](Makefile.toml)**: Defines all setup, update, and maintenance tasks via cargo-make
-- **[TODO.md](TODO.md)**: Current work items (kept minimal)
+- **[.dotter/global.toml](.dotter/global.toml)**: Symlink mappings. Sections: `[common.files]`, `[mac.files]`, `[windows.files]`, `[linux.files]`
+- **[Makefile.toml](Makefile.toml)**: Setup/install tasks. Platform branching via `mac_alias`, `windows_alias`, `linux_alias`
+- **[Makefile.utils.toml](Makefile.utils.toml)**: Daily utility tasks (pkg management, backup, doctor)
 
-### Shell Configuration (macOS Active)
+### Shell Configuration
 
-- **[unix/zsh/.zshrc](unix/zsh/.zshrc)**: Main zsh config (sources aliases/functions, configures fzf, oh-my-zsh)
-- **[unix/zsh/aliases.zsh](unix/zsh/aliases.zsh)**: Shell aliases (eza for ls, git shortcuts, Azure/Databricks)
-- **[unix/zsh/functions.zsh](unix/zsh/functions.zsh)**: Custom functions (rld, update, az-func-info)
+- **[common/zsh/platform.zsh](common/zsh/platform.zsh)**: Platform detection -- sourced first by .zshrc
+- **[common/zsh/.zshrc](common/zsh/.zshrc)**: Main zsh config (platform-gated PATH, brew, fzf, oh-my-zsh)
+- **[common/zsh/aliases.zsh](common/zsh/aliases.zsh)**: Aliases with `_clip` clipboard abstraction and `open` alias
+- **[common/zsh/functions/](common/zsh/functions/)**: Autoloaded functions (update, cmds, _use_databricks, etc.)
 
-### Window Management (macOS)
+### Dotter Platform Mapping
 
-- **[unix/aerospace/aerospace.toml](unix/aerospace/aerospace.toml)**: AeroSpace tiling WM config with workspace rules
-- **[unix/borders/bordersrc](unix/borders/bordersrc)**: Window border visual effects
-- **[unix/sketchybar/](unix/sketchybar/)**: Status bar
+Dotter selects config based on hostname -> machine toml -> packages list -> global.toml sections:
 
-### Terminal & Prompt
+| Package | Symlinks from | Used on |
+|---------|---------------|---------|
+| `common` | `common/*` | All platforms |
+| `mac` | `common/bottom` (macOS path) + `macos/*` | macOS |
+| `linux` | `common/bottom` (linux path) | WSL2 |
+| `windows` | `windows/*` | Windows host |
 
-- **[unix/ghostty/config](unix/ghostty/config)**: Primary terminal (Catppuccin Mocha, quick-terminal with cmd+`)
-- **[starship/starship.toml](starship/starship.toml)**: Shell prompt configuration
+## Setup Workflow
 
-### Development Tools
-
-- **[shared/nvim/](shared/nvim/)**: Neovim with lazy.nvim plugin manager
-- **[shared/mise/config.toml](shared/mise/config.toml)**: Manages Python/Go/Lua versions
-- **[shared/linters/ruff.toml](shared/linters/ruff.toml)**: Python linting/formatting
-
-## Platform-Specific Details
-
-### macOS (Primary)
-
-**Package Manager**: Homebrew
-**Shell**: zsh (with oh-my-zsh)
-**Window Manager**: AeroSpace (tiling)
-**Terminal**: Ghostty
-**Tools**: borders, sketchybar, fzf, ripgrep, bat, eza, lazygit
-
-**Key Locations**:
-
-- Configs: `~/.config/` (via XDG_CONFIG_HOME)
-- Dotfiles symlinked by dotter
-- Zsh sources from `~/.config/zsh/`
-
-### Windows (Secondary)
-
-**Package Manager**: Scoop
-**Shell**: Nushell
-**Window Manager**: komorebi
-**Terminal**: WezTerm
-**Automation**: AutoHotkey
-
-### Linux (Discontinued)
-
-**Status**: No longer actively maintained
-**Note**: Partial implementation remains in Makefile.toml but is not being developed further
-
-## Important Workflows
-
-### Initial Setup
+### macOS
 
 ```bash
-# From repo root:
+cargo make init  # Installs brew packages, oh-my-zsh, rust tools, symlinks
+```
+
+### Windows (two-step)
+
+```bash
+# 1. Windows host -- Scoop packages, native app configs
+cargo make init
+
+# 2. Inside WSL2 -- apt packages, zsh, oh-my-zsh, symlinks common/ configs
 cargo make init
 ```
 
-This runs:
-
-1. `install-rust` - Adds clippy, rustfmt
-2. `install-tools` - Platform-specific tools (brew/scoop/dnf5)
-3. `install-coreutils` - Platform-specific coreutils
-4. `install-rust-tools` - mise, dotter, cargo-update, vivid, eza, bottom, bat
-5. `dotfiles` - Runs `dotter -v` to create symlinks
+The repo is at `C:\Users\2015m\.dotfiles` and accessed from WSL2 via `/mnt/c/Users/2015m/.dotfiles`.
 
 ### Updates
 
 ```bash
-# Update everything:
-cargo make update
-
-# Check for updates without applying:
-cargo make check-outdated
-```
-
-Or use the zsh function:
-
-```bash
-update  # Defined in unix/zsh/functions.zsh
-```
-
-### Dotfile Deployment
-
-After editing configs:
-
-```bash
-dotter -v  # Verbose mode shows what gets symlinked
-```
-
-Dotter reads `.dotter/global.toml` to determine platform and target paths.
-
-### Shell Reload
-
-```bash
-rld  # Defined in unix/zsh/functions.zsh, runs: exec zsh
+cargo make update       # Update all tools
+cargo make check-outdated # Check without applying
+update                  # zsh function (brew/apt + rustup + cargo + mise)
 ```
 
 ## Development Environment
 
-### Languages Managed by Mise
-
-Per [shared/mise/config.toml](shared/mise/config.toml):
+### Languages (via Mise)
 
 - Python: latest
 - Go: latest
@@ -170,215 +156,103 @@ Per [shared/mise/config.toml](shared/mise/config.toml):
 
 - Plugin manager: lazy.nvim
 - Structure: `nvim/lua/{core,plugins}/`
-- Plugins: blink-cmp, telescope, neo-tree, gitsigns, treesitter, LSP, snacks, etc.
+- Plugins: blink-cmp, telescope, neo-tree, gitsigns, treesitter, LSP, snacks
 
 ### Tools & Utilities
 
-**File Operations**: eza, bat, yazi, fzf, ripgrep, fd
+**File ops**: eza, bat, yazi, fzf, ripgrep, fd
 **Git**: lazygit, fzf git checkout function
 **System**: bottom, fastfetch
 **Python**: ruff (linting/formatting)
-**Rust**: cargo with custom config in shared/cargo/config.toml
+**Terminal**: zellij (multiplexer)
 
 ## User Preferences & Patterns
 
 ### Naming Conventions
 
-- Functions: lowercase with underscores (e.g., `git_fzf_checkout`)
-- Aliases: lowercase abbreviations (e.g., `gfc`, `lt`, `db`)
+- Functions: lowercase with underscores (`git_fzf_checkout`)
+- Aliases: lowercase abbreviations (`gfc`, `lt`, `db`)
 - Scripts: snake_case.sh
 
-### Directory Shortcuts
+### Style Preferences
 
-Common aliases in [unix/zsh/aliases.zsh](unix/zsh/aliases.zsh):
+- **Unix-first**: write for unix, adapt for Windows via WSL2
+- **Shell**: prefers functions over complex aliases
+- **Tools**: performance-focused (Rust tools preferred)
+- **Comments**: functional, not verbose
+- **Files**: many small files > few large files
 
-- `home` → `~`
-- `dotfiles` → `~/.dotfiles`
-- `dev` → `~/dev`
-- `mlops` → `~/dev/mlops`
+### Work Context
 
-### Workspace Organization (AeroSpace)
-
-Defined in [aerospace/aerospace.toml](aerospace/aerospace.toml):
-
-- **Workspace 1**: Development (VSCode, Terminal)
-- **Workspace 2**: Communication (Teams, Claude, Slack)
-- **Workspace 3**: Documentation (Obsidian)
-- **Workspace 4**: Monitoring/Tools
-- **Workspace 5-6**: Overflow
-
-### Work Context Clues
-
-Based on aliases and functions:
-
-- **Cloud**: Heavy Azure usage (az-func-info function, Azure CLI shortcuts)
-- **Data**: Databricks alias (`db`)
+- **Cloud**: Azure (az CLI, Azure Functions)
+- **Data**: Databricks (`db-prod`, `db-qa`, `db-dev`)
 - **Languages**: Python (ruff), Go, Lua
-- **Tools**: Git, Docker implied by workflow
-
-## Git Workflow
-
-### Current State
-
-Branch: `main`
-Recent activity: Mac-focused updates, cleaning up unix configs
-
-### Modified Files (Uncommitted)
-
-Per git status:
-
-- `.dotter/global.toml`
-- `.gitignore`
-- `TODO.md`
-- `unix/zsh/` configs
-- `cargo/config.toml`
-- `code-tools/ruff/ruff.toml`
-- `ghostty/config`
-- `starship/starship.toml`
-
-### Untracked Additions
-
-- `unix/borders/`
-- `aerospace/`
-- `bottom/`
-- `claude/`
-- `scripts/`
-- `sketchybar/`
-
-### Deleted (Migration from _unix)
-
-Old `_unix/zsh/` configs were removed in favor of `unix/` specificity.
 
 ## AI Assistant Guidelines
 
 ### When Making Changes
 
-1. **Check platform context**: Currently on macOS, but Windows/Linux configs exist
-2. **Use dotter-aware paths**: Changes should align with `.dotter/global.toml` mappings
-3. **Respect structure**: Follow existing file organization patterns
-4. **Test symlinks**: Suggest running `dotter -v` after config changes
-5. **Update both source and symlink**: If editing, work in the repo, not symlinked locations
+1. **Unix-first**: write shell configs for unix. Use `(( IS_MAC ))` / `(( IS_WSL ))` guards for platform-specific behavior
+2. **Use dotter-aware paths**: changes must align with `.dotter/global.toml` mappings
+3. **Three directories**: `common/` for the base layer, `macos/` for mac GUI apps, `windows/` for Windows GUI apps
+4. **Test symlinks**: suggest `dotter -v` after config changes
+5. **Platform branching in Makefile**: use `mac_alias`, `windows_alias`, `linux_alias`
 
-### Common Tasks
+### Adding a new tool config
 
-**Adding a new tool config**:
-
-1. Create directory under `unix/`, `windows/`, or `shared/` as appropriate
-2. Add entry to `.dotter/global.toml` under `[mac.files]`, `[windows.files]`, or `[common.files]`
-3. Add installation to `Makefile.toml` under relevant `install-*-tools` task
+1. Create directory under `common/`, `macos/`, or `windows/` as appropriate
+2. Add entry to `.dotter/global.toml` under the correct `[*.files]` section
+3. Add installation to `Makefile.toml` under relevant `install-*-tools` task (with platform aliases if needed)
 4. Run `cargo make dotfiles` to symlink
 
-**Modifying zsh config**:
+### Modifying zsh config
 
-- Edit source: `unix/zsh/{.zshrc,aliases.zsh,functions/}`
+- Edit source: `common/zsh/{.zshrc,aliases.zsh,platform.zsh,functions/}`
+- Use `(( IS_MAC ))` / `(( IS_WSL ))` for platform-specific code
+- Use `_clip` function (not `pbcopy` directly) for clipboard operations
+- Use `open` alias (not `open` command directly) for URL/file opening
 - Symlinked to: `~/.config/zsh/`
 - Test with: `rld` (reload shell)
-
-**Adding cargo-make task**:
-
-- Edit [Makefile.toml](Makefile.toml)
-- Use platform aliases: `linux_alias`, `windows_alias`, `mac_alias`
-- Add to `dependencies` array of relevant top-level task
 
 ### Don't Assume
 
 - Which platform user is currently on (check context or ask)
 - That all tools are installed (user may be mid-setup)
-- Windows configs are outdated (they're intentionally maintained)
-- Linux configs are active (Linux support is discontinued)
+- That `pbcopy`, `open`, or `security` are available (use platform abstractions)
+- Windows configs are outdated (they're maintained for the host GUI layer)
 
-### Style Preferences
-
-- **Shell**: Prefers functions over complex aliases
-- **Tools**: Performance-focused (Rust tools preferred)
-- **Comments**: Functional, not verbose
-- **Documentation**: External (README.md) vs inline
-
-## Troubleshooting Common Issues
+## Troubleshooting
 
 ### Symlinks Not Working
 
 ```bash
-cd ~/.dotfiles
-dotter -v  # Verbose output shows what's happening
+cd ~/.dotfiles && dotter -v
 ```
 
-Check `.dotter/global.toml` for correct paths.
+Check `.dotter/global.toml` for correct paths and ensure hostname matches a `.dotter/<hostname>.toml` file.
 
 ### Tools Not Found After Install
 
-Ensure PATH includes:
-
-- `/opt/homebrew/bin` (Homebrew)
+PATH includes (platform-dependent):
+- `/opt/homebrew/bin` (macOS Homebrew)
+- `/home/linuxbrew/.linuxbrew/bin` (Linuxbrew, if installed)
 - `~/.cargo/bin` (Rust tools)
 - `~/.local/bin` (Local installs)
 
-Check [unix/zsh/.zshrc](unix/zsh/.zshrc) for PATH configuration.
+### WSL2 Line Endings
 
-### Cargo-Make Task Fails
-
-```bash
-# Verify platform detection:
-rustc -Vv | grep host
-
-# Run specific task:
-cargo make <task-name>
-
-# Debug with:
-cargo make --print-only <task-name>
-```
-
-### Neovim Plugin Issues
+`.gitattributes` enforces LF for shell files. If scripts break with `\r` errors, run:
 
 ```bash
-nvim  # Open Neovim
-:Lazy sync  # Sync plugins with lazy.nvim
+git add --renormalize .
 ```
 
-## Quick Reference
-
-### Essential Commands
+### Cargo-Make Platform Detection
 
 ```bash
-# Setup
-cargo make init
-
-# Update everything
-cargo make update
-# or
-update
-
-# Deploy dotfiles
-dotter -v
-
-# Reload shell
-rld
-
-# Git checkout with fzf
-gfc
-
-# Azure function app info
-az-func-info
-
-# Tree view with eza
-lt2  # 2 levels deep
+rustc -Vv | grep host    # Shows detected platform
+cargo make --print-only <task-name>  # Debug task resolution
 ```
-
-### File Navigation
-
-```bash
-dotfiles  # cd ~/.dotfiles
-dev       # cd ~/dev
-mlops     # cd ~/dev/mlops
-```
-
-### Key Bindings (AeroSpace)
-
-- `alt-d`: Development workspace
-- `alt-c`: Communication workspace
-- `alt-h/j/k/l`: Focus windows (vim-style)
-- `alt-shift-h/j/k/l`: Move windows
-- `cmd+\``: Quick terminal (Ghostty)
 
 ## External Resources
 
@@ -389,6 +263,5 @@ mlops     # cd ~/dev/mlops
 
 ---
 
-**Last Updated**: 2025-10-11
+**Last Updated**: 2026-03-01
 **For**: AI assistants working with msetsma's dotfiles
-**Maintained**: Manually when significant changes occur

@@ -1,10 +1,13 @@
 [common.files]
-"shared/linters" = "~/.config"
-"shared/cargo" = "~/.cargo"
-"shared/fastfetch" = "~/.config/fastfetch"
-"shared/mise" = "~/.config/mise"
-"shared/nvim" = "~/.config/nvim"
-"shared/starship" = "~/.config"
+"common/linters" = "~/.config"
+"common/cargo" = "~/.cargo"
+"common/fastfetch" = "~/.config/fastfetch"
+"common/mise" = "~/.config/mise"
+"common/nvim" = "~/.config/nvim"
+"common/starship" = "~/.config"
+"common/zsh" = "~/.config/zsh"
+"common/bash" = "~/.config/bash"
+"common/zellij" = "~/.config/zellij"
 
 [windows.files]
 "windows/ahk" = "C:\\Users\\2015m\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup"
@@ -13,11 +16,10 @@
 "windows/wezterm" = "~/.config/wezterm"
 
 [mac.files]
-"unix/bash" = "~/.config/bash"
-"unix/zsh" = "~/.config/zsh"
-"unix/borders" = "~/.config/borders"
-"unix/aerospace" = "~/.config/aerospace"
-"unix/bottom" = "~/Library/Application Support/bottom"
-"unix/ghostty" = "~/.config/ghostty"
-"unix/zellij" = "~/.config/zellij"
-"unix/sketchybar" = "~/.config/sketchybar"
+"common/bottom" = "~/Library/Application Support/bottom"
+"macos/borders" = "~/.config/borders"
+"macos/aerospace" = "~/.config/aerospace"
+"macos/ghostty" = "~/.config/ghostty"
+
+[linux.files]
+"common/bottom" = "~/.config/bottom"

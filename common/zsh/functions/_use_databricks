@@ -1,0 +1,30 @@
+local env=$1
+
+if (( IS_MAC )); then
+  export DATABRICKS_HOST=$(security find-generic-password -a ${USER} -s "databricks-${env}-host" -w 2>/dev/null)
+  export DATABRICKS_TOKEN=$(security find-generic-password -a ${USER} -s "databricks-${env}-token" -w 2>/dev/null)
+else
+  local env_file="$HOME/.config/databricks/.env-${env}"
+  if [[ -f "$env_file" ]]; then
+    source "$env_file"
+  fi
+fi
+
+if [[ -z "$DATABRICKS_HOST" ]] || [[ -z "$DATABRICKS_TOKEN" ]]; then
+  echo "Error: ${env} credentials not found"
+  if (( IS_MAC )); then
+    echo "Add them with:"
+    echo "  security add-generic-password -a \${USER} -s databricks-${env}-host -w"
+    echo "  security add-generic-password -a \${USER} -s databricks-${env}-token -w"
+  else
+    echo "Create: $HOME/.config/databricks/.env-${env}"
+    echo "Contents:"
+    echo "  export DATABRICKS_HOST=https://..."
+    echo "  export DATABRICKS_TOKEN=dapi..."
+  fi
+  unset DATABRICKS_HOST DATABRICKS_TOKEN DATABRICKS_ENV
+  return 1
+fi
+
+export DATABRICKS_ENV="${env}"
+echo "Using Databricks ${env}"

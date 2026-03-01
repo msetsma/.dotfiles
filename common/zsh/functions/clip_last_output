@@ -28,6 +28,6 @@ OUTPUT=$(sed -n "$((START + 1)),$((END - 1))p" "$DUMP_FILE" \
   | sed 's/[[:space:]]*$//')
 
 # Format and copy to clipboard
-printf "$ %s\n\n%s" "$COMMAND" "$OUTPUT" | pbcopy
+printf "$ %s\n\n%s" "$COMMAND" "$OUTPUT" | _clip
 
 echo "✓ Copied to clipboard"

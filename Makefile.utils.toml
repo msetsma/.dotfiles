@@ -103,21 +103,42 @@ script = [
 description = "Export packages (platform-specific)"
 mac_alias = "brew-export"
 windows_alias = "scoop-export"
+linux_alias = "linux-pkg-info"
 
 [tasks.pkg-import]
 description = "Import packages (platform-specific)"
 mac_alias = "brew-import"
 windows_alias = "scoop-import"
+linux_alias = "linux-pkg-info"
 
 [tasks.pkg-cleanup]
 description = "Cleanup packages (platform-specific)"
 mac_alias = "brew-cleanup"
 windows_alias = "scoop-cleanup"
+linux_alias = "linux-pkg-cleanup"
 
 [tasks.pkg-doctor]
 description = "Check package manager health (platform-specific)"
 mac_alias = "brew-doctor"
 windows_alias = "scoop-doctor"
+linux_alias = "linux-pkg-info"
+
+# ---------- Linux/WSL2: apt ----------
+
+[tasks.linux-pkg-info]
+condition = { platforms = ["linux"] }
+script = [
+    "echo '--- Linux/WSL2 uses apt ---'",
+    "echo 'Use apt directly: sudo apt update && sudo apt upgrade'",
+]
+
+[tasks.linux-pkg-cleanup]
+condition = { platforms = ["linux"] }
+script = [
+    "echo '--- Cleaning up apt ---'",
+    "sudo apt autoremove -y",
+    "sudo apt autoclean",
+]
 
 
 # =============================
@@ -257,6 +278,11 @@ script = [
     "fi",
     "if [[ \"$OSTYPE\" == \"msys\" ]] || [[ \"$OSTYPE\" == \"win32\" ]]; then",
     "  command -v scoop >/dev/null 2>&1 && echo '✓ scoop installed' || echo '✗ scoop not found'",
+    "fi",
+    "if grep -qi 'microsoft\\|wsl' /proc/version 2>/dev/null; then",
+    "  echo '✓ WSL2 detected'",
+    "  command -v wslview >/dev/null 2>&1 && echo '✓ wslu installed' || echo '✗ wslu not found (install: sudo apt install wslu)'",
+    "  command -v zsh >/dev/null 2>&1 && echo '✓ zsh installed' || echo '✗ zsh not found'",
     "fi",
     "echo ''",
     "echo '--- Environment variables ---'",

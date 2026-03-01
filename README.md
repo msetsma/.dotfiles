@@ -1,209 +1,189 @@
-# **Dotfiles**
+# Dotfiles
 
-Feel free to take what you want, but I would advice against blindly installing without reviewing.
+Feel free to take what you want, but I would advise against blindly installing without reviewing.
 
-> [!NOTE] These dotfiles complex due to specific requirements (see below).
-
----
-
-## **Requirements**
-
-1. **Cross-Platform Compatibility**
-   Tools must work seamlessly on Windows and macOS for a consistent experience.
-
-2. **Performance-First Approach**  
-   Preference for modern, high-performance tools (e.g., Rust-based tools like `uutils`) that replace core utilities across major platforms.
-
-3. **Easy Installation**  
-   Tools should have minimal setup time. Examples include `dotter` for dotfile management and `cargo-make` for setup tasks.
+> These dotfiles are unix-first, adapted to work on Windows via WSL2.
 
 ---
 
-## **How to Install**
+## Architecture
 
-1. **Install Rust**
+This repo is designed around a **unix-first** philosophy. The core dev environment (zsh, neovim, CLI tools) targets unix, and Windows gets there via WSL2.
 
-   - **Windows**:
+```
+macOS:    native apps (Ghostty, AeroSpace) --> unix backend (zsh, neovim, zellij)
+Windows:  native apps (WezTerm, AHK)       --> WSL2 --> unix backend (zsh, neovim, zellij)
+```
 
-     ```cmd
-     curl -o rustup-init.exe https://win.rustup.rs
-     rustup-init.exe
-     ```
+Both platforms converge on the same `common/` configs for the shell and dev tools. The difference is only in the GUI layer above.
 
-   - **UNIX**:
+### What lives where
 
-     ```bash
-     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-     ```
-
-2. **Verify Rust Installation**  
-   Check if Rust is installed correctly:
-
-   ```bash
-   rustc --version
-   cargo --version
-   ```
-
-3. **Install Cargo-Make**
-
-   ```bash
-   cargo install cargo-make
-   ```
-
-4. **Clone This Repo**
-
-   ```bash
-   git clone git@github.com:msetsma/.dotfiles.git
-   cd .dotfiles
-   ```
-
-5. **Run the Makefile**
-   Use `cargo-make` to execute tasks from the `Makefile.toml`:
-
-   ```bash
-   cargo make init
-   ```
-
-6. **View Available Commands**
-
-   Quick reference (most common commands):
-
-   ```bash
-   cargo make help
-   ```
-
-   Detailed information (all commands):
-
-   ```bash
-   cargo make info
-   ```
+| Directory  | Purpose                          | Used by           |
+|------------|----------------------------------|--------------------|
+| `common/`  | Base layer -- shell, dev tools, editors | All platforms |
+| `macos/`   | macOS-only GUI apps              | macOS only         |
+| `windows/` | Windows-only GUI apps            | Windows host only  |
 
 ---
 
-## **Common Tasks**
+## Requirements
 
-### **Initial Setup**
+1. **Unix-First** -- configs are written for unix. Windows uses WSL2 to run them.
+2. **Performance-First** -- preference for modern, Rust-based tools (eza, bat, ripgrep, fd).
+3. **Easy Installation** -- `dotter` for symlinks, `cargo-make` for setup automation.
+
+---
+
+## How to Install
+
+### Prerequisites
+
+Install Rust and cargo-make:
 
 ```bash
-cargo make init          # Complete environment setup
+# Install Rust
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# Verify
+rustc --version && cargo --version
+
+# Install cargo-make
+cargo install cargo-make
 ```
 
-### **Updates**
+### Clone and init
 
 ```bash
-cargo make update        # Update all tools and packages
-cargo make check-outdated # Check for available updates
+git clone git@github.com:msetsma/.dotfiles.git
+cd .dotfiles
+cargo make init
 ```
 
-### **Package Manager (Cross-Platform)**
+### Windows (two-step setup)
+
+On Windows, you run init twice -- once on the Windows host for native apps, and once inside WSL2 for the dev environment:
 
 ```bash
-cargo make pkg-export    # Export packages (works on macOS & Windows)
-cargo make pkg-import    # Import packages (works on macOS & Windows)
-cargo make pkg-cleanup   # Cleanup old versions
-cargo make pkg-doctor    # Check for issues
+# 1. Windows host (PowerShell/cmd) -- installs Scoop packages, WezTerm, AHK
+cargo make init
+
+# 2. Inside WSL2 -- installs zsh, oh-my-zsh, CLI tools, symlinks common/ configs
+cargo make init
 ```
 
-### **Homebrew Management** (macOS)
+The repo lives on the Windows filesystem and is accessed from WSL2 via `/mnt/c/Users/<you>/.dotfiles`.
+
+### View available commands
 
 ```bash
-cargo make brew-export   # Export current packages to Brewfile
-cargo make brew-import   # Install from Brewfile
-cargo make brew-cleanup  # Cleanup old versions
-cargo make brew-doctor   # Check for issues
-```
-
-### **Scoop Management** (Windows)
-
-```bash
-cargo make scoop-export  # Export current packages to scoopfile.json
-cargo make scoop-import  # Install from scoopfile.json
-cargo make scoop-cleanup # Cleanup old versions
-cargo make scoop-doctor  # Check for issues
-```
-
-### **Python/pipx Management**
-
-```bash
-cargo make pipx-list     # List installed pipx packages
-cargo make pipx-export   # Export packages to file
-cargo make pipx-install  # Install from file
-```
-
-### **Dotfile Management**
-
-```bash
-cargo make deploy         # Deploy dotfiles via dotter (easy to remember!)
-cargo make dotfiles       # Same as above
-cargo make dotfiles-check # Validate configuration
-```
-
-### **Git Backup**
-
-```bash
-cargo make backup         # Quick backup (auto-generated commit message)
-cargo make deploy-and-backup  # Deploy dotfiles + backup to git (all-in-one!)
-
-# Custom message example:
-cargo make backup-with-message -- "Updated zsh config"
-```
-
-### **Utilities**
-
-```bash
-cargo make doctor        # System health check
-cargo make clean         # Cleanup caches
-cargo make info          # Show all available commands
+cargo make help    # Quick reference
+cargo make info    # All commands
 ```
 
 ---
 
-## **Tools**
+## Common Tasks
 
-> [!NOTE] Common tools are cross-platform, but installation methods may differ by OS.
+### Setup & Updates
 
-### **Common Tools**
+```bash
+cargo make init            # Complete environment setup
+cargo make update          # Update all tools and packages
+cargo make check-outdated  # Check for available updates
+cargo make doctor          # System health check
+```
 
-- [Neovim](https://neovim.io/)
-- [Mise](https://github.com/jdx/mise)
-- [Nushell](https://github.com/nushell/nushell)
-- [Dotter](https://github.com/SuperCuber/dotter)
-- [Cargo-Make](https://github.com/sagiegurari/cargo-make)
-- [Bottom](https://github.com/ClementTsang/bottom)
-- [Duckypad](https://github.com/dekuNukem/duckyPad-Pro)
-- [WezTerm](https://github.com/wez/wezterm)
-- [Starship](https://github.com/starship/starship)
-- [Ruff](https://github.com/astral-sh/ruff)
-- [Vivid](https://github.com/sharkdp/vivid)
-- [FiraCode](https://github.com/tonsky/FiraCode)
+### Package Management (cross-platform)
 
-### **macOS-Specific Tools**
+```bash
+cargo make pkg-export      # Export packages
+cargo make pkg-import      # Import packages
+cargo make pkg-cleanup     # Cleanup old versions
+cargo make pkg-doctor      # Check for issues
+```
 
-Most macOS tools are installed via the `Brewfile` using `brew bundle`. Prerequisites:
+Platform-specific: `brew-*` (macOS), `scoop-*` (Windows), `apt` (WSL2/Linux).
 
-- [Ghostty](https://ghostty.org/) — primary terminal emulator
-- [AeroSpace](https://github.com/nikitabobko/AeroSpace) — tiling window manager
-- [borders](https://github.com/FelixKratz/JankyBorders) — window border visual effects
-- [sketchybar](https://github.com/FelixKratz/SketchyBar) — status bar
-- [Zellij](https://github.com/zellij-org/zellij) — terminal multiplexer
-- [Oh My Zsh](https://github.com/ohmyzsh/ohmyzsh) — zsh framework (installed by `cargo make init`)
+### Dotfile Deployment
 
-### **Windows-Specific Tools**
+```bash
+cargo make deploy          # Deploy dotfiles via dotter
+cargo make dotfiles-check  # Validate without deploying
+```
 
-- [AutoHotkey (AHK)](https://github.com/AutoHotkey/AutoHotkey)
-- [Komorebi](https://github.com/LGUG2Z/komorebi)
-- [AudioSwitcher](https://github.com/xenolightning/AudioSwitcher_v1)
-- [Scoop](https://scoop.sh/)
+### Git Backup
+
+```bash
+cargo make backup                        # Quick backup (auto-commit message)
+cargo make deploy-and-backup             # Deploy + backup (all-in-one)
+cargo make backup-with-message -- "msg"  # Custom message
+```
+
+### Python/pipx
+
+```bash
+cargo make pipx-list       # List installed packages
+cargo make pipx-export     # Export to file
+cargo make pipx-install    # Install from file
+```
+
+### Utilities
+
+```bash
+cargo make clean           # Cleanup caches
+cargo make info            # Show all available commands
+```
 
 ---
 
-## **Gotchas**
+## Tools
 
-### **Installing a Compiler Suite**
+> [!NOTE] Common tools are cross-platform. Installation methods differ by OS.
 
-To ensure tools work correctly, you’ll need a suitable compiler suite:
+### Common (all platforms)
 
-- **Linux**: GCC or Clang
-- **macOS**: Clang (via Xcode)
-- **Windows**: MSVC (Visual Studio Build Tools)
-  - Install the "Desktop development with C++" workload.
+[Neovim](https://neovim.io/) | [Zsh](https://www.zsh.org/) + [Oh My Zsh](https://github.com/ohmyzsh/ohmyzsh) | [Zellij](https://github.com/zellij-org/zellij) | [Mise](https://github.com/jdx/mise) | [Dotter](https://github.com/SuperCuber/dotter) | [Cargo-Make](https://github.com/sagiegurari/cargo-make) | [Starship](https://github.com/starship/starship) | [fzf](https://github.com/junegunn/fzf) | [eza](https://github.com/eza-community/eza) | [bat](https://github.com/sharkdp/bat) | [ripgrep](https://github.com/BurntSushi/ripgrep) | [fd](https://github.com/sharkdp/fd) | [yazi](https://github.com/sxyazi/yazi) | [lazygit](https://github.com/jesseduffield/lazygit) | [Bottom](https://github.com/ClementTsang/bottom) | [Ruff](https://github.com/astral-sh/ruff) | [Vivid](https://github.com/sharkdp/vivid) | [FiraCode](https://github.com/tonsky/FiraCode)
+
+### macOS-only (GUI layer)
+
+[Ghostty](https://ghostty.org/) | [AeroSpace](https://github.com/nikitabobko/AeroSpace) | [borders](https://github.com/FelixKratz/JankyBorders)
+
+### Windows-only (GUI layer)
+
+[WezTerm](https://github.com/wez/wezterm) | [AutoHotkey](https://github.com/AutoHotkey/AutoHotkey) | [Scoop](https://scoop.sh/)
+
+---
+
+## Platform Detection
+
+Shell configs use `common/zsh/platform.zsh` to detect the runtime environment:
+
+- `IS_MAC` -- macOS (Darwin)
+- `IS_WSL` -- WSL2 (Linux with Microsoft kernel)
+- `IS_LINUX` -- generic Linux
+
+This drives platform-specific behavior like clipboard (`pbcopy` vs `clip.exe`), URL opening (`open` vs `wslview`), and credential storage (Keychain vs env files).
+
+---
+
+## Gotchas
+
+### Compiler Suite
+
+- **macOS**: Clang (via Xcode command line tools)
+- **Windows**: MSVC (Visual Studio Build Tools, "Desktop development with C++" workload)
+- **WSL2/Linux**: GCC (`sudo apt install build-essential`)
+
+### WSL2 Line Endings
+
+The repo uses `.gitattributes` to enforce LF line endings for shell scripts. This prevents issues when the repo lives on the Windows filesystem and is accessed from WSL2 via `/mnt/c`.
+
+### WSL2 Hostname
+
+Dotter uses hostname-based machine configs (`.dotter/<hostname>.toml`). If your WSL2 hostname matches your Windows hostname, set a distinct one in `/etc/wsl.conf`:
+
+```ini
+[network]
+hostname = mitch-wsl
+```

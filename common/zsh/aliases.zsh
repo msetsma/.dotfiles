@@ -1,10 +1,31 @@
+# clipboard abstraction
+# WSL2 uses clip.exe (Windows interop), macOS uses pbcopy
+if (( IS_MAC )); then
+  _clip() { pbcopy }
+  alias -g copy='| pbcopy'
+elif (( IS_WSL )); then
+  _clip() { clip.exe }
+  alias -g copy='| clip.exe'
+else
+  if command -v xclip &>/dev/null; then
+    _clip() { xclip -selection clipboard }
+    alias -g copy='| xclip -selection clipboard'
+  fi
+fi
+
+# open abstraction
+if (( IS_WSL )); then
+  alias open='wslview'
+elif ! (( IS_MAC )); then
+  alias open='xdg-open'
+fi
+
 # general
 alias c='clear'
 alias home='cd $HOME'
 alias dotfiles='cd ~/.dotfiles'
 alias dev='cd ~/dev'
 alias mlops='cd ~/dev/mlops'
-alias -g copy='| pbcopy'
 
 # tool replacements
 alias cat='bat'
@@ -18,7 +39,7 @@ alias lt1='eza --icons --tree --level=1 --group-directories-first -h --long --no
 alias lt2='eza --icons --tree --level=2 --group-directories-first -h --long --no-permissions --no-user --no-time'
 alias lt3='eza --icons --tree --level=3 --group-directories-first -h --long --no-permissions --no-user --no-time'
 alias lta='eza --icons --tree --group-directories-first -h --long --no-permissions --no-user --no-time'
-alias ltcopy='eza --tree | pbcopy'
+alias ltcopy='eza --tree | _clip'
 
 # git
 alias gitfzf='~/.config/bash/git_fzf_checkout.sh'

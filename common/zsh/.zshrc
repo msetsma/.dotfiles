@@ -1,6 +1,15 @@
+# Source platform detection first
+source "$HOME/.config/zsh/platform.zsh"
+
 # Only set PATH once
 if [ -z "$PATH_SET" ]; then
-  export PATH="/opt/homebrew/bin:/usr/local/bin:$HOME/.cargo/bin:$HOME/.local/bin:/usr/local/go/bin:$PATH"
+  if (( IS_MAC )); then
+    export PATH="/opt/homebrew/bin:/usr/local/bin:$HOME/.cargo/bin:$HOME/.local/bin:/usr/local/go/bin:$PATH"
+  else
+    export PATH="$HOME/.cargo/bin:$HOME/.local/bin:/usr/local/go/bin:$PATH"
+    # Linuxbrew (if installed)
+    [[ -d /home/linuxbrew/.linuxbrew ]] && export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+  fi
   export GOPATH="$HOME/go"
   export PATH="$PATH:$GOPATH/bin"
   export PATH_SET=1
@@ -9,18 +18,23 @@ fi
 export UV_VENV_CTEAR=1
 
 # fpath setup (before compinit)
-fpath+=("$(brew --prefix)/share/zsh/site-functions")
+if (( IS_MAC )); then
+  fpath+=("$(brew --prefix)/share/zsh/site-functions")
+fi
 _uv_comp_dir="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/completions"
 mkdir -p "$_uv_comp_dir"
 [[ ! -f "$_uv_comp_dir/_uv" ]] && uv generate-shell-completion zsh > "$_uv_comp_dir/_uv" 2>/dev/null
 [[ ! -f "$_uv_comp_dir/_uvx" ]] && uvx --generate-shell-completion zsh > "$_uv_comp_dir/_uvx" 2>/dev/null
 fpath=("$_uv_comp_dir" $fpath)
 
-# homebrew
 autoload -Uz compinit && compinit
-export HOMEBREW_NO_ENV_HINTS=1
-export HOMEBREW_NO_AUTO_UPDATE=1
-export HOMEBREW_NO_INSTALL_CLEANUP=1
+
+# Homebrew (macOS only)
+if (( IS_MAC )); then
+  export HOMEBREW_NO_ENV_HINTS=1
+  export HOMEBREW_NO_AUTO_UPDATE=1
+  export HOMEBREW_NO_INSTALL_CLEANUP=1
+fi
 
 # Oh My Zsh
 plugins=(
@@ -30,7 +44,6 @@ plugins=(
   zsh-completions
 )
 source $ZSH/oh-my-zsh.sh
-
 
 # fzf
 [ -f "$HOME/.fzf.zsh" ] && source <(fzf --zsh)
