@@ -17,29 +17,34 @@ This is a cross-platform dotfiles repository managed by **dotter** (a dotfile sy
 
 ``` text
 .dotfiles/
-├── _osx/           # macOS-specific configs (zsh, bash scripts, borders)
-├── _windows/       # Windows-specific configs (AHK, komorebi)
-├── aerospace/      # AeroSpace window manager (macOS)
-├── bottom/         # System monitor config
-├── cargo/          # Rust/Cargo configuration
-├── claude/         # Claude Code settings
-├── code-tools/     # Linters/formatters (ruff, lua)
-├── fastfetch/      # System info tool
-├── ghostty/        # Terminal emulator config
-├── mise/           # Runtime version manager
-├── night-tab/      # Browser new tab page backup
-├── nushell/        # Nushell config (Windows-focused)
-├── nvim/           # Neovim configuration (lazy.nvim)
-├── scripts/        # Helper scripts (bash, python)
-├── sketchybar/     # macOS status bar (laptop/desktop variants)
-├── starship/       # Shell prompt
-├── television/     # Fuzzy finder
-├── wezterm/        # Terminal emulator (Windows-focused)
-├── yazi/           # File manager
-├── .dotter/        # Dotter configuration
-├── Makefile.toml   # Cargo-make automation
-├── TODO.md         # Active todo list
-└── README.md       # User-facing documentation
+├── unix/               # ALL macOS-specific configs
+│   ├── aerospace/      # AeroSpace window manager
+│   ├── bash/           # Bash config
+│   ├── borders/        # Window border visual effects
+│   ├── bottom/         # System monitor config
+│   ├── ghostty/        # Primary terminal emulator
+│   ├── sketchybar/     # macOS status bar
+│   ├── zellij/         # Terminal multiplexer
+│   └── zsh/            # Zsh config (active shell)
+├── windows/            # ALL Windows-specific configs
+│   ├── ahk/            # AutoHotkey scripts
+│   ├── komorebi/       # Tiling window manager
+│   ├── nushell/        # Nushell config
+│   ├── wezterm/        # Terminal emulator
+│   └── whkdrc/         # Hotkey daemon config
+├── shared/             # Cross-platform (dotter-managed)
+│   ├── cargo/          # Rust/Cargo configuration
+│   ├── fastfetch/      # System info tool
+│   ├── linters/        # ruff.toml, stylua.toml
+│   ├── mise/           # Runtime version manager
+│   ├── nvim/           # Neovim configuration (lazy.nvim)
+│   └── starship/       # Shell prompt
+├── night-tab/          # Browser new tab page backup (not dotter-managed)
+├── scripts/            # Helper scripts (not dotter-managed)
+├── Brewfile            # Homebrew packages (not dotter-managed)
+├── .dotter/            # Dotter configuration
+├── Makefile.toml       # Cargo-make automation
+└── README.md           # User-facing documentation
 ```
 
 ## Key Files
@@ -52,26 +57,26 @@ This is a cross-platform dotfiles repository managed by **dotter** (a dotfile sy
 
 ### Shell Configuration (macOS Active)
 
-- **[_osx/zsh/.zshrc](_osx/zsh/.zshrc)**: Main zsh config (sources aliases/functions, configures fzf, oh-my-zsh)
-- **[_osx/zsh/aliases.zsh](_osx/zsh/aliases.zsh)**: Shell aliases (eza for ls, git shortcuts, Azure/Databricks)
-- **[_osx/zsh/functions.zsh](_osx/zsh/functions.zsh)**: Custom functions (rld, update, az-func-info)
+- **[unix/zsh/.zshrc](unix/zsh/.zshrc)**: Main zsh config (sources aliases/functions, configures fzf, oh-my-zsh)
+- **[unix/zsh/aliases.zsh](unix/zsh/aliases.zsh)**: Shell aliases (eza for ls, git shortcuts, Azure/Databricks)
+- **[unix/zsh/functions.zsh](unix/zsh/functions.zsh)**: Custom functions (rld, update, az-func-info)
 
 ### Window Management (macOS)
 
-- **[aerospace/aerospace.toml](aerospace/aerospace.toml)**: AeroSpace tiling WM config with workspace rules
-- **[_osx/borders/bordersrc](_osx/borders/bordersrc)**: Window border visual effects
-- **[sketchybar/](sketchybar/)**: Status bar (has laptop/desktop variants)
+- **[unix/aerospace/aerospace.toml](unix/aerospace/aerospace.toml)**: AeroSpace tiling WM config with workspace rules
+- **[unix/borders/bordersrc](unix/borders/bordersrc)**: Window border visual effects
+- **[unix/sketchybar/](unix/sketchybar/)**: Status bar
 
 ### Terminal & Prompt
 
-- **[ghostty/config](ghostty/config)**: Primary terminal (Catppuccin Mocha, quick-terminal with cmd+`)
+- **[unix/ghostty/config](unix/ghostty/config)**: Primary terminal (Catppuccin Mocha, quick-terminal with cmd+`)
 - **[starship/starship.toml](starship/starship.toml)**: Shell prompt configuration
 
 ### Development Tools
 
-- **[nvim/](nvim/)**: Neovim with lazy.nvim plugin manager
-- **[mise/config.toml](mise/config.toml)**: Manages Python/Go/Lua versions
-- **[code-tools/ruff/ruff.toml](code-tools/ruff/ruff.toml)**: Python linting/formatting
+- **[shared/nvim/](shared/nvim/)**: Neovim with lazy.nvim plugin manager
+- **[shared/mise/config.toml](shared/mise/config.toml)**: Manages Python/Go/Lua versions
+- **[shared/linters/ruff.toml](shared/linters/ruff.toml)**: Python linting/formatting
 
 ## Platform-Specific Details
 
@@ -132,7 +137,7 @@ cargo make check-outdated
 Or use the zsh function:
 
 ```bash
-update  # Defined in _osx/zsh/functions.zsh
+update  # Defined in unix/zsh/functions.zsh
 ```
 
 ### Dotfile Deployment
@@ -148,14 +153,14 @@ Dotter reads `.dotter/global.toml` to determine platform and target paths.
 ### Shell Reload
 
 ```bash
-rld  # Defined in _osx/zsh/functions.zsh, runs: exec zsh
+rld  # Defined in unix/zsh/functions.zsh, runs: exec zsh
 ```
 
 ## Development Environment
 
 ### Languages Managed by Mise
 
-Per [mise/config.toml](mise/config.toml):
+Per [shared/mise/config.toml](shared/mise/config.toml):
 
 - Python: latest
 - Go: latest
@@ -173,7 +178,7 @@ Per [mise/config.toml](mise/config.toml):
 **Git**: lazygit, fzf git checkout function
 **System**: bottom, fastfetch
 **Python**: ruff (linting/formatting)
-**Rust**: cargo with custom config in cargo/config.toml
+**Rust**: cargo with custom config in shared/cargo/config.toml
 
 ## User Preferences & Patterns
 
@@ -185,7 +190,7 @@ Per [mise/config.toml](mise/config.toml):
 
 ### Directory Shortcuts
 
-Common aliases in [_osx/zsh/aliases.zsh](_osx/zsh/aliases.zsh):
+Common aliases in [unix/zsh/aliases.zsh](unix/zsh/aliases.zsh):
 
 - `home` → `~`
 - `dotfiles` → `~/.dotfiles`
@@ -225,7 +230,7 @@ Per git status:
 - `.dotter/global.toml`
 - `.gitignore`
 - `TODO.md`
-- `_osx/zsh/` configs
+- `unix/zsh/` configs
 - `cargo/config.toml`
 - `code-tools/ruff/ruff.toml`
 - `ghostty/config`
@@ -233,7 +238,7 @@ Per git status:
 
 ### Untracked Additions
 
-- `_osx/borders/`
+- `unix/borders/`
 - `aerospace/`
 - `bottom/`
 - `claude/`
@@ -242,7 +247,7 @@ Per git status:
 
 ### Deleted (Migration from _unix)
 
-Old `_unix/zsh/` configs were removed in favor of `_osx/` specificity.
+Old `_unix/zsh/` configs were removed in favor of `unix/` specificity.
 
 ## AI Assistant Guidelines
 
@@ -258,14 +263,14 @@ Old `_unix/zsh/` configs were removed in favor of `_osx/` specificity.
 
 **Adding a new tool config**:
 
-1. Create directory in repo root (e.g., `newtool/`)
-2. Add entry to `.dotter/global.toml` under appropriate platform
+1. Create directory under `unix/`, `windows/`, or `shared/` as appropriate
+2. Add entry to `.dotter/global.toml` under `[mac.files]`, `[windows.files]`, or `[common.files]`
 3. Add installation to `Makefile.toml` under relevant `install-*-tools` task
 4. Run `cargo make dotfiles` to symlink
 
 **Modifying zsh config**:
 
-- Edit source: `_osx/zsh/{.zshrc,aliases.zsh,functions.zsh}`
+- Edit source: `unix/zsh/{.zshrc,aliases.zsh,functions/}`
 - Symlinked to: `~/.config/zsh/`
 - Test with: `rld` (reload shell)
 
@@ -308,7 +313,7 @@ Ensure PATH includes:
 - `~/.cargo/bin` (Rust tools)
 - `~/.local/bin` (Local installs)
 
-Check [_osx/zsh/.zshrc](_osx/zsh/.zshrc) for PATH configuration.
+Check [unix/zsh/.zshrc](unix/zsh/.zshrc) for PATH configuration.
 
 ### Cargo-Make Task Fails
 

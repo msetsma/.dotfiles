@@ -1,0 +1,33 @@
+DUMP_FILE="/tmp/zellij_dump.txt"
+
+# Dump the current pane
+zellij action dump-screen "$DUMP_FILE"
+
+# Find all line numbers containing the prompt arrow
+PROMPT_LINES=($(grep -n "➜" "$DUMP_FILE" | cut -d: -f1))
+
+# We need at least 2 prompts to have output between them
+if [[ ${#PROMPT_LINES[@]} -lt 2 ]]; then
+  echo "✗ Not enough output to capture"
+  exit 1
+fi
+
+# Second to last prompt = command we ran
+# Last prompt = current prompt
+START=${PROMPT_LINES[-2]}
+END=${PROMPT_LINES[-1]}
+
+# Get the command that was run (the line with the arrow)
+COMMAND=$(sed -n "${START}p" "$DUMP_FILE" | sed 's/.*➜ //')
+
+# Extract lines between the two prompts (the output only, no trailing prompt line)
+OUTPUT=$(sed -n "$((START + 1)),$((END - 1))p" "$DUMP_FILE" \
+  | grep -v "^\s*$" \
+  | grep -v "\.\.\.\." \
+  | sed 's/^[[:space:]]*//' \
+  | sed 's/[[:space:]]*$//')
+
+# Format and copy to clipboard
+printf "$ %s\n\n%s" "$COMMAND" "$OUTPUT" | pbcopy
+
+echo "✓ Copied to clipboard"

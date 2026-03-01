@@ -1,0 +1,137 @@
+#!/bin/bash
+
+# SketchyBar config - bar on main monitor only
+# Secondary monitor workspaces shown first, then divider, then main
+
+PLUGIN_DIR="$CONFIG_DIR/plugins"
+ITEM_DIR="$CONFIG_DIR/items"
+
+##### Bar Appearance #####
+sketchybar --bar position=top height=30 blur_radius=30 color=0x40000000 display=main
+
+##### Changing Defaults #####
+default=(
+  padding_left=3
+  padding_right=3
+  icon.font="Hack Nerd Font:Bold:12.0"
+  label.font="SF Pro:Semibold:12.0"
+  icon.color=0xffffffff
+  label.color=0xffffffff
+  icon.padding_left=3
+  icon.padding_right=3
+  label.padding_left=3
+  label.padding_right=3
+  updates=on
+)
+sketchybar --default "${default[@]}"
+
+##### Adding aerospace layouts #####
+
+# Add the aerospace_workspace_change event
+sketchybar --add event aerospace_workspace_change
+
+# Secondary monitor workspaces first (dimmer)
+for sid in $(aerospace list-workspaces --monitor 2 | sort -n); do
+  sketchybar --add item space.$sid left \
+    --subscribe space.$sid aerospace_workspace_change \
+    --set space.$sid \
+      drawing=on \
+      background.color=0x22ffffff \
+      background.corner_radius=4 \
+      background.drawing=on \
+      background.border_color=0x66FFFFFF \
+      background.border_width=0 \
+      background.height=18 \
+      icon="$sid" \
+      icon.font="Hack Nerd Font:Bold:11.0" \
+      icon.color=0x99ffffff \
+      icon.padding_left=6 \
+      icon.shadow.distance=3 \
+      icon.shadow.color=0xA0000000 \
+      label.font="sketchybar-app-font:Regular:11.0" \
+      label.color=0x99ffffff \
+      label.padding_right=12 \
+      label.padding_left=0 \
+      label.y_offset=-1 \
+      label.shadow.drawing=off \
+      label.shadow.color=0xA0000000 \
+      label.shadow.distance=3 \
+      click_script="aerospace workspace $sid 2>/dev/null" \
+      script="$CONFIG_DIR/plugins/aerospace.sh $sid"
+done
+
+# Divider between secondary and main workspaces
+sketchybar --add item divider left \
+  --set divider \
+    icon="│" \
+    icon.font="Hack Nerd Font:Bold:14.0" \
+    icon.color=0x44ffffff \
+    icon.padding_left=6 \
+    icon.padding_right=6 \
+    label.drawing=off \
+    background.drawing=off
+
+# Main monitor workspaces (brighter)
+for sid in $(aerospace list-workspaces --monitor 1 | sort -n); do
+  sketchybar --add item space.$sid left \
+    --subscribe space.$sid aerospace_workspace_change \
+    --set space.$sid \
+      drawing=on \
+      background.color=0x44ffffff \
+      background.corner_radius=4 \
+      background.drawing=on \
+      background.border_color=0xAAFFFFFF \
+      background.border_width=0 \
+      background.height=18 \
+      icon="$sid" \
+      icon.font="Hack Nerd Font:Bold:11.0" \
+      icon.padding_left=6 \
+      icon.shadow.distance=3 \
+      icon.shadow.color=0xA0000000 \
+      label.font="sketchybar-app-font:Regular:11.0" \
+      label.padding_right=12 \
+      label.padding_left=0 \
+      label.y_offset=-1 \
+      label.shadow.drawing=off \
+      label.shadow.color=0xA0000000 \
+      label.shadow.distance=3 \
+      click_script="aerospace workspace $sid 2>/dev/null" \
+      script="$CONFIG_DIR/plugins/aerospace.sh $sid"
+done
+
+# Load Icons on startup for all monitors
+for monitor in $(aerospace list-monitors | awk -F'|' '{print $1}' | tr -d ' '); do
+  for sid in $(aerospace list-workspaces --monitor "$monitor" --empty no | sort -n); do
+    apps=$(aerospace list-windows --workspace "$sid" | awk -F'|' '{gsub(/^ +| +$/, "", $2); print $2}')
+
+    sketchybar --set space.$sid drawing=on
+
+    icon_strip=" "
+    if [ "${apps}" != "" ]; then
+      while read -r app; do
+        icon_strip+=" $($CONFIG_DIR/plugins/icon_map_fn.sh "$app")"
+      done <<<"${apps}"
+    else
+      icon_strip=""
+    fi
+    sketchybar --set space.$sid label="$icon_strip"
+  done
+done
+
+##### Adding Right Items #####
+sketchybar --add item clock right \
+  --set clock update_freq=10 script="$PLUGIN_DIR/clock.sh" \
+  --add item volume right \
+  --set volume script="$PLUGIN_DIR/volume.sh" \
+  --subscribe volume volume_change \
+  --add item battery right \
+  --set battery update_freq=120 script="$PLUGIN_DIR/battery.sh" \
+  --subscribe battery system_woke power_source_change \
+  --add item swap e \
+    icon="" \
+    label.font="Hack Nerd Font:Italic:10.0" \
+    icon.color=0x44FFFFFF \
+    label.color=0x44FFFFFF
+
+##### Force all scripts to run the first time (never do this in a script) #####
+sketchybar --update

@@ -1,0 +1,27 @@
+# witr-fzf
+# Browse running processes sorted by memory usage using fzf.
+# Live preview shows witr output for the highlighted process.
+# Select a process to run a full witr inspection on it.
+# Deps: fzf, witr (brew install fzf witr)
+local selected
+selected=$(ps aux -m \
+| awk 'NR>1 {
+    cmd=$11; n=split(cmd,a,"/"); name=a[n]
+    # Normalize Microsoft/Apple vendor prefixes
+    if (name ~ /^[Mm]icrosoft|^MSTeams|^com\.microsoft/) name="Microsoft"
+    if (name ~ /^com\.apple\./) name=substr(name,11)
+    # Track lowest PID per group (oldest = most likely parent)
+    if (!(name in pid) || $2 < pid[name]) pid[name]=$2
+    mem[name]+=$4; cpu[name]+=$3; count[name]++
+    }
+    END {
+    for (name in mem)
+        printf "%-10s %-6.1f %-6.1f %-4d %s\n", pid[name], cpu[name], mem[name], count[name], name
+    }' \
+| sort -k3 -rn \
+| fzf --header="PID        CPU%   MEM%   CNT  NAME" \
+        --preview='witr --pid {1}' \
+        --preview-window=right:60% \
+| awk '{print $1}')
+
+[[ -n "$selected" ]] && witr --pid "$selected"

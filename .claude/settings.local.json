@@ -4,7 +4,12 @@
       "Bash(cargo make:*)",
       "Bash(python3 -m pytest:*)",
       "Bash(./venv/bin/python -m pytest:*)",
-      "Bash(make test:*)"
+      "Bash(make test:*)",
+      "Bash(git:*)",
+      "Bash(ls:*)",
+      "Bash(echo === $\\(basename \"$dir\"\\) ===:*)",
+      "Bash(dotter:*)",
+      "Bash(head:*)"
     ],
     "deny": [],
     "ask": []

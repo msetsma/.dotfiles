@@ -74,12 +74,6 @@ mac_alias = "mac-tools"
 
 [tasks.windows-tools]
 script = [
-#    "echo --- Scoop Setup ---",
-#    "echo Adding Scoop buckets...",
-#    "scoop bucket add extras || true",
-#    "scoop bucket add nerd-fonts || true",
-#    "scoop bucket add versions || true",
-
     "echo --- Installing Tools ---",
     "scoop install lazygit neovim yazi wezterm-nightly fzf ripgrep bat",
 
@@ -111,26 +105,21 @@ script = [
 
 [tasks.mac-tools]
 script = [
-    "echo '--- Installing Tools ---'",
-    "brew install yazi lazygit bat fzf ripgrep fd fastfetch cmake openssl nvim",
-    "brew install --cask nikitabobko/tap/aerospace",
+    "echo '--- Installing via Brewfile ---'",
+    "brew bundle --file=~/.dotfiles/Brewfile",
+
+    "echo '--- Installing Oh My Zsh ---'",
     'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"',
 
-    "echo '--- Installing Languages ---'",
-    "brew install lua lua51 luarocks go python node",
-
-    "echo '--- Managing Fonts ---'",
-    "brew tap homebrew/cask-fonts",
-    "brew install --cask font-fira-code",
+    "echo '--- Installing Oh My Zsh Plugins ---'",
+    "git clone https://github.com/Aloxaf/fzf-tab ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-tab 2>/dev/null || true",
+    "git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions 2>/dev/null || true",
+    "git clone https://github.com/zsh-users/zsh-syntax-highlighting ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting 2>/dev/null || true",
+    "git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-completions 2>/dev/null || true",
 
     "echo '--- Installing Python Package Manager ---'",
     "python3 -m pip install --user pipx",
     "python3 -m pipx ensurepath",
-
-    "echo '--- Installing Brewfile (if exists) ---'",
-    "if [ -f ~/.dotfiles/Brewfile ]; then",
-    "  brew bundle --file=~/.dotfiles/Brewfile || echo 'Some Brewfile packages may have failed'",
-    "fi",
 
     "echo '--- Installing pipx packages (if exists) ---'",
     "if [ -f ~/.dotfiles/pipx-requirements.txt ]; then",

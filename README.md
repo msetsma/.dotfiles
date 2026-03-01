@@ -8,8 +8,8 @@ Feel free to take what you want, but I would advice against blindly installing w
 
 ## **Requirements**
 
-1. **Cross-Platform Compatibility**  
-   Tools must work seamlessly on Windows, macOS, and Linux for a consistent experience.
+1. **Cross-Platform Compatibility**
+   Tools must work seamlessly on Windows and macOS for a consistent experience.
 
 2. **Performance-First Approach**  
    Preference for modern, high-performance tools (e.g., Rust-based tools like `uutils`) that replace core utilities across major platforms.
@@ -179,8 +179,14 @@ cargo make info          # Show all available commands
 
 ### **macOS-Specific Tools**
 
-- [Karabiner-Elements](https://github.com/pqrs-org/Karabiner-Elements)
-- [skhd](https://github.com/koekeishiya/skhd)
+Most macOS tools are installed via the `Brewfile` using `brew bundle`. Prerequisites:
+
+- [Ghostty](https://ghostty.org/) — primary terminal emulator
+- [AeroSpace](https://github.com/nikitabobko/AeroSpace) — tiling window manager
+- [borders](https://github.com/FelixKratz/JankyBorders) — window border visual effects
+- [sketchybar](https://github.com/FelixKratz/SketchyBar) — status bar
+- [Zellij](https://github.com/zellij-org/zellij) — terminal multiplexer
+- [Oh My Zsh](https://github.com/ohmyzsh/ohmyzsh) — zsh framework (installed by `cargo make init`)
 
 ### **Windows-Specific Tools**
 

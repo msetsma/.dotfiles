@@ -1,0 +1,46 @@
+# cmd-preview — fuzzy search most used commands with smart previews
+# usage: cmd-preview [count]
+#   count: number of top commands to show (default: 75)
+
+local count="${1:-75}"
+local preview='
+  cmd={2}
+  alias_def=$(alias "$cmd" 2>/dev/null)
+  if [[ -n "$alias_def" ]]; then
+    printf "[alias]\n"
+    printf "%.0s-" {1..40}; echo
+    echo "$alias_def"
+    exit 0
+  fi
+  if [[ $(whence -w "$cmd" 2>/dev/null) == *"function"* ]]; then
+    printf "[function]\n"
+    printf "%.0s-" {1..40}; echo
+    whence -f "$cmd" 2>/dev/null
+    exit 0
+  fi
+  if command -v "$cmd" > /dev/null 2>&1; then
+    printf "[command] %s\n" "$(which "$cmd")"
+    printf "%.0s-" {1..40}; echo
+    tldr "$cmd" 2>/dev/null || echo "no tldr page found -- try: tldr --update"
+    exit 0
+  fi
+  echo "unknown or no longer installed"
+'
+
+LC_ALL=C bat "$HISTFILE" \
+  | sed 's/^: [0-9]*:[0-9]*;//' \
+  | awk '{print $1}' \
+  | sort \
+  | uniq -c \
+  | sort -rn \
+  | head -n "$count" \
+  | fzf \
+    --header "commands -- sorted by usage" \
+    --preview "$preview" \
+    --preview-window "right:60%:wrap" \
+    --bind "enter:become(echo {2})" \
+    --bind "ctrl-y:execute-silent(echo -n {2} | pbcopy)+abort" \
+    --height "80%" \
+    --border rounded \
+    --prompt "> " \
+    --pointer ">"
