@@ -1,12 +1,9 @@
 local wezterm = require('wezterm')
-local action = wezterm.action
 local nerdfonts = wezterm.nerdfonts
-local mux = wezterm.mux
 local colors = wezterm.GLOBAL.color_table
 local F = {}
 
 function F.is_vim(pane)
-    -- this is set by the plugin, and unset on ExitPre in Neovim
     return pane:get_user_vars().IS_NVIM == 'true'
 end
 
@@ -18,14 +15,6 @@ function F.detect_os()
         return 'macos'
     end
     return 'linux'
-end
-
-function F.get_os_mod()
-    local os = F.detect_os()
-    if os == 'macos' then
-        return 'OPT'
-    end
-    return 'ALT'
 end
 
 function F.get_os_font_size()
@@ -41,16 +30,9 @@ end
 function F.get_default_program()
     local os = F.detect_os()
     if os == 'windows' then
-        return 'nu'
+        return { 'wsl.exe', '--cd', '~' }
     end
-    return 'zsh'
-end
-
-function F.path(...)
-    local is_windows = wezterm.target_triple:find('windows') ~= nil
-    local separator = is_windows and '\\' or '/'
-    local parts = { ... }
-    return table.concat(parts, separator)
+    return { 'zsh' }
 end
 
 function F.normalize_path(path)
@@ -59,20 +41,6 @@ function F.normalize_path(path)
         n_path = n_path:sub(2)
     end
     return n_path
-end
-
-function F.file_exists(name)
-    local file = io.open(name, 'r')
-    if file ~= nil then
-        io.close(file)
-        return true
-    else
-        return false
-    end
-end
-
-function F.basename(string)
-    return string.gsub(string, '(.*[/\\])(.*)', '%2')
 end
 
 function F.get_tab_title(tab, tabs)
@@ -87,23 +55,19 @@ function F.get_tab_title(tab, tabs)
 
     if tab.is_active then
         return {
-            -- left circle
             { Background = { Color = colors.ansi[1] } },
             { Foreground = { Color = colors.ansi[2] } },
             { Attribute = { Intensity = 'Bold' } },
             { Text = ' ' .. tab_number .. ' ' },
-            -- ending for very last tab
             { Foreground = { Color = colors.ansi[1] } },
             { Background = { Color = colors.background } },
             { Text = optional_end },
         }
     else
         return {
-            -- tab text
             { Background = { Color = colors.ansi[1] } },
             { Foreground = { Color = colors.foreground } },
             { Text = ' ' .. tab_number .. ' ' },
-            -- ending for very last tab
             { Foreground = { Color = colors.ansi[1] } },
             { Background = { Color = colors.background } },
             { Text = optional_end },
@@ -112,19 +76,9 @@ function F.get_tab_title(tab, tabs)
 end
 
 function F.set_tab_bar_status(window, pane, custom)
-    local stat = window:active_workspace()
-    local workspace_color = colors.ansi[3]
     local time = wezterm.strftime('%H:%M %m/%d')
 
-    if window:active_key_table() then
-        stat = window:active_key_table()
-        workspace_color = colors.ansi[4]
-    elseif window:leader_is_active() then
-        stat = 'leader'
-        workspace_color = colors.ansi[2]
-    end
-
-    -- Current worki{ng directory
+    -- Current working directory
     local cwd = pane:get_current_working_dir()
     if cwd then
         if type(cwd) == 'userdata' and cwd.path then
@@ -146,28 +100,11 @@ function F.set_tab_bar_status(window, pane, custom)
         cwd = ''
     end
 
-    -- Left status (left of the tab line)
+    -- Left status
     window:set_left_status(wezterm.format({
-        -- workspace/mux
-        { Background = { Color = colors.background } },
-        { Text = ' ' },
-        { Background = { Color = colors.background } },
-        { Foreground = { Color = workspace_color } },
-        { Text = nerdfonts.ple_left_half_circle_thick },
-        { Background = { Color = workspace_color } },
-        { Foreground = { Color = colors.ansi[1] } },
-        { Text = nerdfonts.cod_terminal_tmux .. ' ' },
-        { Background = { Color = colors.ansi[1] } },
-        { Foreground = { Color = colors.foreground } },
-        { Text = ' ' .. stat },
-        { Background = { Color = colors.background } },
-        { Foreground = { Color = colors.ansi[1] } },
-        { Text = nerdfonts.ple_right_half_circle_thick .. ' ' },
-        -- start of tabs
         { Background = { Color = colors.background } },
         { Foreground = { Color = colors.ansi[8] } },
-        { Text = nerdfonts.ple_left_half_circle_thick },
-        -- tab icon
+        { Text = ' ' .. nerdfonts.ple_left_half_circle_thick },
         { Foreground = { Color = colors.background } },
         { Background = { Color = colors.ansi[8] } },
         { Text = nerdfonts.oct_terminal .. ' ' },
@@ -274,114 +211,11 @@ function F.increase_opacity(window, config)
         overrides.window_background_opacity = config.window_background_opacity
     end
 
-    if overrides.window_background_opacity > 0 and overrides.window_background_opacity <= 1 then
-        overrides.text_background_opacity = overrides.text_background_opacity - 0.05
-        overrides.window_background_opacity = overrides.window_background_opacity - 0.05
+    if overrides.window_background_opacity >= 0 and overrides.window_background_opacity < 1 then
+        overrides.text_background_opacity = overrides.text_background_opacity + 0.05
+        overrides.window_background_opacity = overrides.window_background_opacity + 0.05
         window:set_config_overrides(overrides)
     end
-end
-
--- set up the default workspaces
-function F.init_default_workspaces(workspaces)
-    for _, space in pairs(workspaces.repositories) do
-        mux.spawn_window({ workspace = space.name, cwd = space.path })
-    end
-    mux.set_active_workspace(workspaces.default)
-end
-
--- Function to create a new workspace
-function F.create_workspace(window, pane)
-    window:perform_action(
-        action.PromptInputLine({
-            description = wezterm.format({
-                { Attribute = { Intensity = 'Bold' } },
-                { Foreground = { AnsiColor = 'Fuchsia' } },
-                { Text = 'Enter name for new workspace' },
-            }),
-            action = function(user_window, user_pane, line)
-                if line and #line > 0 then
-                    user_window:perform_action(action.SwitchToWorkspace({ name = line }), user_pane)
-                else
-                    user_window:toast_notification(
-                        'Workspace Creation Cancelled',
-                        'No workspace name provided.',
-                        nil,
-                        3000
-                    )
-                end
-            end,
-        }),
-        pane
-    )
-end
-
--- Function to close the current workspace with confirmation
-function F.close_workspace(window, pane)
-    window:perform_action(
-        wezterm.action.PromptInputLine({
-            description = 'Are you sure you want to close this workspace? (yes/no)',
-            action = wezterm.action_callback(function(window, _, line)
-                if line and line:lower() == 'yes' then
-                    local mux_window = window:mux_window()
-                    if mux_window then
-                        for _, tab in ipairs(mux_window:tabs()) do
-                            mux_window:kill_tab(tab)
-                        end
-                    end
-                else
-                    window:toast_notification('Workspace Close Cancelled', 'No tabs were closed.', nil, 3000)
-                end
-            end),
-        }),
-        pane
-    )
-end
-
-function F.rename_workspace()
-    return action.PromptInputLine({
-        description = wezterm.format({
-            { Attribute = { Intensity = 'Bold' } },
-            { Foreground = { Color = colors.ansi[2] } },
-            { Text = 'Enter a new name for the workspace' },
-        }),
-        action = wezterm.action_callback(function(_, _, line)
-            if line then
-                mux.rename_workspace(mux.get_active_workspace(), line)
-            end
-        end),
-    })
-end
-
-function F.new_workspace()
-    return action.PromptInputLine({
-        description = wezterm.format({
-            { Attribute = { Intensity = 'Bold' } },
-            { Foreground = { Color = colors.ansi[2] } },
-            { Text = 'Enter name for the new workspace' },
-        }),
-        action = wezterm.action_callback(function(window, pane, line)
-            if line then
-                window:perform_action(action.SwitchToWorkspace({ name = line }), pane)
-            end
-        end),
-    })
-end
-
--- TODO: needs work
-function F.show_workspace_launcher_action()
-    return wezterm.action_callback(function(window, _)
-        local workspaces = mux.get_workspace_names()
-        local items = {}
-        for _, name in ipairs(workspaces) do
-            table.insert(items, {
-                label = name,
-                action = wezterm.action_callback(function()
-                    mux.set_active_workspace(name)
-                end),
-            })
-        end
-        window:show_launcher_menu(items)
-    end)
 end
 
 return F

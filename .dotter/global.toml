@@ -14,6 +14,7 @@
 "windows/komorebi" = "~/.config/komorebi"
 "windows/nushell" = "~/.config/nushell"
 "windows/wezterm" = "~/.config/wezterm"
+"windows/wsl/.wslconfig" = "~/.wslconfig"
 
 [mac.files]
 "common/bottom" = "~/Library/Application Support/bottom"
