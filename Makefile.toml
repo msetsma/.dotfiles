@@ -29,6 +29,7 @@ dependencies = [
     "install-tools",      # Install platform-specific tools
     "install-coreutils",  # Install platform-specific coreutils
     "install-rust-tools", # Install additional Rust tools
+    "install-mise",       # Install mise runtime manager
     "dotfiles",           # Symlink dotfiles
 ]
 
@@ -41,13 +42,28 @@ script = [
 
 [tasks.install-rust-tools]
 script = [
-    "cargo install mise",
     "cargo install dotter",
     "cargo install cargo-update",
     "cargo install vivid",
     "cargo install eza",
     "cargo install bottom",
     "cargo install bat",
+]
+
+[tasks.install-mise]
+description = "Install mise runtime manager"
+windows_alias = "install-mise-cargo"
+mac_alias = "install-mise-cargo"
+linux_alias = "install-mise-apt"
+
+[tasks.install-mise-cargo]
+script = ["cargo install mise"]
+
+[tasks.install-mise-apt]
+condition = { platforms = ["linux"] }
+script = [
+    "echo '--- Installing mise via install script ---'",
+    "curl https://mise.jdx.dev/install.sh | sh",
 ]
 
 # Platform-Specific Coreutils Installation
@@ -145,7 +161,7 @@ condition = { platforms = ["linux"] }
 script = [
     "echo '--- Installing WSL2/Linux tools via apt ---'",
     "sudo apt update",
-    "sudo apt install -y zsh fzf ripgrep fd-find bat neovim cmake curl git",
+    "sudo apt install -y zsh fzf ripgrep fd-find bat neovim cmake curl git build-essential pkg-config libssl-dev",
 
     "echo '--- Installing Oh My Zsh ---'",
     'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended 2>/dev/null || true',
