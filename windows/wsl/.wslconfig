@@ -1,7 +1,6 @@
 [wsl2]
 networkingMode=mirrored
-autoMemoryReclaim=gradual
-sparseVhd=true
 
 [experimental]
 autoMemoryReclaim=gradual
+sparseVhd=true

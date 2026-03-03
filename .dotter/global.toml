@@ -24,3 +24,4 @@
 
 [linux.files]
 "common/bottom" = "~/.config/bottom"
+"windows/wsl/.hushlogin" = "~/.hushlogin"

@@ -21,15 +21,31 @@ wezterm.GLOBAL.color_table = color_table
 config.colors = {
     compose_cursor = color_table.ansi[2],
     cursor_bg = color_table.indexed[16] or color_table.ansi[2],
-    tab_bar = { background = color_table.background },
+    tab_bar = {
+        background = color_table.background,
+        active_tab = { bg_color = color_table.background, fg_color = color_table.foreground },
+        inactive_tab = { bg_color = color_table.background, fg_color = color_table.foreground },
+        inactive_tab_hover = { bg_color = color_table.background, fg_color = color_table.foreground },
+        inactive_tab_edge = color_table.background,
+        new_tab = { bg_color = color_table.ansi[1], fg_color = color_table.foreground },
+        new_tab_hover = { bg_color = color_table.ansi[1], fg_color = color_table.ansi[2], intensity = 'Bold' },
+    },
+}
+config.window_frame = {
+    font = wezterm.font({ family = 'JetBrains Mono', weight = 'Bold' }),
+    font_size = 10.0,
+    active_titlebar_bg = color_table.background,
+    inactive_titlebar_bg = color_table.background,
 }
 
 -- Window
 config.max_fps = 144
 config.adjust_window_size_when_changing_font_size = false
 config.text_background_opacity = 1.0
-config.window_background_opacity = 0.9
+config.window_background_opacity = 0.99
 config.window_decorations = 'INTEGRATED_BUTTONS|RESIZE'
+config.integrated_title_button_alignment = 'Right'
+config.integrated_title_buttons = { 'Hide', 'Maximize', 'Close' }
 config.window_padding = {
     left = 0,
     right = 0,
@@ -38,7 +54,6 @@ config.window_padding = {
 }
 
 -- Font
-config.font = wezterm.font('FiraCode Nerd Font', { weight = 'Medium' })
 config.font_size = F.get_os_font_size()
 
 -- Scrolling
@@ -46,12 +61,14 @@ config.enable_scroll_bar = false
 config.scrollback_lines = 10000
 
 -- Tab bar
+config.enable_tab_bar = true
 config.hide_tab_bar_if_only_one_tab = false
-config.show_new_tab_button_in_tab_bar = false
+config.show_new_tab_button_in_tab_bar = true
 config.show_tab_index_in_tab_bar = true
+config.show_tabs_in_tab_bar = true
+config.show_close_tab_button_in_tabs = false
 config.status_update_interval = 500
-config.tab_max_width = 64
-config.use_fancy_tab_bar = false
+config.use_fancy_tab_bar = true
 
 -- Keys
 config.enable_kitty_keyboard = true

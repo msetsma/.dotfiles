@@ -139,7 +139,7 @@ cargo make info            # Show all available commands
 
 ## Tools
 
-> [!NOTE] Common tools are cross-platform. Installation methods differ by OS.
+> Common tools are cross-platform. Installation methods differ by OS.
 
 ### Common (all platforms)
 

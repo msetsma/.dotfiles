@@ -46,12 +46,6 @@ end
 function F.get_tab_title(tab, tabs)
     local colors = wezterm.GLOBAL.color_table
     local tab_number = tostring(tab.tab_index + 1)
-    local is_last_tab = (tab.tab_index + 1 == #tabs)
-    local optional_end = ''
-
-    if is_last_tab then
-        optional_end = nerdfonts.ple_right_half_circle_thick
-    end
 
     if tab.is_active then
         return {
@@ -59,18 +53,12 @@ function F.get_tab_title(tab, tabs)
             { Foreground = { Color = colors.ansi[2] } },
             { Attribute = { Intensity = 'Bold' } },
             { Text = ' ' .. tab_number .. ' ' },
-            { Foreground = { Color = colors.ansi[1] } },
-            { Background = { Color = colors.background } },
-            { Text = optional_end },
         }
     else
         return {
             { Background = { Color = colors.ansi[1] } },
             { Foreground = { Color = colors.foreground } },
             { Text = ' ' .. tab_number .. ' ' },
-            { Foreground = { Color = colors.ansi[1] } },
-            { Background = { Color = colors.background } },
-            { Text = optional_end },
         }
     end
 end
@@ -99,16 +87,6 @@ function F.set_tab_bar_status(window, pane, custom)
     else
         cwd = ''
     end
-
-    -- Left status
-    window:set_left_status(wezterm.format({
-        { Background = { Color = colors.background } },
-        { Foreground = { Color = colors.ansi[8] } },
-        { Text = ' ' .. nerdfonts.ple_left_half_circle_thick },
-        { Foreground = { Color = colors.background } },
-        { Background = { Color = colors.ansi[8] } },
-        { Text = nerdfonts.oct_terminal .. ' ' },
-    }))
 
     -- Right status
     window:set_right_status(wezterm.format({

@@ -170,8 +170,7 @@ script = [
     "  done < ~/.dotfiles/pipx-requirements.txt",
     "fi",
 
-    "echo '--- Setting default shell to zsh ---'",
-    "chsh -s $(which zsh) 2>/dev/null || echo 'Run: chsh -s $(which zsh) manually'",
+    "echo '--- Default shell set via /etc/wsl.conf ---'",
 
     "echo '--- Deploying wsl.conf ---'",
     "sudo cp /mnt/c/Users/2015m/.dotfiles/windows/wsl/wsl.conf /etc/wsl.conf",
