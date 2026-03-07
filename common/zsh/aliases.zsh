@@ -53,21 +53,8 @@ alias db-prod='_use_databricks prod'
 alias db-qa='_use_databricks qa'
 alias db-dev='_use_databricks dev'
 
-# zellij
-alias z='zellij'
-
 # azure
 alias repo='open $(az repos show --repository $(basename "$PWD") --query webUrl -o tsv)'
 
 # lazy docker
 alias lzd='lazydocker'
-
-# completions for aliases (must run after compinit)
-compdef db=databricks
-compdef z=zellij
-compdef cat=bat
-compdef grep=rg
-compdef find=fd
-compdef ls=eza
-compdef lt=eza lt1=eza lt2=eza lt3=eza lta=eza ltcopy=eza
-compdef az=az

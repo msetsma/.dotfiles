@@ -1,3 +1,6 @@
+# Source env vars (not auto-sourced when ZDOTDIR is set via ~/.zshenv)
+source "$HOME/.config/zsh/.zshenv"
+
 # Source platform detection first
 source "$HOME/.config/zsh/platform.zsh"
 
@@ -15,6 +18,14 @@ if [ -z "$PATH_SET" ]; then
   export PATH_SET=1
 fi
 
+if grep -qi microsoft /proc/version 2>/dev/null; then
+    # WSL
+    export COPY_COMMAND="clip.exe"
+else
+    # Mac
+    export COPY_COMMAND="pbcopy"
+fi
+
 export UV_VENV_CTEAR=1
 
 # fpath setup (before compinit)
@@ -29,7 +40,7 @@ fpath=("$_uv_comp_dir" $fpath)
 
 autoload -Uz compinit && compinit
 
-# Homebrew (macOS only)
+# Homebrew
 if (( IS_MAC )); then
   export HOMEBREW_NO_ENV_HINTS=1
   export HOMEBREW_NO_AUTO_UPDATE=1
@@ -63,22 +74,25 @@ for func_file in $HOME/.config/zsh/functions/*; do
 done
 
 # starship
-eval "$(starship init zsh)"
+(( $+commands[starship] )) && eval "$(starship init zsh)"
 
 # Zellij pane renaming hooks - AFTER starship, BEFORE zellij auto-start
 # so they don't interfere with starship's own prompt hooks
 if [[ -n "$ZELLIJ" ]]; then
-  function preexec() {
-      [[ -n "$ZELLIJ" ]] && zellij action rename-pane "⚙ ${1%% *}"
+  preexec() {
+      zellij action rename-pane "⚙ ${1%% *}"
   }
-  function precmd() {
-      if [[ -n "$ZELLIJ" ]]; then
-          # project root is more stable than pwd basename
-          local name=$(git rev-parse --show-toplevel 2>/dev/null | xargs basename || basename $PWD)
-          zellij action rename-pane "$name"
+  precmd() {
+      local name
+      name=$(git rev-parse --show-toplevel 2>/dev/null)
+      if [[ -n "$name" ]]; then
+          name=$(basename "$name")
+      else
+          name=$(basename "$PWD")
       fi
+      zellij action rename-pane "$name"
   }
 fi
 
 # zellij
-eval "$(zellij setup --generate-auto-start zsh)"
+(( $+commands[zellij] )) && eval "$(zellij setup --generate-auto-start zsh)"

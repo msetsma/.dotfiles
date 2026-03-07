@@ -133,13 +133,14 @@ script = [
     "brew bundle --file=~/.dotfiles/Brewfile",
 
     "echo '--- Installing Oh My Zsh ---'",
+    'export ZSH="$HOME/.config/zsh/ohmyzsh"',
     'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"',
 
     "echo '--- Installing Oh My Zsh Plugins ---'",
-    "git clone https://github.com/Aloxaf/fzf-tab ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-tab 2>/dev/null || true",
-    "git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions 2>/dev/null || true",
-    "git clone https://github.com/zsh-users/zsh-syntax-highlighting ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting 2>/dev/null || true",
-    "git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-completions 2>/dev/null || true",
+    "git clone https://github.com/Aloxaf/fzf-tab $HOME/.config/zsh/ohmyzsh/custom/plugins/fzf-tab 2>/dev/null || true",
+    "git clone https://github.com/zsh-users/zsh-autosuggestions $HOME/.config/zsh/ohmyzsh/custom/plugins/zsh-autosuggestions 2>/dev/null || true",
+    "git clone https://github.com/zsh-users/zsh-syntax-highlighting $HOME/.config/zsh/ohmyzsh/custom/plugins/zsh-syntax-highlighting 2>/dev/null || true",
+    "git clone https://github.com/zsh-users/zsh-completions $HOME/.config/zsh/ohmyzsh/custom/plugins/zsh-completions 2>/dev/null || true",
 
     "echo '--- Installing Python Package Manager ---'",
     "python3 -m pip install --user pipx",
@@ -161,16 +162,24 @@ condition = { platforms = ["linux"] }
 script = [
     "echo '--- Installing WSL2/Linux tools via apt ---'",
     "sudo apt update",
-    "sudo apt install -y zsh fzf ripgrep fd-find bat neovim cmake curl git build-essential pkg-config libssl-dev",
+    "sudo apt install -y zsh fzf ripgrep fd-find bat neovim cmake curl git build-essential pkg-config libssl-dev fastfetch",
 
     "echo '--- Installing Oh My Zsh ---'",
+    'export ZSH="$HOME/.config/zsh/ohmyzsh"',
     'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended 2>/dev/null || true',
 
     "echo '--- Installing Oh My Zsh Plugins ---'",
-    "git clone https://github.com/Aloxaf/fzf-tab ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-tab 2>/dev/null || true",
-    "git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions 2>/dev/null || true",
-    "git clone https://github.com/zsh-users/zsh-syntax-highlighting ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting 2>/dev/null || true",
-    "git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-completions 2>/dev/null || true",
+    "git clone https://github.com/Aloxaf/fzf-tab $HOME/.config/zsh/ohmyzsh/custom/plugins/fzf-tab 2>/dev/null || true",
+    "git clone https://github.com/zsh-users/zsh-autosuggestions $HOME/.config/zsh/ohmyzsh/custom/plugins/zsh-autosuggestions 2>/dev/null || true",
+    "git clone https://github.com/zsh-users/zsh-syntax-highlighting $HOME/.config/zsh/ohmyzsh/custom/plugins/zsh-syntax-highlighting 2>/dev/null || true",
+    "git clone https://github.com/zsh-users/zsh-completions $HOME/.config/zsh/ohmyzsh/custom/plugins/zsh-completions 2>/dev/null || true",
+
+    "echo '--- Installing CLI tools ---'",
+    "curl -sS https://starship.rs/install.sh | sh -s -- -y",
+    "cargo install zellij",
+    "cargo install yazi-fm yazi-cli",
+    "go install github.com/jesseduffield/lazygit@latest",
+    "go install github.com/jesseduffield/lazydocker@latest",
 
     "echo '--- Installing wslu (WSL utilities) ---'",
     "sudo apt install -y wslu 2>/dev/null || true",
@@ -190,6 +199,12 @@ script = [
 
     "echo '--- Deploying wsl.conf ---'",
     "sudo cp /mnt/c/Users/2015m/.dotfiles/windows/wsl/wsl.conf /etc/wsl.conf",
+
+    "echo '--- Setting WSL hostname for dotter ---'",
+    "sudo hostnamectl set-hostname mitch-wsl",
+
+    "echo '--- Creating ZDOTDIR bootstrap ---'",
+    'echo export ZDOTDIR=\$HOME/.config/zsh > ~/.zshenv',
 ]
 
 [tasks.dotfiles]

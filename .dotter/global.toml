@@ -1,3 +1,10 @@
+[common.variables]
+copy_command = "pbcopy"  # default/fallback
+theme            = "tokyo-night"
+theme_ghostty    = "Tokyo Night"
+theme_wezterm    = "Tokyo Night Storm (Gogh)"
+theme_zellij     = "tokyo-night"
+
 [common.files]
 "common/linters" = "~/.config"
 "common/cargo" = "~/.cargo"
@@ -7,20 +14,24 @@
 "common/starship" = "~/.config"
 "common/zsh" = "~/.config/zsh"
 "common/bash" = "~/.config/bash"
-"common/zellij" = "~/.config/zellij"
+"common/zellij/layouts" = "~/.config/zellij/layouts"
+"common/zellij/config.kdl" = { target = "~/.config/zellij/config.kdl", type = "template" }
 
 [windows.files]
 "windows/ahk" = "C:\\Users\\2015m\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup"
 "windows/komorebi" = "~/.config/komorebi"
 "windows/nushell" = "~/.config/nushell"
-"windows/wezterm" = "~/.config/wezterm"
+"windows/wezterm/constants.lua" = "~/.config/wezterm/constants.lua"
+"windows/wezterm/functions.lua" = "~/.config/wezterm/functions.lua"
+"windows/wezterm/keybinds.lua" = "~/.config/wezterm/keybinds.lua"
+"windows/wezterm/wezterm.lua" = { target = "~/.config/wezterm/wezterm.lua", type = "template" }
 "windows/wsl/.wslconfig" = "~/.wslconfig"
 
 [mac.files]
 "common/bottom" = "~/Library/Application Support/bottom"
 "macos/borders" = "~/.config/borders"
 "macos/aerospace" = "~/.config/aerospace"
-"macos/ghostty" = "~/.config/ghostty"
+"macos/ghostty/config" = { target = "~/.config/ghostty/config", type = "template" }
 
 [linux.files]
 "common/bottom" = "~/.config/bottom"

@@ -29,9 +29,6 @@ truncate_to_repo = false
 style = "bold cyan"
 read_only = " 󰌾"
 
-[git_branch]
-symbol = " "
-
 [git_status]
 style = "bold yellow"
 conflicted = "🏳"

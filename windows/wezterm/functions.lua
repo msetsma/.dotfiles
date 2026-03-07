@@ -43,22 +43,32 @@ function F.normalize_path(path)
     return n_path
 end
 
+function F.get_pane_type(pane)
+    local proc = (pane.foreground_process_name or ''):lower()
+    if proc:match('powershell') or proc:match('cmd') then
+        return 'windows'
+    end
+    return 'wsl'
+end
+
 function F.get_tab_title(tab, tabs)
     local colors = wezterm.GLOBAL.color_table
     local tab_number = tostring(tab.tab_index + 1)
+    local pane_type = F.get_pane_type(tab.active_pane)
+    local env_icon = pane_type == 'wsl' and nerdfonts.dev_linux or nerdfonts.md_microsoft_windows
 
     if tab.is_active then
         return {
             { Background = { Color = colors.ansi[1] } },
             { Foreground = { Color = colors.ansi[2] } },
             { Attribute = { Intensity = 'Bold' } },
-            { Text = ' ' .. tab_number .. ' ' },
+            { Text = ' ' .. env_icon .. ' ' .. tab_number .. ' ' },
         }
     else
         return {
             { Background = { Color = colors.ansi[1] } },
             { Foreground = { Color = colors.foreground } },
-            { Text = ' ' .. tab_number .. ' ' },
+            { Text = ' ' .. env_icon .. ' ' .. tab_number .. ' ' },
         }
     end
 end

@@ -1,4 +1,4 @@
-theme = Catppuccin Macchiato
+theme = {{theme_ghostty}}
 window-decoration = true
 font-size = 14
 confirm-close-surface = false

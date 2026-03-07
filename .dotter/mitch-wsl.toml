@@ -1,1 +1,4 @@
 packages = ["common", "linux"]
+
+[variables]
+copy_command = "clip.exe" 
