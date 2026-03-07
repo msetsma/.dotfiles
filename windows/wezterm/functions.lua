@@ -1,6 +1,5 @@
 local wezterm = require('wezterm')
 local nerdfonts = wezterm.nerdfonts
-local colors = wezterm.GLOBAL.color_table
 local F = {}
 
 function F.is_vim(pane)
@@ -35,14 +34,6 @@ function F.get_default_program()
     return { 'zsh' }
 end
 
-function F.normalize_path(path)
-    local n_path = path:gsub('\\', '/')
-    if n_path:match('^/') then
-        n_path = n_path:sub(2)
-    end
-    return n_path
-end
-
 function F.get_pane_type(pane)
     local proc = (pane.foreground_process_name or ''):lower()
     if proc:match('powershell') or proc:match('cmd') then
@@ -71,92 +62,6 @@ function F.get_tab_title(tab, tabs)
             { Text = ' ' .. env_icon .. ' ' .. tab_number .. ' ' },
         }
     end
-end
-
-function F.set_tab_bar_status(window, pane, custom)
-    local time = wezterm.strftime('%H:%M %m/%d')
-
-    -- Current working directory
-    local cwd = pane:get_current_working_dir()
-    if cwd then
-        if type(cwd) == 'userdata' and cwd.path then
-            local path = F.normalize_path(cwd.path)
-            local home_dir = F.normalize_path(wezterm.home_dir)
-
-            if path:sub(1, #home_dir) == home_dir then
-                path = '~' .. path:sub(#home_dir + 1)
-            end
-            if #path > 32 then
-                cwd = '..' .. path:sub(-32)
-            else
-                cwd = path
-            end
-        else
-            cwd = tostring(cwd)
-        end
-    else
-        cwd = ''
-    end
-
-    -- Right status
-    window:set_right_status(wezterm.format({
-        -- path
-        { Text = ' ' },
-        { Background = { Color = colors.background } },
-        { Foreground = { Color = colors.ansi[5] } },
-        { Text = nerdfonts.ple_left_half_circle_thick },
-        { Background = { Color = colors.ansi[5] } },
-        { Foreground = { Color = colors.background } },
-        { Text = nerdfonts.md_folder .. ' ' },
-        { Background = { Color = colors.ansi[1] } },
-        { Foreground = { Color = colors.foreground } },
-        { Text = ' ' .. cwd },
-        { Background = { Color = colors.background } },
-        { Foreground = { Color = colors.ansi[1] } },
-        { Text = nerdfonts.ple_right_half_circle_thick },
-        -- user
-        { Text = ' ' },
-        { Background = { Color = colors.background } },
-        { Foreground = { Color = colors.ansi[6] } },
-        { Text = nerdfonts.ple_left_half_circle_thick },
-        { Background = { Color = colors.ansi[6] } },
-        { Foreground = { Color = colors.background } },
-        { Text = nerdfonts.fa_user .. ' ' },
-        { Background = { Color = colors.ansi[1] } },
-        { Foreground = { Color = colors.foreground } },
-        { Text = ' ' .. custom.username },
-        { Background = { Color = colors.background } },
-        { Foreground = { Color = colors.ansi[1] } },
-        { Text = nerdfonts.ple_right_half_circle_thick },
-        -- host device
-        { Text = ' ' },
-        { Background = { Color = colors.background } },
-        { Foreground = { Color = colors.ansi[7] } },
-        { Text = nerdfonts.ple_left_half_circle_thick },
-        { Background = { Color = colors.ansi[7] } },
-        { Foreground = { Color = colors.ansi[1] } },
-        { Text = nerdfonts.cod_server .. ' ' },
-        { Background = { Color = colors.ansi[1] } },
-        { Foreground = { Color = colors.foreground } },
-        { Text = ' ' .. custom.hostname.current },
-        { Background = { Color = colors.background } },
-        { Foreground = { Color = colors.ansi[1] } },
-        { Text = nerdfonts.ple_right_half_circle_thick },
-        -- date
-        { Text = ' ' },
-        { Background = { Color = colors.background } },
-        { Foreground = { Color = colors.ansi[8] } },
-        { Text = nerdfonts.ple_left_half_circle_thick },
-        { Background = { Color = colors.ansi[8] } },
-        { Foreground = { Color = colors.background } },
-        { Text = nerdfonts.md_calendar_clock .. ' ' },
-        { Background = { Color = colors.ansi[1] } },
-        { Foreground = { Color = colors.foreground } },
-        { Text = ' ' .. time },
-        { Background = { Color = colors.background } },
-        { Foreground = { Color = colors.ansi[1] } },
-        { Text = nerdfonts.ple_right_half_circle_thick },
-    }))
 end
 
 function F.reset_opacity(window, config)

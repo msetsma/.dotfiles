@@ -3,13 +3,6 @@ local K = require('keybinds')
 local F = require('functions')
 local config = wezterm.config_builder()
 
-local custom = {
-    username = os.getenv('USER') or os.getenv('LOGNAME') or os.getenv('USERNAME'),
-    hostname = {
-        current = string.lower(wezterm.hostname()),
-    },
-}
-
 -- Launch
 config.default_prog = F.get_default_program()
 config.automatically_reload_config = true
@@ -46,7 +39,7 @@ config.window_frame = {
 config.max_fps = 144
 config.adjust_window_size_when_changing_font_size = false
 config.text_background_opacity = 1.0
-config.window_background_opacity = 0.99
+config.window_background_opacity = 1.0
 config.window_decorations = 'INTEGRATED_BUTTONS|RESIZE'
 config.integrated_title_button_alignment = 'Right'
 config.integrated_title_buttons = { 'Hide', 'Maximize', 'Close' }
@@ -71,7 +64,6 @@ config.show_new_tab_button_in_tab_bar = true
 config.show_tab_index_in_tab_bar = true
 config.show_tabs_in_tab_bar = true
 config.show_close_tab_button_in_tabs = false
-config.status_update_interval = 500
 config.use_fancy_tab_bar = true
 
 -- Keys
@@ -80,8 +72,8 @@ config.disable_default_key_bindings = true
 config.keys = K.keybinds()
 
 -- Events
-wezterm.on('update-status', function(window, pane)
-    F.set_tab_bar_status(window, pane, custom)
+wezterm.on('window-config-reloaded', function(window, _)
+    F.reset_opacity(window, config)
 end)
 
 wezterm.on('format-tab-title', function(tab, tabs)

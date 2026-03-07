@@ -1,9 +1,9 @@
 [common.variables]
 copy_command = "pbcopy"  # default/fallback
-theme            = "tokyo-night"
-theme_ghostty    = "Tokyo Night"
-theme_wezterm    = "Tokyo Night Storm (Gogh)"
-theme_zellij     = "tokyo-night"
+theme            = "gruvbox-dark"                # tokyo-night | catppuccin-macchiato | catppuccin-mocha | gruvbox-dark
+theme_ghostty    = "GruvboxDark"                 # Tokyo Night | Catppuccin Macchiato | Catppuccin Mocha | GruvboxDark
+theme_wezterm    = "GruvboxDark"                 # Tokyo Night Storm (Gogh) | Catppuccin Macchiato (Gogh) | Catppuccin Mocha (Gogh) | GruvboxDark
+theme_zellij     = "gruvbox-dark"                # tokyo-night | catppuccin-macchiato | catppuccin-mocha | gruvbox-dark
 
 [common.files]
 "common/linters" = "~/.config"
