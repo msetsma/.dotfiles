@@ -33,7 +33,7 @@ alias grep='rg'
 alias find='fd'
 
 # EZA - better ls
-alias ls='eza -1ah --group-directories-first --git-repos-no-status --icons --all'
+alias ls='eza --grid -ah --group-directories-first --git-repos-no-status --icons --all'
 alias lt='eza --icons --tree --level=1 --group-directories-first -h --long --no-permissions --no-user --no-time'
 alias lt1='eza --icons --tree --level=1 --group-directories-first -h --long --no-permissions --no-user --no-time'
 alias lt2='eza --icons --tree --level=2 --group-directories-first -h --long --no-permissions --no-user --no-time'

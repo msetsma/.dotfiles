@@ -3,6 +3,9 @@
 # Timeout for commands (ms)
 command_timeout = 500
 
+# Don't add blank line before prompt
+add_newline = false
+
 # Format - customize order of modules (left side)
 format = """
 $username\
@@ -14,7 +17,6 @@ $python\
 $rust\
 $golang\
 $docker_context\
-$fill\
 $custom\
 $line_break\
 $character"""
