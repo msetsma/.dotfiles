@@ -132,12 +132,12 @@ layout {
                 mode_normal        "#[bg=$green,fg=$crust,bold] NORMAL#[bg=$surface0,fg=$green]"
                 mode_tmux          "#[bg=$mauve,fg=$crust,bold] TMUX#[bg=$surface0,fg=$mauve]"
                 mode_locked        "#[bg=$red,fg=$crust,bold] LOCKED#[bg=$surface0,fg=$red]"
-                mode_pane          "#[bg=$teal,fg=$crust,bold] PANE#[bg=$surface0,fg=teal]"
+                mode_pane          "#[bg=$teal,fg=$crust,bold] PANE#[bg=$surface0,fg=$teal]"
                 mode_tab           "#[bg=$teal,fg=$crust,bold] TAB#[bg=$surface0,fg=$teal]"
                 mode_scroll        "#[bg=$flamingo,fg=$crust,bold] SCROLL#[bg=$surface0,fg=$flamingo]"
-                mode_enter_search  "#[bg=$flamingo,fg=$crust,bold] ENT-SEARCH#[bg=$surfaco,fg=$flamingo]"
-                mode_search        "#[bg=$flamingo,fg=$crust,bold] SEARCHARCH#[bg=$surfac0,fg=$flamingo]"
-                mode_resize        "#[bg=$yellow,fg=$crust,bold] RESIZE#[bg=$surfac0,fg=$yellow]"
+                mode_enter_search  "#[bg=$flamingo,fg=$crust,bold] ENT-SEARCH#[bg=$surface0,fg=$flamingo]"
+                mode_search        "#[bg=$flamingo,fg=$crust,bold] SEARCH#[bg=$surface0,fg=$flamingo]"
+                mode_resize        "#[bg=$yellow,fg=$crust,bold] RESIZE#[bg=$surface0,fg=$yellow]"
                 mode_rename_tab    "#[bg=$yellow,fg=$crust,bold] RENAME-TAB#[bg=$surface0,fg=$yellow]"
                 mode_rename_pane   "#[bg=$yellow,fg=$crust,bold] RENAME-PANE#[bg=$surface0,fg=$yellow]"
                 mode_move          "#[bg=$yellow,fg=$crust,bold] MOVE#[bg=$surface0,fg=$yellow]"
@@ -176,5 +176,60 @@ layout {
             }
         }
         children
+        pane size=1 borderless=true {
+            plugin location="file:.config/zellij/plugins/zjstatus.wasm" {
+                // -- Catppuccin Macchiato (matching top bar) --
+                color_rosewater "#f4dbd6"
+                color_flamingo "#f0c6c6"
+                color_pink "#f5bde6"
+                color_mauve "#c6a0f6"
+                color_red "#ed8796"
+                color_maroon "#ee99a0"
+                color_peach "#f5a97f"
+                color_yellow "#eed49f"
+                color_green "#a6da95"
+                color_teal "#8bd5ca"
+                color_sky "#91d7e3"
+                color_sapphire "#7dc4e4"
+                color_blue "#8aadf4"
+                color_lavender "#b7bdf8"
+                color_text "#cad3f5"
+                color_subtext1 "#b8c0e0"
+                color_subtext0 "#a5adcb"
+                color_overlay2 "#939ab7"
+                color_overlay1 "#8087a2"
+                color_overlay0 "#6e738d"
+                color_surface2 "#5b6078"
+                color_surface1 "#494d64"
+                color_surface0 "#24273a"
+                color_base "#24273a"
+                color_mantle "#1e2030"
+                color_crust "#181926"
+
+                format_left   "{mode}"
+                format_center ""
+                format_right  ""
+                format_space  "#[bg=$surface0]"
+                format_hide_on_overlength "true"
+                format_precedence "lrc"
+
+                border_enabled  "false"
+
+                mode_normal        "#[bg=$green,fg=$crust,bold] NORMAL #[bg=$surface0,fg=$green] #[fg=$overlay1]g #[fg=$text]Lock  #[fg=$overlay1]p #[fg=$text]Pane  #[fg=$overlay1]t #[fg=$text]Tab  #[fg=$overlay1]n #[fg=$text]Resize  #[fg=$overlay1]h #[fg=$text]Move  #[fg=$overlay1]s #[fg=$text]Scroll  #[fg=$overlay1]o #[fg=$text]Session  #[fg=$overlay1]q #[fg=$text]Quit"
+                mode_tmux          "#[bg=$mauve,fg=$crust,bold] TMUX #[bg=$surface0,fg=$mauve] #[fg=$overlay1][ #[fg=$text]Scroll  #[fg=$overlay1]\" #[fg=$text]HSplit  #[fg=$overlay1]% #[fg=$text]VSplit  #[fg=$overlay1]z #[fg=$text]Full  #[fg=$overlay1]c #[fg=$text]New Tab  #[fg=$overlay1]p/n #[fg=$text]Tabs  #[fg=$overlay1]x #[fg=$text]Close  #[fg=$overlay1]d #[fg=$text]Detach"
+                mode_locked        "#[bg=$red,fg=$crust,bold] LOCKED #[bg=$surface0,fg=$red] #[fg=$overlay1]Ctrl+g #[fg=$text]Unlock"
+                mode_pane          "#[bg=$teal,fg=$crust,bold] PANE #[bg=$surface0,fg=$teal] #[fg=$overlay1]h/j/k/l #[fg=$text]Focus  #[fg=$overlay1]n #[fg=$text]New  #[fg=$overlay1]d #[fg=$text]Down  #[fg=$overlay1]r #[fg=$text]Right  #[fg=$overlay1]s #[fg=$text]Stack  #[fg=$overlay1]x #[fg=$text]Close  #[fg=$overlay1]f #[fg=$text]Full  #[fg=$overlay1]w #[fg=$text]Float  #[fg=$overlay1]c #[fg=$text]Rename"
+                mode_tab           "#[bg=$teal,fg=$crust,bold] TAB #[bg=$surface0,fg=$teal] #[fg=$overlay1]h/l #[fg=$text]Navigate  #[fg=$overlay1]n #[fg=$text]New  #[fg=$overlay1]x #[fg=$text]Close  #[fg=$overlay1]r #[fg=$text]Rename  #[fg=$overlay1]s #[fg=$text]Sync  #[fg=$overlay1]b #[fg=$text]Break  #[fg=$overlay1]1-9 #[fg=$text]GoTo"
+                mode_scroll        "#[bg=$flamingo,fg=$crust,bold] SCROLL #[bg=$surface0,fg=$flamingo] #[fg=$overlay1]j/k #[fg=$text]Scroll  #[fg=$overlay1]Ctrl+f/b #[fg=$text]Page  #[fg=$overlay1]d/u #[fg=$text]HalfPage  #[fg=$overlay1]e #[fg=$text]Edit  #[fg=$overlay1]s #[fg=$text]Search"
+                mode_enter_search  "#[bg=$flamingo,fg=$crust,bold] SEARCH #[bg=$surface0,fg=$flamingo] #[fg=$text]Type to search ... #[fg=$overlay1]Enter #[fg=$text]Confirm  #[fg=$overlay1]Esc #[fg=$text]Cancel"
+                mode_search        "#[bg=$flamingo,fg=$crust,bold] SEARCH #[bg=$surface0,fg=$flamingo] #[fg=$overlay1]n/p #[fg=$text]Next/Prev  #[fg=$overlay1]c #[fg=$text]Case  #[fg=$overlay1]w #[fg=$text]Wrap  #[fg=$overlay1]o #[fg=$text]WholeWord"
+                mode_resize        "#[bg=$yellow,fg=$crust,bold] RESIZE #[bg=$surface0,fg=$yellow] #[fg=$overlay1]h/j/k/l #[fg=$text]Increase  #[fg=$overlay1]H/J/K/L #[fg=$text]Decrease  #[fg=$overlay1]+/- #[fg=$text]All"
+                mode_rename_tab    "#[bg=$yellow,fg=$crust,bold] RENAME TAB #[bg=$surface0,fg=$yellow] #[fg=$text]Type name ... #[fg=$overlay1]Enter #[fg=$text]Confirm  #[fg=$overlay1]Esc #[fg=$text]Cancel"
+                mode_rename_pane   "#[bg=$yellow,fg=$crust,bold] RENAME PANE #[bg=$surface0,fg=$yellow] #[fg=$text]Type name ... #[fg=$overlay1]Enter #[fg=$text]Confirm  #[fg=$overlay1]Esc #[fg=$text]Cancel"
+                mode_move          "#[bg=$yellow,fg=$crust,bold] MOVE #[bg=$surface0,fg=$yellow] #[fg=$overlay1]h/j/k/l #[fg=$text]Direction  #[fg=$overlay1]n/Tab #[fg=$text]Next  #[fg=$overlay1]p #[fg=$text]Prev"
+                mode_session       "#[bg=$pink,fg=$crust,bold] SESSION #[bg=$surface0,fg=$pink] #[fg=$overlay1]d #[fg=$text]Detach  #[fg=$overlay1]w #[fg=$text]Manager  #[fg=$overlay1]c #[fg=$text]Config  #[fg=$overlay1]p #[fg=$text]Plugins"
+                mode_prompt        "#[bg=$pink,fg=$crust,bold] PROMPT #[bg=$surface0,fg=$pink]"
+            }
+        }
     }
 }
