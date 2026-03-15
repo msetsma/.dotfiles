@@ -33,7 +33,6 @@ ctrl-alt-cmd-t = '''exec-and-forget open -a "Ghostty"'''
 ctrl-alt-cmd-b = '''exec-and-forget open -a "Firefox"'''
 ctrl-alt-cmd-m = '''exec-and-forget open -a "Microsoft Teams"'''
 ctrl-alt-cmd-n = '''exec-and-forget open -a "Obsidian"'''
-ctrl-alt-cmd-l = '''exec-and-forget open -a "Claude"'''
 # See: https://nikitabobko.github.ioeAeroSpace/commands#layout
 alt-e = "layout tiles horizontal vertical"
 alt-comma = "layout accordion horizontal vertical"

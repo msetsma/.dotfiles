@@ -1,8 +1,6 @@
-# Source env vars (not auto-sourced when ZDOTDIR is set via ~/.zshenv)
-source "$HOME/.config/zsh/.zshenv"
-
-# Source platform detection first
-source "$HOME/.config/zsh/platform.zsh"
+# Source environment variables and platform detection
+source "$ZDOTDIR/.zshenv"
+source "$ZDOTDIR/platform.zsh"
 
 # Only set PATH once
 if [ -z "$PATH_SET" ]; then
@@ -18,15 +16,6 @@ if [ -z "$PATH_SET" ]; then
   export PATH_SET=1
 fi
 
-if grep -qi microsoft /proc/version 2>/dev/null; then
-    # WSL
-    export COPY_COMMAND="clip.exe"
-else
-    # Mac
-    export COPY_COMMAND="pbcopy"
-fi
-
-export UV_VENV_CTEAR=1
 
 # fpath setup (before compinit)
 if (( IS_MAC )); then
@@ -93,6 +82,9 @@ if [[ -n "$ZELLIJ" ]]; then
       zellij action rename-pane "$name"
   }
 fi
+
+# mise (runtime version manager)
+eval "$(mise activate zsh)"
 
 # zellij
 (( $+commands[zellij] )) && eval "$(zellij setup --generate-auto-start zsh)"

@@ -1,0 +1,5 @@
+# Global uv configuration
+# Symlinked to ~/.config/uv/uv.toml via dotter
+
+# Use system Python (managed by mise)
+python-preference = "managed"

@@ -6,7 +6,7 @@
 #
 # Usage examples:
 #     $ cargo make brew-export       # Export Homebrew packages to Brewfile
-#     $ cargo make pipx-list         # List installed pipx packages
+#     $ cargo make uv-tools-list     # List installed Python CLI tools
 #     $ cargo make doctor            # Check system health
 #     $ cargo make clean             # Cleanup caches and temp files
 # ==============================================================================
@@ -141,36 +141,43 @@ script = [
 ]
 
 
-# =============================
-# === Python/pipx Utilities ===
-# =============================
+# ================================
+# === Python/uv tool Utilities ===
+# ================================
 
-[tasks.pipx-list]
-description = "List all installed pipx packages"
+[tasks.uv-tools-list]
+description = "List all installed uv tool packages"
 script = [
-    "echo '--- Installed pipx packages ---'",
-    "pipx list",
+    "echo '--- Installed uv tool packages ---'",
+    "uv tool list",
 ]
 
-[tasks.pipx-export]
-description = "Export pipx packages to requirements file"
+[tasks.uv-tools-export]
+description = "Export uv tool packages to uv-tools.txt"
 script = [
-    "echo '--- Exporting pipx packages ---'",
-    "pipx list --short > ~/.dotfiles/pipx-requirements.txt",
-    "echo 'Pipx packages exported to ~/.dotfiles/pipx-requirements.txt'",
+    "echo '--- Exporting uv tool packages ---'",
+    "uv tool list --short | awk '{print $1}' > ~/.dotfiles/uv-tools.txt",
+    "echo 'uv tool packages exported to ~/.dotfiles/uv-tools.txt'",
 ]
 
-[tasks.pipx-install]
-description = "Install pipx packages from requirements file"
+[tasks.uv-tools-install]
+description = "Install uv tool packages from uv-tools.txt"
 script = [
-    "echo '--- Installing pipx packages from requirements file ---'",
-    "if [ -f ~/.dotfiles/pipx-requirements.txt ]; then",
-    "  while read package; do",
-    "    pipx install $package || echo \"Failed to install $package\"",
-    "  done < ~/.dotfiles/pipx-requirements.txt",
+    "echo '--- Installing uv tool packages from uv-tools.txt ---'",
+    "if [ -f ~/.dotfiles/uv-tools.txt ]; then",
+    "  while read -r package; do",
+    "    [ -n \"$package\" ] && uv tool install $package || echo \"Failed to install $package\"",
+    "  done < ~/.dotfiles/uv-tools.txt",
     "else",
-    "  echo 'No pipx-requirements.txt found. Run: cargo make pipx-export'",
+    "  echo 'No uv-tools.txt found. Run: cargo make uv-tools-export'",
     "fi",
+]
+
+[tasks.uv-tools-upgrade]
+description = "Upgrade all uv tool packages"
+script = [
+    "echo '--- Upgrading all uv tool packages ---'",
+    "uv tool upgrade --all",
 ]
 
 
@@ -316,8 +323,8 @@ script = [
     "echo '  cargo make scoop-export      Export Scoop (Windows)'",
     "echo ''",
     "echo '🐍 PYTHON'",
-    "echo '  cargo make pipx-list         List pipx packages'",
-    "echo '  cargo make pipx-export       Export pipx packages'",
+    "echo '  cargo make uv-tools-list     List uv tool packages'",
+    "echo '  cargo make uv-tools-export   Export uv tool packages'",
     "echo ''",
     "echo '🔧 UTILITIES'",
     "echo '  cargo make doctor            Check system health'",
@@ -361,10 +368,11 @@ script = [
     "echo '    cargo make scoop-cleanup     - Cleanup old versions'",
     "echo '    cargo make scoop-doctor      - Check for issues'",
     "echo ''",
-    "echo '  Python/pipx:'",
-    "echo '    cargo make pipx-list         - List packages'",
-    "echo '    cargo make pipx-export       - Export to file'",
-    "echo '    cargo make pipx-install      - Install from file'",
+    "echo '  Python/uv tool:'",
+    "echo '    cargo make uv-tools-list     - List packages'",
+    "echo '    cargo make uv-tools-export   - Export to file'",
+    "echo '    cargo make uv-tools-install  - Install from file'",
+    "echo '    cargo make uv-tools-upgrade  - Upgrade all packages'",
     "echo ''",
     "echo '  Dotfiles:'",
     "echo '    cargo make deploy            - Deploy dotfiles with dotter'",

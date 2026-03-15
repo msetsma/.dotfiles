@@ -14,8 +14,10 @@ theme_zellij     = "gruvbox-dark"                # tokyo-night | catppuccin-macc
 "common/starship" = "~/.config"
 "common/zsh" = "~/.config/zsh"
 "common/bash" = "~/.config/bash"
-"common/zellij/layouts" = "~/.config/zellij/layouts"
-"common/zellij/config.kdl" = { target = "~/.config/zellij/config.kdl", type = "template" }
+"common/zellij" = "~/.config/zellij"
+"common/uv" = "~/.config/uv"
+"common/claude/settings.json" = "~/.claude/settings.json"
+"common/claude/CLAUDE.md" = "~/.claude/CLAUDE.md"
 
 [windows.files]
 "windows/ahk" = "C:\\Users\\2015m\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup"

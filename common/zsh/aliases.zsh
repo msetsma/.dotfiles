@@ -53,8 +53,10 @@ alias db-prod='_use_databricks prod'
 alias db-qa='_use_databricks qa'
 alias db-dev='_use_databricks dev'
 
+# uv
+alias uvt='uv tool'
+
 # azure
-alias repo='open $(az repos show --repository $(basename "$PWD") --query webUrl -o tsv)'
 
 # lazy docker
 alias lzd='lazydocker'

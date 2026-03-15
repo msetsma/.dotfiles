@@ -1,0 +1,20 @@
+#!/usr/bin/env zsh
+# Open the current repo in the browser (supports GitHub and Azure DevOps)
+
+local remote_url
+remote_url=$(git remote get-url origin 2>/dev/null) || {
+  echo "Not a git repository or no 'origin' remote found" >&2
+  return 1
+}
+
+if [[ "$remote_url" == *"github.com"* ]]; then
+  # Normalize SSH or HTTPS GitHub URLs to browser URL
+  local url="${remote_url%.git}"
+  url="${url/git@github.com:/https://github.com/}"
+  open "$url"
+elif [[ "$remote_url" == *"dev.azure.com"* || "$remote_url" == *"visualstudio.com"* ]]; then
+  open "$(az repos show --repository "$(basename "$PWD")" --query webUrl -o tsv)"
+else
+  echo "Unsupported remote: $remote_url" >&2
+  return 1
+fi

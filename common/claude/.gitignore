@@ -1,0 +1,20 @@
+# Generated state - not tracked
+backups/
+cache/
+debug/
+file-history/
+history.jsonl
+ide/
+mcp-needs-auth-cache.json
+paste-cache/
+plans/
+plugins/
+projects/
+session-env/
+shell-snapshots/
+stats-cache.json
+statsig/
+tasks/
+telemetry/
+todos/
+.DS_Store

@@ -2,7 +2,7 @@ theme = {{theme_ghostty}}
 window-decoration = true
 font-size = 14
 confirm-close-surface = false
-background-opacity = .9
+background-opacity = 1
 background-blur = 20
 
 # Add padding around the terminal content (in pixels)

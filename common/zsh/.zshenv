@@ -1,7 +1,7 @@
 export EDITOR="nvim"
 export VISUAL="nvim"
 export XDG_CONFIG_HOME="$HOME/.config"
-export ZSH="$ZDOTDIR/ohmyzsh"
+export ZSH="${ZDOTDIR:-$XDG_CONFIG_HOME/zsh}/ohmyzsh"
 
 # Telemetry Opt-Out (wide spread list, might not have tools installed)
 # Last updated: 2026-02-11

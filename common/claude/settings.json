@@ -1,0 +1,63 @@
+{
+  "env": {
+    "CLAUDE_CODE_ENABLE_TELEMETRY": "1"
+  },
+  "includeCoAuthoredBy": false,
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(git:*)",
+      "Bash(npm:*)",
+      "Bash(npx:*)",
+      "Bash(node:*)",
+      "Bash(python:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(echo:*)",
+      "Bash(grep:*)",
+      "Bash(make:*)",
+      "mcp__plugin_context-mode_context-mode__batch_execute",
+      "mcp__plugin_context-mode_context-mode__execute",
+      "mcp__claude_ai_Context7__resolve-library-id",
+      "mcp__claude_ai_Context7__query-docs"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)",
+      "Read(./credentials.*)",
+      "Read(./.credentials.*)",
+      "Read(**/*.pem)",
+      "Read(**/*id_rsa*)",
+      "Read(./build)",
+      "Bash(sudo *)",
+      "Bash(rm -rf /*)",
+      "Bash(curl *)",
+      "Bash(wget *)",
+      "Bash(ssh *)",
+      "Bash(scp *)",
+      "Bash(nc *)",
+      "Bash(npm publish *)",
+      "Bash(docker push *)",
+      "Bash(pip install *)",
+      "Bash(brew install *)",
+      "Bash(apt install *)",
+      "Bash(wrangler deploy *)",
+      "Bash(terraform apply *)",
+      "Bash(kubectl delete *)"
+    ]
+  },
+  "model": "opus",
+  "enabledPlugins": {
+    "context-mode@claude-context-mode": true
+  },
+  "extraKnownMarketplaces": {
+    "claude-context-mode": {
+      "source": {
+        "source": "github",
+        "repo": "mksglu/claude-context-mode"
+      }
+    }
+  },
+  "alwaysThinkingEnabled": true
+}

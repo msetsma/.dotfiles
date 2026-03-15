@@ -108,18 +108,14 @@ script = [
     "scoop install autohotkey gcc cmake fastfetch firacode",
     "scoop shim add gcc ~\\scoop\\apps\\gcc\\current\\bin\\gcc.exe", # Needed for NVim Telescope FZF Native
 
-    "echo --- Installing Python Package Manager ---",
-    "python -m pip install --user pipx",
-    "python -m pipx ensurepath",
-
     "echo --- Installing Scoopfile (if exists) ---",
     "if exist %USERPROFILE%\\.dotfiles\\scoopfile.json (",
     "  for /f \"tokens=1\" %%i in (%USERPROFILE%\\.dotfiles\\scoopfile.json) do scoop install %%i 2>nul || echo Skipping %%i",
     ")",
 
-    "echo --- Installing pipx packages (if exists) ---",
-    "if exist %USERPROFILE%\\.dotfiles\\pipx-requirements.txt (",
-    "  for /f %%p in (%USERPROFILE%\\.dotfiles\\pipx-requirements.txt) do pipx install %%p 2>nul || echo Skipping %%p",
+    "echo --- Installing Python CLI tools via uv ---",
+    "if exist %USERPROFILE%\\.dotfiles\\uv-tools.txt (",
+    "  for /f %%p in (%USERPROFILE%\\.dotfiles\\uv-tools.txt) do uv tool install %%p 2>nul || echo Skipping %%p",
     ")",
 
     "echo --- Setting Environment Variables ---",
@@ -142,15 +138,11 @@ script = [
     "git clone https://github.com/zsh-users/zsh-syntax-highlighting $HOME/.config/zsh/ohmyzsh/custom/plugins/zsh-syntax-highlighting 2>/dev/null || true",
     "git clone https://github.com/zsh-users/zsh-completions $HOME/.config/zsh/ohmyzsh/custom/plugins/zsh-completions 2>/dev/null || true",
 
-    "echo '--- Installing Python Package Manager ---'",
-    "python3 -m pip install --user pipx",
-    "python3 -m pipx ensurepath",
-
-    "echo '--- Installing pipx packages (if exists) ---'",
-    "if [ -f ~/.dotfiles/pipx-requirements.txt ]; then",
-    "  while read package; do",
-    "    pipx install $package 2>/dev/null || echo \"Skipping $package (may already be installed)\"",
-    "  done < ~/.dotfiles/pipx-requirements.txt",
+    "echo '--- Installing Python CLI tools via uv ---'",
+    "if [ -f ~/.dotfiles/uv-tools.txt ]; then",
+    "  while read -r package; do",
+    "    [ -n \"$package\" ] && uv tool install $package 2>/dev/null || echo \"Skipping $package\"",
+    "  done < ~/.dotfiles/uv-tools.txt",
     "fi",
 
     "echo '--- Setting Environment Variables ---'",
@@ -184,15 +176,11 @@ script = [
     "echo '--- Installing wslu (WSL utilities) ---'",
     "sudo apt install -y wslu 2>/dev/null || true",
 
-    "echo '--- Installing Python Package Manager ---'",
-    "python3 -m pip install --user pipx 2>/dev/null || true",
-    "python3 -m pipx ensurepath 2>/dev/null || true",
-
-    "echo '--- Installing pipx packages (if exists) ---'",
-    "if [ -f ~/.dotfiles/pipx-requirements.txt ]; then",
-    "  while read package; do",
-    "    pipx install $package 2>/dev/null || echo \"Skipping $package\"",
-    "  done < ~/.dotfiles/pipx-requirements.txt",
+    "echo '--- Installing Python CLI tools via uv ---'",
+    "if [ -f ~/.dotfiles/uv-tools.txt ]; then",
+    "  while read -r package; do",
+    "    [ -n \"$package\" ] && uv tool install $package 2>/dev/null || echo \"Skipping $package\"",
+    "  done < ~/.dotfiles/uv-tools.txt",
     "fi",
 
     "echo '--- Default shell set via /etc/wsl.conf ---'",
@@ -245,6 +233,9 @@ script = [
     "echo --- Updating Scoop & Packages ---",
     "scoop update",
     "scoop update *",
+
+    "echo --- Updating Python CLI tools ---",
+    "uv tool upgrade --all",
 ]
 
 [tasks.update-mac-tools]
@@ -254,6 +245,8 @@ script = [
     "brew upgrade",
     "brew upgrade --cask wezterm@nightly --no-quarantine --greedy-latest",
 
+    "echo --- Updating Python CLI tools ---",
+    "uv tool upgrade --all",
 ]
 
 [tasks.update-linux-tools]
@@ -261,6 +254,9 @@ condition = { platforms = ["linux"] }
 script = [
     "echo '--- Updating apt packages ---'",
     "sudo apt update && sudo apt upgrade -y",
+
+    "echo '--- Updating Python CLI tools ---'",
+    "uv tool upgrade --all",
 ]
 
 [tasks.update-mise]
