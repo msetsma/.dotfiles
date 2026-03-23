@@ -99,7 +99,8 @@ linux_alias = "linux-tools"
 [tasks.windows-tools]
 script = [
     "echo --- Installing Tools ---",
-    "scoop install lazygit neovim yazi wezterm-nightly fzf ripgrep bat",
+    "scoop bucket add extras 2>nul || echo extras bucket already added",
+    "scoop install lazygit neovim yazi wezterm-nightly fzf ripgrep bat yasb",
 
     "echo --- Installing Languages ---",
     "scoop install python go lua lua51 luarocks stylua",

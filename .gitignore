@@ -63,4 +63,5 @@ build/
 
 target/
 
-.DS_Store
+# LLM 
+.claude/

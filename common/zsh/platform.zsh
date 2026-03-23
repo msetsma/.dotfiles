@@ -18,7 +18,14 @@ _detect_platform() {
         linux) IS_LINUX=1 ;;
     esac
 
-    export PLATFORM IS_MAC IS_WSL IS_LINUX
+    # Default search root for gitnav
+    if (( IS_WSL )); then
+        GITNAV_ROOT="/mnt/c/Users/2015m"
+    else
+        GITNAV_ROOT="$HOME"
+    fi
+
+    export PLATFORM IS_MAC IS_WSL IS_LINUX GITNAV_ROOT
 }
 
 _detect_platform

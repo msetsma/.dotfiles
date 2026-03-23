@@ -75,4 +75,8 @@ alt + shift + 6         : komorebic move-to-workspace 5
 alt + shift + 7         : komorebic move-to-workspace 6
 alt + shift + 8         : komorebic move-to-workspace 7
 
-
+# Monitor input switching (ControlMyMonitor DDC/CI)
+# HP24: toggle display port (15) <-> HDMI (17)
+ctrl + alt + shift + f20 : & 'C:\Users\2015m\AppData\Local\control-my-monitor\ControlMyMonitor.exe' /SwitchValue HPN3688 60 15 17
+# M32U: toggle display port (15) <-> USB-C (16)
+ctrl + alt + shift + f19 : & 'C:\Users\2015m\AppData\Local\control-my-monitor\ControlMyMonitor.exe' /SwitchValue GBT3204 60 15 16

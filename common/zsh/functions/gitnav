@@ -25,12 +25,16 @@ _gitnav_cache_valid() {
 }
 
 local selected cache_file cache_ttl=300 current_dir force_refresh=0
-current_dir="${1:-$HOME}"
 
 # Support -f flag to force refresh
-if [[ "$1" == "-f" ]] || [[ "$1" == "--force" ]]; then
-  force_refresh=1
-fi
+while [[ "$1" == -* ]]; do
+  case "$1" in
+    -f|--force) force_refresh=1; shift ;;
+    *) shift ;;
+  esac
+done
+
+current_dir="${1:-${GITNAV_ROOT:-$HOME}}"
 
 cache_file=$(_gitnav_cache_path "$current_dir")
 

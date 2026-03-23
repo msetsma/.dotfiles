@@ -49,7 +49,8 @@
   },
   "model": "opus",
   "enabledPlugins": {
-    "context-mode@claude-context-mode": true
+    "context-mode@claude-context-mode": true,
+    "rust-analyzer-lsp@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "claude-context-mode": {

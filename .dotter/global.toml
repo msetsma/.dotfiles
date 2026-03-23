@@ -1,9 +1,9 @@
 [common.variables]
-copy_command = "pbcopy"  # default/fallback
-theme            = "gruvbox-dark"                # tokyo-night | catppuccin-macchiato | catppuccin-mocha | gruvbox-dark
+copy_command = "pbcopy"                          # default/fallback
+theme            = "tokyo-night"                # tokyo-night | catppuccin-macchiato | catppuccin-mocha | gruvbox-dark
 theme_ghostty    = "GruvboxDark"                 # Tokyo Night | Catppuccin Macchiato | Catppuccin Mocha | GruvboxDark
-theme_wezterm    = "GruvboxDark"                 # Tokyo Night Storm (Gogh) | Catppuccin Macchiato (Gogh) | Catppuccin Mocha (Gogh) | GruvboxDark
-theme_zellij     = "gruvbox-dark"                # tokyo-night | catppuccin-macchiato | catppuccin-mocha | gruvbox-dark
+theme_wezterm    = "Tokyo Night Storm (Gogh)"    # Tokyo Night Storm (Gogh) | Catppuccin Macchiato (Gogh) | Catppuccin Mocha (Gogh) | GruvboxDark
+theme_zellij     = "tokyo-night"                 # tokyo-night | catppuccin-macchiato | catppuccin-mocha | gruvbox-dark
 
 [common.files]
 "common/linters" = "~/.config"
@@ -20,8 +20,9 @@ theme_zellij     = "gruvbox-dark"                # tokyo-night | catppuccin-macc
 "common/claude/CLAUDE.md" = "~/.claude/CLAUDE.md"
 
 [windows.files]
-"windows/ahk" = "C:\\Users\\2015m\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup"
+"windows/startup/startup.vbs" = "C:\\Users\\2015m\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\startup.vbs"
 "windows/komorebi" = "~/.config/komorebi"
+"windows/yasb" = "~/.config/yasb"
 "windows/nushell" = "~/.config/nushell"
 "windows/wezterm/constants.lua" = "~/.config/wezterm/constants.lua"
 "windows/wezterm/functions.lua" = "~/.config/wezterm/functions.lua"

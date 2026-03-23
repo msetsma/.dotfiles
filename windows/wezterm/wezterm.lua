@@ -67,7 +67,7 @@ config.show_close_tab_button_in_tabs = false
 config.use_fancy_tab_bar = true
 
 -- Keys
-config.enable_kitty_keyboard = true
+config.enable_kitty_keyboard = false
 config.disable_default_key_bindings = true
 config.keys = K.keybinds()
 
