@@ -310,14 +310,14 @@
     "manage": [
       {
         "kind": "Exe",
-        "id": "Claude.exe",
+        "id": "claude.exe",
         "matching_strategy": "Equals"
       }
     ],
     "tray_and_multi_window": [
       {
         "kind": "Exe",
-        "id": "Claude.exe",
+        "id": "claude.exe",
         "matching_strategy": "Equals"
       }
     ]
