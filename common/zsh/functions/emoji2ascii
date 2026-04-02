@@ -1,0 +1,23 @@
+#!/usr/bin/env zsh
+# Convert an emoji or image to colored ASCII art
+# Requires: curl, ascii-image-converter
+# Usage: emoji2ascii 🐍
+#        emoji2ascii 🔥 60
+#        emoji2ascii /path/to/image.png
+#        emoji2ascii /path/to/image.png 60
+
+local input="$1"
+local width="${2:-40}"
+local img_path
+
+if [[ -f "$input" ]]; then
+  # Input is a file path
+  img_path="$input"
+else
+  # Input is an emoji — download from noto-emoji
+  local hex=$(printf '%x' "'$input")
+  img_path="/tmp/emoji.png"
+  curl -s -o "$img_path" "https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/128/emoji_u${hex}.png"
+fi
+
+ascii-image-converter "$img_path" -C -W "$width"

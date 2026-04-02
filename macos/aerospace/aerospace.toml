@@ -73,6 +73,8 @@ alt-tab = "workspace-back-and-forth"
 alt-shift-tab = "move-workspace-to-monitor --wrap-around next"
 # See: https://nikitabobko.github.io/AeroSpace/commands#mode
 alt-shift-semicolon = "mode service"
+# Assign all windows to their designated workspaces
+alt-shift-a = "exec-and-forget ~/.config/aerospace/assign-workspaces.sh"
 
 # 'service' binding mode declaration.
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
@@ -90,3 +92,28 @@ alt-shift-h = ["join-with left", "mode main"]
 alt-shift-j = ["join-with down", "mode main"]
 alt-shift-k = ["join-with up", "mode main"]
 alt-shift-l = ["join-with right", "mode main"]
+
+# Auto-assign windows to workspaces when they open
+[[on-window-detected]]
+if.app-name-regex-substring = "Ghostty"
+run = "move-node-to-workspace 1"
+
+[[on-window-detected]]
+if.app-name-regex-substring = "Code"
+run = "move-node-to-workspace 2"
+
+[[on-window-detected]]
+if.app-name-regex-substring = "Firefox"
+run = "move-node-to-workspace 3"
+
+[[on-window-detected]]
+if.app-name-regex-substring = "Microsoft Teams"
+run = "move-node-to-workspace 4"
+
+[[on-window-detected]]
+if.app-name-regex-substring = "Obsidian"
+run = "move-node-to-workspace 5"
+
+[[on-window-detected]]
+if.app-id = "com.apple.Safari.WebApp.8BF96B99-2FB3-4E75-B0E5-F505CD76E34D"
+run = ["layout tiling", "move-node-to-workspace 6", "fullscreen"]

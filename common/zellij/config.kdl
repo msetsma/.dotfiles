@@ -218,8 +218,16 @@ load_plugins {
   // "https://example.com/my-plugin.wasm"
 }
 
+<<<<<<< HEAD
 copy_on_select true
 copy_command "{{copy_command}}"
+=======
+copy_command "{{copy_command}}"
+copy_clipboard "system"
+copy_on_select true
+mouse_mode true
+scrollback_lines_to_serialize 10000
+>>>>>>> 0036ab6 (updates to aerospace, zellij, dotter, and zsh)
 
 // theme
 pane_frames false
