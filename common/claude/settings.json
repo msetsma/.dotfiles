@@ -47,7 +47,6 @@
       "Bash(kubectl delete *)"
     ]
   },
-  "model": "opus",
   "enabledPlugins": {
     "context-mode@claude-context-mode": true,
     "rust-analyzer-lsp@claude-plugins-official": true
@@ -60,5 +59,6 @@
       }
     }
   },
-  "alwaysThinkingEnabled": true
+  "alwaysThinkingEnabled": true,
+  "effortLevel": "medium"
 }

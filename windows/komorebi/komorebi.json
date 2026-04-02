@@ -26,22 +26,6 @@
     {
       "workspaces": [
         {
-          "name": "main",
-          "layout": "BSP"
-        },
-        {
-          "name": "2",
-          "layout": "BSP"
-        },
-        {
-          "name": "3",
-          "layout": "BSP"
-        }
-      ]
-    },
-    {
-      "workspaces": [
-        {
           "name": "1",
           "layout": "Rows"
         },
@@ -52,6 +36,22 @@
         {
           "name": "3",
           "layout": "Rows"
+        }
+      ]
+    },
+    {
+      "workspaces": [
+        {
+          "name": "main",
+          "layout": "BSP"
+        },
+        {
+          "name": "2",
+          "layout": "BSP"
+        },
+        {
+          "name": "3",
+          "layout": "BSP"
         }
       ]
     }
