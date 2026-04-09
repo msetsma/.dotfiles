@@ -60,5 +60,6 @@
     }
   },
   "alwaysThinkingEnabled": true,
-  "effortLevel": "medium"
+  "effortLevel": "medium",
+  "model": "opus"
 }

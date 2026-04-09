@@ -14,7 +14,8 @@ theme_zellij     = "tokyo-night"                 # tokyo-night | catppuccin-macc
 "common/starship" = "~/.config"
 "common/zsh" = "~/.config/zsh"
 "common/bash" = "~/.config/bash"
-"common/zellij" = "~/.config/zellij"
+"common/zellij/config.kdl" = { target = "~/.config/zellij/config.kdl", type = "template" }
+"common/zellij/layouts" = "~/.config/zellij/layouts"
 "common/uv" = "~/.config/uv"
 "common/claude/settings.json" = "~/.claude/settings.json"
 "common/claude/CLAUDE.md" = "~/.claude/CLAUDE.md"
