@@ -31,21 +31,10 @@ bars:
       bottom: 0
       right: 6
     widgets:
-      left: ["komorebi_workspaces","active_window"]
+      left: ["komorebi_workspaces"]
       center: ["clock","apps"]
       right: ["taskbar","whkd","volume","power_menu"]
 widgets:
-  active_window:
-    type: "yasb.active_window.ActiveWindowWidget"
-    options:
-      label: "{win[title]}"
-      label_alt: "[class_name='{win[class_name]}' exe='{win[process][name]}' hwnd={win[hwnd]}]"
-      label_no_window: ""
-      label_icon: true
-      label_icon_size: 14
-      max_length: 56
-      max_length_ellipsis: "..."
-      monitor_exclusive: false
   clock:
     type: "yasb.clock.ClockWidget"
     options:
