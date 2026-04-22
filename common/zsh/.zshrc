@@ -86,5 +86,7 @@ fi
 # mise (runtime version manager)
 eval "$(mise activate zsh)"
 
-# zellij
-(( $+commands[zellij] )) && eval "$(zellij setup --generate-auto-start zsh)"
+# zellij (skip auto-start inside tmux or mosh so Moshi's tmux selector works)
+if [[ -z "$TMUX" && -z "$MOSH_CONNECTION" && -z "$ZELLIJ" ]]; then
+  (( $+commands[zellij] )) && eval "$(zellij setup --generate-auto-start zsh)"
+fi

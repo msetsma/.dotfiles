@@ -47,6 +47,75 @@
       "Bash(kubectl delete *)"
     ]
   },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun /tmp/bunx-1000-moshi-hooks@latest/node_modules/moshi-hooks/src/index.ts # moshi-hooks",
+            "async": true
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun /tmp/bunx-1000-moshi-hooks@latest/node_modules/moshi-hooks/src/index.ts # moshi-hooks",
+            "async": true
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun /tmp/bunx-1000-moshi-hooks@latest/node_modules/moshi-hooks/src/index.ts # moshi-hooks",
+            "async": true
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "permission_prompt|idle_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun /tmp/bunx-1000-moshi-hooks@latest/node_modules/moshi-hooks/src/index.ts # moshi-hooks",
+            "async": true
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun /tmp/bunx-1000-moshi-hooks@latest/node_modules/moshi-hooks/src/index.ts # moshi-hooks",
+            "async": true
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun /tmp/bunx-1000-moshi-hooks@latest/node_modules/moshi-hooks/src/index.ts # moshi-hooks",
+            "async": true
+          }
+        ]
+      }
+    ]
+  },
   "enabledPlugins": {
     "context-mode@claude-context-mode": true,
     "rust-analyzer-lsp@claude-plugins-official": true
