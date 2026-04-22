@@ -47,6 +47,7 @@
       "Bash(kubectl delete *)"
     ]
   },
+  "model": "opus",
   "hooks": {
     "SessionStart": [
       {
@@ -116,9 +117,14 @@
       }
     ]
   },
+  "statusLine": {
+    "type": "command",
+    "command": "bash /home/msetsma/.claude/statusline-command.sh"
+  },
   "enabledPlugins": {
     "context-mode@claude-context-mode": true,
-    "rust-analyzer-lsp@claude-plugins-official": true
+    "rust-analyzer-lsp@claude-plugins-official": true,
+    "caveman@caveman": true
   },
   "extraKnownMarketplaces": {
     "claude-context-mode": {
@@ -126,9 +132,14 @@
         "source": "github",
         "repo": "mksglu/claude-context-mode"
       }
+    },
+    "caveman": {
+      "source": {
+        "source": "github",
+        "repo": "JuliusBrussee/caveman"
+      }
     }
   },
   "alwaysThinkingEnabled": true,
-  "effortLevel": "medium",
-  "model": "opus"
+  "effortLevel": "high"
 }
