@@ -7,8 +7,8 @@ This document helps AI assistants (like Claude) understand and work effectively 
 This repo is **unix-first**. The core dev environment (zsh, neovim, CLI tools) targets unix, and Windows gets there via WSL2. Both platforms converge on the same `common/` configs.
 
 ```
-macOS:    native apps (Ghostty, AeroSpace) --> unix backend (zsh, neovim, zellij)
-Windows:  native apps (WezTerm, AHK)       --> WSL2 --> unix backend (zsh, neovim, zellij)
+macOS:    native apps (Ghostty, AeroSpace) --> unix backend (zsh, neovim, tmux)
+Windows:  native apps (WezTerm, AHK)       --> WSL2 --> unix backend (zsh, neovim, tmux)
 ```
 
 **Owner**: msetsma
@@ -31,7 +31,7 @@ Windows:  native apps (WezTerm, AHK)       --> WSL2 --> unix backend (zsh, neovi
 | GUI apps | Ghostty, AeroSpace, borders | WezTerm, AHK, (komorebi undecided) |
 | Terminal | Ghostty (native) | WezTerm -> WSL2 |
 | Shell | zsh (oh-my-zsh) | zsh via WSL2 (oh-my-zsh) |
-| Dev tools | neovim, zellij, fzf, eza, bat, rg | same, via WSL2 |
+| Dev tools | neovim, tmux, fzf, eza, bat, rg | same, via WSL2 |
 | Package mgr | Homebrew | Scoop (Windows host) + apt (WSL2) |
 
 ### Platform detection
@@ -61,7 +61,7 @@ Platform-specific behavior gated by `(( IS_MAC ))` / `(( IS_WSL ))`:
 │   ├── mise/           # Runtime version manager
 │   ├── nvim/           # Neovim configuration (lazy.nvim)
 │   ├── starship/       # Shell prompt
-│   ├── zellij/         # Terminal multiplexer
+│   ├── tmux/           # Terminal multiplexer
 │   └── zsh/            # Zsh config (active shell on both platforms)
 │       ├── .zshrc      # Main config (sources platform.zsh first)
 │       ├── .zshenv     # Environment vars
@@ -164,7 +164,7 @@ update                  # zsh function (brew/apt + rustup + cargo + mise)
 **Git**: lazygit, fzf git checkout function
 **System**: bottom, fastfetch
 **Python**: ruff (linting/formatting)
-**Terminal**: zellij (multiplexer)
+**Terminal**: tmux (multiplexer), mosh (mobile-friendly SSH)
 
 ## User Preferences & Patterns
 

@@ -51,6 +51,7 @@ config.window_padding = {
 }
 
 -- Font
+config.font = wezterm.font_with_fallback({ 'FiraCode Nerd Font', 'FiraCode NF', 'JetBrains Mono' })
 config.font_size = F.get_os_font_size()
 
 -- Scrolling

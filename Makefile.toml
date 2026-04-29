@@ -100,7 +100,8 @@ linux_alias = "linux-tools"
 script = [
     "echo --- Installing Tools ---",
     "scoop bucket add extras 2>nul || echo extras bucket already added",
-    "scoop install lazygit neovim yazi wezterm-nightly fzf ripgrep bat yasb",
+    "scoop bucket add nerd-fonts 2>nul || echo nerd-fonts bucket already added",
+    "scoop install lazygit neovim yazi wezterm-nightly fzf ripgrep bat yasb FiraCode-NF",
 
     "echo --- Installing Languages ---",
     "scoop install python go lua lua51 luarocks stylua",
@@ -155,7 +156,7 @@ condition = { platforms = ["linux"] }
 script = [
     "echo '--- Installing WSL2/Linux tools via apt ---'",
     "sudo apt update",
-    "sudo apt install -y zsh fzf ripgrep fd-find bat neovim cmake curl git build-essential pkg-config libssl-dev fastfetch",
+    "sudo apt install -y zsh fzf ripgrep fd-find bat neovim cmake curl git build-essential pkg-config libssl-dev fastfetch tmux mosh",
 
     "echo '--- Installing Oh My Zsh ---'",
     'export ZSH="$HOME/.config/zsh/ohmyzsh"',
@@ -169,7 +170,6 @@ script = [
 
     "echo '--- Installing CLI tools ---'",
     "curl -sS https://starship.rs/install.sh | sh -s -- -y",
-    "cargo install zellij",
     "cargo install yazi-fm yazi-cli",
     "go install github.com/jesseduffield/lazygit@latest",
     "go install github.com/jesseduffield/lazydocker@latest",
