@@ -65,28 +65,17 @@ done
 # starship
 (( $+commands[starship] )) && eval "$(starship init zsh)"
 
-# Zellij pane renaming hooks - AFTER starship, BEFORE zellij auto-start
-# so they don't interfere with starship's own prompt hooks
-if [[ -n "$ZELLIJ" ]]; then
-  preexec() {
-      zellij action rename-pane "⚙ ${1%% *}"
-  }
-  precmd() {
-      local name
-      name=$(git rev-parse --show-toplevel 2>/dev/null)
-      if [[ -n "$name" ]]; then
-          name=$(basename "$name")
-      else
-          name=$(basename "$PWD")
-      fi
-      zellij action rename-pane "$name"
-  }
-fi
-
 # mise (runtime version manager)
 eval "$(mise activate zsh)"
 
-# zellij (skip auto-start inside tmux or mosh so Moshi's tmux selector works)
-if [[ -z "$TMUX" && -z "$MOSH_CONNECTION" && -z "$ZELLIJ" ]]; then
-  (( $+commands[zellij] )) && eval "$(zellij setup --generate-auto-start zsh)"
+# tmux auto-start (interactive shell, not nested, not in editor terminals)
+if (( $+commands[tmux] )) \
+   && [[ -o interactive ]] \
+   && [[ -z "$TMUX" ]] \
+   && [[ -z "$VSCODE_INJECTION" ]] \
+   && [[ -z "$INSIDE_EMACS" ]] \
+   && [[ "$TERM_PROGRAM" != "vscode" ]] \
+   && [[ -z "$NO_TMUX" ]]; then
+  # Attach to "main" if exists, else create. No `exec` — exit returns to shell.
+  tmux attach -t main 2>/dev/null || tmux new -s main
 fi

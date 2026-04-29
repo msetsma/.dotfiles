@@ -10,7 +10,8 @@ brew "sketchybar"
 
 # Terminal & Multiplexer
 cask "ghostty"
-brew "zellij"
+brew "tmux"
+brew "mosh"
 
 # Shell Tools
 brew "fzf"

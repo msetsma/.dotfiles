@@ -3,7 +3,6 @@ copy_command = "pbcopy"  # default/fallback
 theme            = "tokyo-night"                # tokyo-night | catppuccin-macchiato | catppuccin-mocha | gruvbox-dark
 theme_ghostty    = "TokyoNight"                # Tokyo Night | Catppuccin Macchiato | Catppuccin Mocha | GruvboxDark
 theme_wezterm    = "Tokyo Night Storm (Gogh)"   # Tokyo Night Storm (Gogh) | Catppuccin Macchiato (Gogh) | Catppuccin Mocha (Gogh) | GruvboxDark
-theme_zellij     = "tokyo-night"                # tokyo-night | catppuccin-macchiato | catppuccin-mocha | gruvbox-dark
 
 [common.files]
 "common/linters" = "~/.config"
@@ -14,8 +13,7 @@ theme_zellij     = "tokyo-night"                # tokyo-night | catppuccin-macch
 "common/starship" = "~/.config"
 "common/zsh" = "~/.config/zsh"
 "common/bash" = "~/.config/bash"
-"common/zellij/config.kdl" = { target = "~/.config/zellij/config.kdl", type = "template" }
-"common/zellij/layouts" = "~/.config/zellij/layouts"
+"common/tmux/tmux.conf" = "~/.tmux.conf"
 "common/uv" = "~/.config/uv"
 "common/claude/settings.json" = "~/.claude/settings.json"
 "common/claude/CLAUDE.md" = "~/.claude/CLAUDE.md"

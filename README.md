@@ -11,8 +11,8 @@ Feel free to take what you want, but I would advise against blindly installing w
 This repo is designed around a **unix-first** philosophy. The core dev environment (zsh, neovim, CLI tools) targets unix, and Windows gets there via WSL2.
 
 ```
-macOS:    native apps (Ghostty, AeroSpace) --> unix backend (zsh, neovim, zellij)
-Windows:  native apps (WezTerm, AHK)       --> WSL2 --> unix backend (zsh, neovim, zellij)
+macOS:    native apps (Ghostty, AeroSpace) --> unix backend (zsh, neovim, tmux)
+Windows:  native apps (WezTerm, AHK)       --> WSL2 --> unix backend (zsh, neovim, tmux)
 ```
 
 Both platforms converge on the same `common/` configs for the shell and dev tools. The difference is only in the GUI layer above.
@@ -143,7 +143,7 @@ cargo make info            # Show all available commands
 
 ### Common (all platforms)
 
-[Neovim](https://neovim.io/) | [Zsh](https://www.zsh.org/) + [Oh My Zsh](https://github.com/ohmyzsh/ohmyzsh) | [Zellij](https://github.com/zellij-org/zellij) | [Mise](https://github.com/jdx/mise) | [Dotter](https://github.com/SuperCuber/dotter) | [Cargo-Make](https://github.com/sagiegurari/cargo-make) | [Starship](https://github.com/starship/starship) | [fzf](https://github.com/junegunn/fzf) | [eza](https://github.com/eza-community/eza) | [bat](https://github.com/sharkdp/bat) | [ripgrep](https://github.com/BurntSushi/ripgrep) | [fd](https://github.com/sharkdp/fd) | [yazi](https://github.com/sxyazi/yazi) | [lazygit](https://github.com/jesseduffield/lazygit) | [Bottom](https://github.com/ClementTsang/bottom) | [Ruff](https://github.com/astral-sh/ruff) | [Vivid](https://github.com/sharkdp/vivid) | [FiraCode](https://github.com/tonsky/FiraCode)
+[Neovim](https://neovim.io/) | [Zsh](https://www.zsh.org/) + [Oh My Zsh](https://github.com/ohmyzsh/ohmyzsh) | [tmux](https://github.com/tmux/tmux) | [Mosh](https://mosh.org/) | [Mise](https://github.com/jdx/mise) | [Dotter](https://github.com/SuperCuber/dotter) | [Cargo-Make](https://github.com/sagiegurari/cargo-make) | [Starship](https://github.com/starship/starship) | [fzf](https://github.com/junegunn/fzf) | [eza](https://github.com/eza-community/eza) | [bat](https://github.com/sharkdp/bat) | [ripgrep](https://github.com/BurntSushi/ripgrep) | [fd](https://github.com/sharkdp/fd) | [yazi](https://github.com/sxyazi/yazi) | [lazygit](https://github.com/jesseduffield/lazygit) | [Bottom](https://github.com/ClementTsang/bottom) | [Ruff](https://github.com/astral-sh/ruff) | [Vivid](https://github.com/sharkdp/vivid) | [FiraCode](https://github.com/tonsky/FiraCode)
 
 ### macOS-only (GUI layer)
 

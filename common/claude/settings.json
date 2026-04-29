@@ -124,7 +124,8 @@
   "enabledPlugins": {
     "context-mode@claude-context-mode": true,
     "rust-analyzer-lsp@claude-plugins-official": true,
-    "caveman@caveman": true
+    "caveman@caveman": true,
+    "everything-claude-code@everything-claude-code": true
   },
   "extraKnownMarketplaces": {
     "claude-context-mode": {
@@ -138,8 +139,16 @@
         "source": "github",
         "repo": "JuliusBrussee/caveman"
       }
+    },
+    "everything-claude-code": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/affaan-m/everything-claude-code.git"
+      }
     }
   },
   "alwaysThinkingEnabled": true,
-  "effortLevel": "high"
+  "effortLevel": "xhigh",
+  "tui": "fullscreen",
+  "verbose": true
 }
