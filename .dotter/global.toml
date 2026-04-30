@@ -17,6 +17,7 @@ theme_wezterm    = "Tokyo Night Storm (Gogh)"   # Tokyo Night Storm (Gogh) | Cat
 "common/uv" = "~/.config/uv"
 "common/claude/settings.json" = "~/.claude/settings.json"
 "common/claude/CLAUDE.md" = "~/.claude/CLAUDE.md"
+"common/moshi/hook-runner.sh" = "~/.config/moshi/hook-runner.sh"
 
 [windows.files]
 "windows/startup/startup.vbs" = "C:\\Users\\2015m\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\startup.vbs"

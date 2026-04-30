@@ -69,13 +69,26 @@ done
 eval "$(mise activate zsh)"
 
 # tmux auto-start (interactive shell, not nested, not in editor terminals)
+# Two-session model:
+#   - local (WezTerm/Ghostty)  -> session "main"
+#   - remote (mosh/ssh)        -> session "mobile"
+# Same tmux server, separate sessions = no mirroring, no fighting over
+# viewport size. Each location preserves its own continuity. The Moshi iOS
+# app's selector still shows both (and any project sessions from `moshi <dir>`).
+#
+# When MOSHI_CLIENT is set the Moshi app drives the attach itself; skip
+# autostart so its session selector + launch command don't nest.
 if (( $+commands[tmux] )) \
    && [[ -o interactive ]] \
    && [[ -z "$TMUX" ]] \
    && [[ -z "$VSCODE_INJECTION" ]] \
    && [[ -z "$INSIDE_EMACS" ]] \
    && [[ "$TERM_PROGRAM" != "vscode" ]] \
-   && [[ -z "$NO_TMUX" ]]; then
-  # Attach to "main" if exists, else create. No `exec` — exit returns to shell.
-  tmux attach -t main 2>/dev/null || tmux new -s main
+   && [[ -z "$NO_TMUX" ]] \
+   && [[ -z "$MOSHI_CLIENT" ]]; then
+  if [[ -n "$MOSH_CONNECTION" || -n "$SSH_CONNECTION" || -n "$SSH_TTY" ]]; then
+    tmux attach -t mobile 2>/dev/null || tmux new -s mobile
+  else
+    tmux attach -t main 2>/dev/null || tmux new -s main
+  fi
 fi

@@ -155,6 +155,26 @@ cargo make info            # Show all available commands
 
 ---
 
+## Moshi (remote coding from iPhone)
+
+iPhone -> Mosh/Tailscale -> Windows -> WSL2 -> tmux -> Claude Code.
+
+Session continuity: zsh autostart uses two separate sessions on the same
+tmux server -- `main` for local WezTerm, `mobile` for remote mosh/Moshi.
+No mirroring or viewport fights. Each location has its own continuity;
+the Moshi iOS selector lists both plus any project sessions from
+`moshi <dir>`.
+
+Push notifications: `common/moshi/hook-runner.sh` gates Claude Code
+hooks via `tmux list-clients` -- pushes fire only when a Moshi client
+is actually attached. Local-only sessions stay silent.
+
+Setup:
+- [docs/ssh-mosh-setup-guide.md](docs/ssh-mosh-setup-guide.md) -- host SSH/Mosh/Tailscale
+- [common/moshi/README.md](common/moshi/README.md) -- hook integration + token
+
+---
+
 ## Platform Detection
 
 Shell configs use `common/zsh/platform.zsh` to detect the runtime environment:
