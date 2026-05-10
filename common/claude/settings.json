@@ -122,10 +122,10 @@
     "command": "bash /home/msetsma/.claude/statusline-command.sh"
   },
   "enabledPlugins": {
-    "context-mode@claude-context-mode": true,
     "rust-analyzer-lsp@claude-plugins-official": true,
     "caveman@caveman": true,
-    "everything-claude-code@everything-claude-code": true
+    "everything-claude-code@everything-claude-code": true,
+    "superpowers@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "claude-context-mode": {
@@ -148,7 +148,6 @@
     }
   },
   "alwaysThinkingEnabled": true,
-  "effortLevel": "xhigh",
   "tui": "fullscreen",
   "verbose": true
 }

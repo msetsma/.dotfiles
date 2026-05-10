@@ -14,6 +14,7 @@ theme_wezterm    = "Tokyo Night Storm (Gogh)"   # Tokyo Night Storm (Gogh) | Cat
 "common/zsh" = "~/.config/zsh"
 "common/bash" = "~/.config/bash"
 "common/tmux/tmux.conf" = "~/.tmux.conf"
+"common/tmux/which-key.yaml" = "~/.tmux/plugins/tmux-which-key/config.yaml"
 "common/uv" = "~/.config/uv"
 "common/claude/settings.json" = "~/.claude/settings.json"
 "common/claude/CLAUDE.md" = "~/.claude/CLAUDE.md"
