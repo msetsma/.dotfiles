@@ -59,6 +59,7 @@ Platform-specific behavior gated by `(( IS_MAC ))` / `(( IS_WSL ))`:
 │   ├── fastfetch/      # System info tool
 │   ├── linters/        # ruff.toml, stylua.toml
 │   ├── mise/           # Runtime version manager
+│   ├── moshi/          # Moshi remote-coding hook runner + docs
 │   ├── nvim/           # Neovim configuration (lazy.nvim)
 │   ├── starship/       # Shell prompt
 │   ├── tmux/           # Terminal multiplexer
@@ -165,6 +166,7 @@ update                  # zsh function (brew/apt + rustup + cargo + mise)
 **System**: bottom, fastfetch
 **Python**: ruff (linting/formatting)
 **Terminal**: tmux (multiplexer), mosh (mobile-friendly SSH)
+**Remote coding**: Moshi (iOS) -> mosh -> WSL -> tmux. Hook runner at `common/moshi/hook-runner.sh` gates push notifications on `MOSHI_CLIENT` attached. Session continuity via attach-most-recent in `common/zsh/.zshrc`. See `common/moshi/README.md`.
 
 ## User Preferences & Patterns
 

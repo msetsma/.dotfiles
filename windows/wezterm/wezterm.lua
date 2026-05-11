@@ -12,7 +12,7 @@ config.launch_menu = {
 }
 
 -- Colors
-config.color_scheme = '{{theme_wezterm}}'
+config.color_scheme = 'Catppuccin Mocha'
 local color_table = wezterm.color.get_builtin_schemes()[config.color_scheme]
 wezterm.GLOBAL.color_table = color_table
 config.colors = {
@@ -28,9 +28,8 @@ config.colors = {
         new_tab_hover = { bg_color = color_table.ansi[1], fg_color = color_table.ansi[2], intensity = 'Bold' },
     },
 }
+
 config.window_frame = {
-    font = wezterm.font({ family = 'JetBrains Mono', weight = 'Bold' }),
-    font_size = 10.0,
     active_titlebar_bg = color_table.background,
     inactive_titlebar_bg = color_table.background,
 }
@@ -51,8 +50,10 @@ config.window_padding = {
 }
 
 -- Font
-config.font = wezterm.font_with_fallback({ 'FiraCode Nerd Font', 'FiraCode NF', 'JetBrains Mono' })
-config.font_size = F.get_os_font_size()
+config.font = wezterm.font_with_fallback {
+  'FiraCode Nerd Font',
+  'Noto Color Emoji',
+}
 
 -- Scrolling
 config.enable_scroll_bar = false

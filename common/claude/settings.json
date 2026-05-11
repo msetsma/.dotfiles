@@ -54,7 +54,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun /tmp/bunx-1000-moshi-hooks@latest/node_modules/moshi-hooks/src/index.ts # moshi-hooks",
+            "command": "bash ~/.config/moshi/hook-runner.sh # moshi-hooks (gated)",
             "async": true
           }
         ]
@@ -65,7 +65,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun /tmp/bunx-1000-moshi-hooks@latest/node_modules/moshi-hooks/src/index.ts # moshi-hooks",
+            "command": "bash ~/.config/moshi/hook-runner.sh # moshi-hooks (gated)",
             "async": true
           }
         ]
@@ -76,7 +76,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun /tmp/bunx-1000-moshi-hooks@latest/node_modules/moshi-hooks/src/index.ts # moshi-hooks",
+            "command": "bash ~/.config/moshi/hook-runner.sh # moshi-hooks (gated)",
             "async": true
           }
         ]
@@ -88,7 +88,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun /tmp/bunx-1000-moshi-hooks@latest/node_modules/moshi-hooks/src/index.ts # moshi-hooks",
+            "command": "bash ~/.config/moshi/hook-runner.sh # moshi-hooks (gated)",
             "async": true
           }
         ]
@@ -99,7 +99,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun /tmp/bunx-1000-moshi-hooks@latest/node_modules/moshi-hooks/src/index.ts # moshi-hooks",
+            "command": "bash ~/.config/moshi/hook-runner.sh # moshi-hooks (gated)",
             "async": true
           }
         ]
@@ -110,7 +110,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun /tmp/bunx-1000-moshi-hooks@latest/node_modules/moshi-hooks/src/index.ts # moshi-hooks",
+            "command": "bash ~/.config/moshi/hook-runner.sh # moshi-hooks (gated)",
             "async": true
           }
         ]
@@ -122,10 +122,10 @@
     "command": "bash /home/msetsma/.claude/statusline-command.sh"
   },
   "enabledPlugins": {
-    "context-mode@claude-context-mode": true,
     "rust-analyzer-lsp@claude-plugins-official": true,
     "caveman@caveman": true,
-    "everything-claude-code@everything-claude-code": true
+    "everything-claude-code@everything-claude-code": true,
+    "superpowers@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "claude-context-mode": {
@@ -148,7 +148,6 @@
     }
   },
   "alwaysThinkingEnabled": true,
-  "effortLevel": "xhigh",
   "tui": "fullscreen",
   "verbose": true
 }

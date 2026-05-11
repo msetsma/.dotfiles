@@ -184,6 +184,9 @@ script = [
     "  done < ~/.dotfiles/uv-tools.txt",
     "fi",
 
+    "echo '--- Moshi remote-coding ---'",
+    "if command -v bun >/dev/null 2>&1; then echo 'bun present — finish Moshi setup with: bunx moshi-hooks token <YOUR_TOKEN>'; else echo 'install bun + run bunx moshi-hooks token <YOUR_TOKEN> when ready'; fi",
+
     "echo '--- Default shell set via /etc/wsl.conf ---'",
 
     "echo '--- Deploying wsl.conf ---'",
