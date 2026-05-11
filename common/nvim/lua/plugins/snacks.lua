@@ -14,8 +14,8 @@ return {
         indent = { enabled = true },
         lazygit = { enabled = true },
         input = { enabled = true },
-        notifier = { enables = true },
-        notify = { enables = true },
+        notifier = { enabled = true },
+        notify = { enabled = true },
         words = { enabled = true },
     },
     keys = {

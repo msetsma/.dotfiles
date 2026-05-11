@@ -2,55 +2,47 @@ return {
     {
         'nvim-treesitter/nvim-treesitter',
         dependencies = {
-            'nushell/tree-sitter-nu',
             'nvim-treesitter/nvim-treesitter-textobjects',
         },
         event = { 'BufReadPre', 'BufNewFile' },
         build = ':TSUpdate',
         config = function()
-            vim.defer_fn(function()
-                require('nvim-treesitter.configs').setup({
-                    ensure_installed = {
-                        'bash',
-                        'dockerfile',
-                        'lua',
-                        'c',
-                        'lua',
-                        'rust',
-                        'python',
-                        'go',
-                        'dockerfile',
-                        'toml',
-                        'json',
-                        'yaml',
-                        'toml',
-                        'markdown',
-                        'bash',
-                        'nu',
-                        'terraform',
-                    },
-                    sync_install = false,
-                    auto_install = true,
-                    highlights = {
+            require('nvim-treesitter.configs').setup({
+                ensure_installed = {
+                    'bash',
+                    'c',
+                    'dockerfile',
+                    'go',
+                    'json',
+                    'lua',
+                    'markdown',
+                    'markdown_inline',
+                    'python',
+                    'rust',
+                    'terraform',
+                    'toml',
+                    'yaml',
+                },
+                sync_install = false,
+                auto_install = true,
+                highlights = {
+                    enable = true,
+                },
+                textobjects = {
+                    select = {
                         enable = true,
-                    },
-                    textobjects = {
-                        select = {
-                            enable = true,
-                            lookahead = true, -- Automatically jump forward to textobj, similar to targets.vim""
-                            keymaps = {
-                                -- You can use the capture groups defined in textobjects.scm
-                                ['aa'] = '@parameter.outer',
-                                ['ia'] = '@parameter.inner',
-                                ['af'] = '@function.outer',
-                                ['if'] = '@function.inner',
-                                ['ac'] = '@class.outer',
-                                ['ic'] = '@class.inner',
-                            },
+                        lookahead = true,
+                        keymaps = {
+                            ['aa'] = '@parameter.outer',
+                            ['ia'] = '@parameter.inner',
+                            ['af'] = '@function.outer',
+                            ['if'] = '@function.inner',
+                            ['ac'] = '@class.outer',
+                            ['ic'] = '@class.inner',
                         },
                     },
-                })
-            end, 0)
+                },
+            })
         end,
     },
 

@@ -4,9 +4,19 @@
 source "$ZDOTDIR/.zshenv"
 source "$ZDOTDIR/platform.zsh"
 
+<<<<<<< HEAD
 # ─────────────────────────────────────────────────────────────
 # 2. PATH (must come before anything that calls binaries)
 # ─────────────────────────────────────────────────────────────
+=======
+# Key stored safely in keychain, loaded into env at shell start
+
+export AZURE_OPENAI_BASE_URL=$(security find-generic-password -a "azure-openai" -s "azure-openai-endpoint" -w 2>/dev/null)
+export AZURE_RESOURCE_NAME=$(security find-generic-password -s "resource_name" -w 2>/dev/null)
+export AZURE_OPENAI_API_KEY=$(security find-generic-password -a "azure-openai" -s "azure-openai-api-key" -w 2>/dev/null)
+
+# Only set PATH once
+>>>>>>> 3ef11b4 (changes to zsh and aerospace)
 if [ -z "$PATH_SET" ]; then
   export GOPATH="$HOME/go"
 

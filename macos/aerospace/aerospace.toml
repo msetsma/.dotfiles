@@ -9,30 +9,36 @@ default-root-container-layout = "tiles"
 default-root-container-orientation = "auto"
 on-focused-monitor-changed = ["move-mouse monitor-lazy-center"]
 automatically-unhide-macos-hidden-apps = true
-exec-on-workspace-change = [
-  "/bin/bash",
-  "-c",
-  "sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE PREV_WORKSPACE=$AEROSPACE_PREV_WORKSPACE && ~/.config/sketchybar/plugins/update_workspace_icons.sh"
-]
+# exec-on-workspace-change = [
+#   "/bin/bash",
+#   "-c",
+#   "sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE PREV_WORKSPACE=$AEROSPACE_PREV_WORKSPACE && ~/.config/sketchybar/plugins/update_workspace_icons.sh"
+# ]
 
 [key-mapping]
 preset = "qwerty"
 
 [gaps]
-inner.horizontal = 0
-inner.vertical = 0
-outer.bottom = 0
-outer.top = 0
-outer.right = 0
-outer.left = 0
+inner.horizontal = 2
+inner.vertical = 2
+outer.bottom = 2
+outer.top = 2
+outer.right = 2
+outer.left = 2
 
 [mode.main.binding]
 # Launch/Focus Apps
-ctrl-alt-cmd-c = '''exec-and-forget open -a "Visual Studio Code"'''
-ctrl-alt-cmd-t = '''exec-and-forget open -a "Ghostty"'''
-ctrl-alt-cmd-b = '''exec-and-forget open -a "Firefox"'''
-ctrl-alt-cmd-m = '''exec-and-forget open -a "Microsoft Teams"'''
-ctrl-alt-cmd-n = '''exec-and-forget open -a "Obsidian"'''
+ctrl-alt-cmd-shift-c = '''exec-and-forget open -a "Visual Studio Code"'''
+ctrl-alt-cmd-shift-t = '''exec-and-forget open -a "Ghostty"'''
+ctrl-alt-cmd-shift-b = '''exec-and-forget open -a "Safari"'''
+ctrl-alt-cmd-shift-m = '''exec-and-forget open -a "Microsoft Teams"'''
+ctrl-alt-cmd-shift-n = '''exec-and-forget open -a "Obsidian"'''
+ctrl-alt-cmd-shift-l = '''exec-and-forget open "/Applications/Open WebUI.app"'''
+ctrl-alt-cmd-shift-r = '''exec-and-forget ~/.config/aerospace/resort-windows.sh'''
+cmd-m = '''exec-and-forget ~/.config/aerospace/stash-window.sh'''
+cmd-h = []
+cmd-alt-h = []
+
 # See: https://nikitabobko.github.ioeAeroSpace/commands#layout
 alt-e = "layout tiles horizontal vertical"
 alt-comma = "layout accordion horizontal vertical"
@@ -73,9 +79,6 @@ alt-tab = "workspace-back-and-forth"
 alt-shift-tab = "move-workspace-to-monitor --wrap-around next"
 # See: https://nikitabobko.github.io/AeroSpace/commands#mode
 alt-shift-semicolon = "mode service"
-# Assign all windows to their designated workspaces
-alt-shift-a = "exec-and-forget ~/.config/aerospace/assign-workspaces.sh"
-
 # 'service' binding mode declaration.
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
 [mode.service.binding]
@@ -86,34 +89,7 @@ f = [
   "mode main"
 ]  # Toggle between floating and tiling layout
 backspace = ["close-all-windows-but-current", "mode main"]
-# sticky is not yet supported https://github.com/nikitabobko/AeroSpace/issues/2
-# s = ['layout sticky tiling', 'mode main']
 alt-shift-h = ["join-with left", "mode main"]
 alt-shift-j = ["join-with down", "mode main"]
 alt-shift-k = ["join-with up", "mode main"]
 alt-shift-l = ["join-with right", "mode main"]
-
-# Auto-assign windows to workspaces when they open
-[[on-window-detected]]
-if.app-name-regex-substring = "Ghostty"
-run = "move-node-to-workspace 1"
-
-[[on-window-detected]]
-if.app-name-regex-substring = "Code"
-run = "move-node-to-workspace 2"
-
-[[on-window-detected]]
-if.app-name-regex-substring = "Firefox"
-run = "move-node-to-workspace 3"
-
-[[on-window-detected]]
-if.app-name-regex-substring = "Microsoft Teams"
-run = "move-node-to-workspace 4"
-
-[[on-window-detected]]
-if.app-name-regex-substring = "Obsidian"
-run = "move-node-to-workspace 5"
-
-[[on-window-detected]]
-if.app-id = "com.apple.Safari.WebApp.8BF96B99-2FB3-4E75-B0E5-F505CD76E34D"
-run = ["layout tiling", "move-node-to-workspace 6", "fullscreen"]

@@ -2,7 +2,7 @@ return {
 	"nvimtools/none-ls.nvim",
 	dependencies = {
 		"nvimtools/none-ls-extras.nvim",
-		"jayp0521/mason-null-ls.nvim", -- ensure dependencies are installed
+		"jay-babu/mason-null-ls.nvim", -- ensure dependencies are installed
 	},
 	event = "VeryLazy",
 	config = function()

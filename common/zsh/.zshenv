@@ -2,6 +2,7 @@ export EDITOR="nvim"
 export VISUAL="nvim"
 export XDG_CONFIG_HOME="$HOME/.config"
 export ZSH="${ZDOTDIR:-$XDG_CONFIG_HOME/zsh}/ohmyzsh"
+export PATH="/Users/msetsma/.bun/bin:$PATH"
 
 export HOMEBREW_NO_ENV_HINTS=1
 
@@ -29,3 +30,4 @@ export ALGOLIA_CLI_TELEMETRY=0
 export GOTELEMETRY=off
 export AUTOMATEDLAB_TELEMETRY_OPTOUT=1
 export POWERSHELL_TELEMETRY_OPTOUT=1
+export OMO_SEND_ANONYMOUS_TELEMETRY=0

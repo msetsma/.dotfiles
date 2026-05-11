@@ -117,12 +117,8 @@
       }
     ]
   },
-  "statusLine": {
-    "type": "command",
-    "command": "bash /home/msetsma/.claude/statusline-command.sh"
-  },
   "enabledPlugins": {
-    "rust-analyzer-lsp@claude-plugins-official": true,
+    "rust-analyzer-lsp@claude-plugins-official": false,
     "caveman@caveman": true,
     "everything-claude-code@everything-claude-code": true,
     "superpowers@claude-plugins-official": true
