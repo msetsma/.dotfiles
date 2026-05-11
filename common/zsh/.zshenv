@@ -3,6 +3,8 @@ export VISUAL="nvim"
 export XDG_CONFIG_HOME="$HOME/.config"
 export ZSH="${ZDOTDIR:-$XDG_CONFIG_HOME/zsh}/ohmyzsh"
 
+export HOMEBREW_NO_ENV_HINTS=1
+
 # Telemetry Opt-Out (wide spread list, might not have tools installed)
 # Last updated: 2026-02-11
 

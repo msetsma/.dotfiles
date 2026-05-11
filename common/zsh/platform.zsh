@@ -1,31 +1,13 @@
-# platform.zsh — detect runtime environment
-# Sets: PLATFORM = "mac" | "wsl" | "linux"
-# Sets: IS_MAC, IS_WSL, IS_LINUX (boolean 0/1)
+# Detect platform
+case "$(uname -s)" in
+  Darwin) IS_MAC=1 ;;
+  Linux)  IS_LINUX=1 ;;
+esac
 
-_detect_platform() {
-    if [[ "$(uname -s)" == "Darwin" ]]; then
-        PLATFORM="mac"
-    elif grep -qi "microsoft\|wsl" /proc/version 2>/dev/null; then
-        PLATFORM="wsl"
-    else
-        PLATFORM="linux"
-    fi
-
-    IS_MAC=0; IS_WSL=0; IS_LINUX=0
-    case "$PLATFORM" in
-        mac)   IS_MAC=1 ;;
-        wsl)   IS_WSL=1 ;;
-        linux) IS_LINUX=1 ;;
-    esac
-
-    # Default search root for gitnav
-    if (( IS_WSL )); then
-        GITNAV_ROOT="/mnt/c/Users/2015m"
-    else
-        GITNAV_ROOT="$HOME"
-    fi
-
-    export PLATFORM IS_MAC IS_WSL IS_LINUX GITNAV_ROOT
-}
-
-_detect_platform
+# Package manager prefix (Homebrew on Mac, Linuxbrew on Linux if present)
+if (( IS_MAC )); then
+  PKG_PREFIX="/opt/homebrew"
+elif [[ -d /home/linuxbrew/.linuxbrew ]]; then
+  PKG_PREFIX="/home/linuxbrew/.linuxbrew"
+fi
+export PKG_PREFIX

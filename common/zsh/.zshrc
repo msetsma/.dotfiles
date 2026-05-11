@@ -1,94 +1,103 @@
-# Source environment variables and platform detection
+# ─────────────────────────────────────────────────────────────
+# 1. Environment & platform detection
+# ─────────────────────────────────────────────────────────────
 source "$ZDOTDIR/.zshenv"
 source "$ZDOTDIR/platform.zsh"
 
-# Only set PATH once
+# ─────────────────────────────────────────────────────────────
+# 2. PATH (must come before anything that calls binaries)
+# ─────────────────────────────────────────────────────────────
 if [ -z "$PATH_SET" ]; then
-  if (( IS_MAC )); then
-    export PATH="/opt/homebrew/bin:/usr/local/bin:$HOME/.cargo/bin:$HOME/.local/bin:/usr/local/go/bin:$PATH"
-  else
-    export PATH="$HOME/.cargo/bin:$HOME/.local/bin:/usr/local/go/bin:$PATH"
-    # Linuxbrew (if installed)
-    [[ -d /home/linuxbrew/.linuxbrew ]] && export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
-  fi
   export GOPATH="$HOME/go"
-  export PATH="$PATH:$GOPATH/bin"
+
+  path_dirs=(
+    "$HOME/.cargo/bin"
+    "$HOME/.local/bin"
+    "/usr/local/go/bin"
+    "$GOPATH/bin"
+  )
+
+  [[ -n "$PKG_PREFIX" ]] && path_dirs=("$PKG_PREFIX/bin" "${path_dirs[@]}")
+  (( IS_MAC )) && path_dirs=("/usr/local/bin" "${path_dirs[@]}")  # Intel fallback
+
+  export PATH="$(IFS=:; echo "${path_dirs[*]}"):$PATH"
   export PATH_SET=1
 fi
 
+# ─────────────────────────────────────────────────────────────
+# 3. Secrets & aliases
+# ─────────────────────────────────────────────────────────────
+source "$ZDOTDIR/.secrets.zsh"
+source "$ZDOTDIR/aliases.zsh"
 
-# fpath setup (before compinit)
-if (( IS_MAC )); then
-  fpath+=("$(brew --prefix)/share/zsh/site-functions")
-fi
+# ─────────────────────────────────────────────────────────────
+# 4. Completions (before compinit)
+# ─────────────────────────────────────────────────────────────
+# Package manager site-functions (Homebrew/Linuxbrew)
+[[ -n "$PKG_PREFIX" ]] && fpath+=("$PKG_PREFIX/share/zsh/site-functions")
+
+# uv/uvx completions, cached
 _uv_comp_dir="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/completions"
 mkdir -p "$_uv_comp_dir"
-[[ ! -f "$_uv_comp_dir/_uv" ]] && uv generate-shell-completion zsh > "$_uv_comp_dir/_uv" 2>/dev/null
+[[ ! -f "$_uv_comp_dir/_uv" ]]  && uv  generate-shell-completion zsh > "$_uv_comp_dir/_uv"  2>/dev/null
 [[ ! -f "$_uv_comp_dir/_uvx" ]] && uvx --generate-shell-completion zsh > "$_uv_comp_dir/_uvx" 2>/dev/null
-fpath=("$_uv_comp_dir" $fpath)
 
-autoload -Uz compinit && compinit
+# zsh-completions plugin needs to be on fpath before compinit
+fpath=(
+  "$ZDOTDIR/functions"
+  "$ZDOTDIR/plugins/zsh-completions/src"
+  "$_uv_comp_dir"
+  $fpath
+)
 
-# Homebrew
-if (( IS_MAC )); then
-  export HOMEBREW_NO_ENV_HINTS=1
-  export HOMEBREW_NO_AUTO_UPDATE=1
-  export HOMEBREW_NO_INSTALL_CLEANUP=1
+# Cached compinit (full security check once per day)
+autoload -Uz compinit
+if [[ -n "$ZDOTDIR/.zcompdump"(#qN.mh+24) ]]; then
+  compinit
+else
+  compinit -C
 fi
 
-# Oh My Zsh
-plugins=(
-  fzf-tab
-  zsh-autosuggestions
-  zsh-syntax-highlighting
-  zsh-completions
-)
-source $ZSH/oh-my-zsh.sh
+# Autoload custom functions
+for func_file in "$ZDOTDIR/functions"/*(N); do
+  autoload -Uz "${func_file:t}"
+done
 
-# fzf
+# ─────────────────────────────────────────────────────────────
+# 5. Plugins (order matters: syntax-highlighting LAST)
+# ─────────────────────────────────────────────────────────────
+# source "$ZDOTDIR/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
+# source "$ZDOTDIR/plugins/fzf-tab/fzf-tab.plugin.zsh"
+# source "$ZDOTDIR/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+
+# ─────────────────────────────────────────────────────────────
+# 6. fzf
+# ─────────────────────────────────────────────────────────────
 [ -f "$HOME/.fzf.zsh" ] && source <(fzf --zsh)
+export FZF_DEFAULT_COMMAND='rg --files --hidden --glob "!.git"'
 export FZF_CTRL_T_OPTS="
   --walker-skip .git,node_modules,target
   --preview 'bat -n --color=always {}'
   --bind 'ctrl-/:change-preview-window(down|hidden|)'"
-export FZF_DEFAULT_COMMAND='rg --hidden -l ""' # Include hidden files
 
-# Load aliases
-source "$HOME/.config/zsh/aliases.zsh"
-
-# Autoload functions
-fpath=($HOME/.config/zsh/functions $fpath)
-for func_file in $HOME/.config/zsh/functions/*; do
-  [[ -f "$func_file" ]] && autoload -Uz ${func_file:t}
-done
-
-# starship
+# ─────────────────────────────────────────────────────────────
+# 7. Prompt & runtime managers
+# ─────────────────────────────────────────────────────────────
 (( $+commands[starship] )) && eval "$(starship init zsh)"
+(( $+commands[mise] ))     && eval "$(mise activate zsh)"
 
-# mise (runtime version manager)
-eval "$(mise activate zsh)"
+# ─────────────────────────────────────────────────────────────
+# 8. Sensible zsh defaults (previously provided by OMZ)
+# ─────────────────────────────────────────────────────────────
+# History
+HISTFILE="$ZDOTDIR/.zsh_history"
+HISTSIZE=50000
+SAVEHIST=50000
+setopt SHARE_HISTORY HIST_IGNORE_DUPS HIST_IGNORE_SPACE HIST_VERIFY EXTENDED_HISTORY
 
-# tmux auto-start (interactive shell, not nested, not in editor terminals)
-# Two-session model:
-#   - local (WezTerm/Ghostty)  -> session "main"
-#   - remote (mosh/ssh)        -> session "mobile"
-# Same tmux server, separate sessions = no mirroring, no fighting over
-# viewport size. Each location preserves its own continuity. The Moshi iOS
-# app's selector still shows both (and any project sessions from `moshi <dir>`).
-#
-# When MOSHI_CLIENT is set the Moshi app drives the attach itself; skip
-# autostart so its session selector + launch command don't nest.
-if (( $+commands[tmux] )) \
-   && [[ -o interactive ]] \
-   && [[ -z "$TMUX" ]] \
-   && [[ -z "$VSCODE_INJECTION" ]] \
-   && [[ -z "$INSIDE_EMACS" ]] \
-   && [[ "$TERM_PROGRAM" != "vscode" ]] \
-   && [[ -z "$NO_TMUX" ]] \
-   && [[ -z "$MOSHI_CLIENT" ]]; then
-  if [[ -n "$MOSH_CONNECTION" || -n "$SSH_CONNECTION" || -n "$SSH_TTY" ]]; then
-    tmux attach -t mobile 2>/dev/null || tmux new -s mobile
-  else
-    tmux attach -t main 2>/dev/null || tmux new -s main
-  fi
-fi
+# Directory navigation
+setopt AUTO_CD AUTO_PUSHD PUSHD_IGNORE_DUPS PUSHD_SILENT
+
+# Completion behavior
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'

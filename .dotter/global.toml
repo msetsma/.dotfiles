@@ -13,18 +13,18 @@ theme_wezterm    = "Tokyo Night Storm (Gogh)"   # Tokyo Night Storm (Gogh) | Cat
 "common/starship" = "~/.config"
 "common/zsh" = "~/.config/zsh"
 "common/bash" = "~/.config/bash"
-"common/tmux/tmux.conf" = "~/.tmux.conf"
-"common/tmux/which-key.yaml" = "~/.tmux/plugins/tmux-which-key/config.yaml"
+# "common/tmux/tmux.conf" = "~/.tmux.conf"
+# "common/tmux/which-key.yaml" = "~/.tmux/plugins/tmux-which-key/config.yaml"
 "common/uv" = "~/.config/uv"
-"common/claude/settings.json" = "~/.claude/settings.json"
-"common/claude/CLAUDE.md" = "~/.claude/CLAUDE.md"
+# "common/claude/settings.json" = "~/.claude/settings.json"
+# "common/claude/CLAUDE.md" = "~/.claude/CLAUDE.md"
 "common/moshi/hook-runner.sh" = "~/.config/moshi/hook-runner.sh"
 
 [windows.files]
 "windows/startup/startup.vbs" = "C:\\Users\\2015m\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\startup.vbs"
 "windows/komorebi" = "~/.config/komorebi"
 "windows/yasb" = "~/.config/yasb"
-"windows/nushell" = "~/.config/nushell"
+# "windows/nushell" = "~/.config/nushell"
 "windows/wezterm/constants.lua" = "~/.config/wezterm/constants.lua"
 "windows/wezterm/functions.lua" = "~/.config/wezterm/functions.lua"
 "windows/wezterm/keybinds.lua" = "~/.config/wezterm/keybinds.lua"
@@ -33,7 +33,7 @@ theme_wezterm    = "Tokyo Night Storm (Gogh)"   # Tokyo Night Storm (Gogh) | Cat
 
 [mac.files]
 "common/bottom" = "~/Library/Application Support/bottom"
-"macos/borders" = "~/.config/borders"
+# "macos/borders" = "~/.config/borders"
 "macos/aerospace" = "~/.config/aerospace"
 "macos/ghostty/config" = { target = "~/.config/ghostty/config", type = "template" }
 
