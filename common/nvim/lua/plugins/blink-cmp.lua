@@ -5,7 +5,7 @@ return {
         'rafamadriz/friendly-snippets',
         'mikavilpas/blink-ripgrep.nvim',
     },
-    version = '0.*',
+    version = '*',
 
     ---@module 'blink.cmp'
     opts = {

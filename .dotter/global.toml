@@ -1,7 +1,7 @@
 [common.variables]
 copy_command = "pbcopy"  # default/fallback
 theme            = "tokyo-night"                # tokyo-night | catppuccin-macchiato | catppuccin-mocha | gruvbox-dark
-theme_ghostty    = "TokyoNight"                # Tokyo Night | Catppuccin Macchiato | Catppuccin Mocha | GruvboxDark
+theme_ghostty    = "TokyoNight"                 # Tokyo Night | Catppuccin Macchiato | Catppuccin Mocha | GruvboxDark
 theme_wezterm    = "Tokyo Night Storm (Gogh)"   # Tokyo Night Storm (Gogh) | Catppuccin Macchiato (Gogh) | Catppuccin Mocha (Gogh) | GruvboxDark
 
 [common.files]
