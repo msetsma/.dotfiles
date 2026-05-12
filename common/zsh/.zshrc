@@ -4,11 +4,9 @@
 source "$ZDOTDIR/.zshenv"
 source "$ZDOTDIR/platform.zsh"
 
-# Key stored safely in keychain, loaded into env at shell start
-
-export AZURE_OPENAI_BASE_URL=$(security find-generic-password -a "azure-openai" -s "azure-openai-endpoint" -w 2>/dev/null)
-export AZURE_RESOURCE_NAME=$(security find-generic-password -s "resource_name" -w 2>/dev/null)
-export AZURE_OPENAI_API_KEY=$(security find-generic-password -a "azure-openai" -s "azure-openai-api-key" -w 2>/dev/null)
+# ─────────────────────────────────────────────────────────────
+# 2. PATH (must come before anything that calls binaries)
+# ─────────────────────────────────────────────────────────────
 
 # Only set PATH once
 if [ -z "$PATH_SET" ]; then

@@ -48,75 +48,6 @@
     ]
   },
   "model": "opus",
-  "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash ~/.config/moshi/hook-runner.sh # moshi-hooks (gated)",
-            "async": true
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash ~/.config/moshi/hook-runner.sh # moshi-hooks (gated)",
-            "async": true
-          }
-        ]
-      }
-    ],
-    "SubagentStop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash ~/.config/moshi/hook-runner.sh # moshi-hooks (gated)",
-            "async": true
-          }
-        ]
-      }
-    ],
-    "Notification": [
-      {
-        "matcher": "permission_prompt|idle_prompt",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash ~/.config/moshi/hook-runner.sh # moshi-hooks (gated)",
-            "async": true
-          }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash ~/.config/moshi/hook-runner.sh # moshi-hooks (gated)",
-            "async": true
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash ~/.config/moshi/hook-runner.sh # moshi-hooks (gated)",
-            "async": true
-          }
-        ]
-      }
-    ]
-  },
   "enabledPlugins": {
     "rust-analyzer-lsp@claude-plugins-official": false,
     "caveman@caveman": true,
@@ -124,12 +55,6 @@
     "superpowers@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
-    "claude-context-mode": {
-      "source": {
-        "source": "github",
-        "repo": "mksglu/claude-context-mode"
-      }
-    },
     "caveman": {
       "source": {
         "source": "github",
@@ -144,6 +69,5 @@
     }
   },
   "alwaysThinkingEnabled": true,
-  "tui": "fullscreen",
-  "verbose": true
+  "tui": "fullscreen"
 }

@@ -13,6 +13,7 @@ theme_wezterm    = "Tokyo Night Storm (Gogh)"   # Tokyo Night Storm (Gogh) | Cat
 "common/starship" = "~/.config"
 "common/zsh" = "~/.config/zsh"
 "common/bash" = "~/.config/bash"
+"common/zellij" = "~/.config/zellij"
 # "common/tmux/tmux.conf" = "~/.tmux.conf"
 # "common/tmux/which-key.yaml" = "~/.tmux/plugins/tmux-which-key/config.yaml"
 "common/uv" = "~/.config/uv"
