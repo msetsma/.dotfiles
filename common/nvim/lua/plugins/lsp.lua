@@ -108,6 +108,11 @@ return {
 
         require('mason-lspconfig').setup({
             ensure_installed = servers,
+            automatic_enable = {
+                exclude = {
+                    'stylua',
+                },
+            },
         })
 
         require('mason-tool-installer').setup({

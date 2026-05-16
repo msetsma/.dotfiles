@@ -1,18 +1,176 @@
-if (( IS_MAC )); then
-  echo "Updating Homebrew and installed packages..."
-  brew update && brew upgrade && (brew cleanup || true)
-elif command -v apt &>/dev/null; then
-  echo "Updating apt packages..."
-  sudo apt update && sudo apt upgrade -y
+emulate -L zsh
+setopt pipefail
+
+local -a managers update_steps unavailable_checks
+local manager name bin cmd answer check_count check_note check_output check_status
+local total_outdated=0
+local updates_started=0
+
+_update_nonempty_line_count() {
+  local text="$1"
+  local -a lines nonempty
+
+  lines=("${(@f)text}")
+  nonempty=("${(@M)lines:#?*}")
+  print -- "${#nonempty}"
+}
+
+_update_count_homebrew() {
+  check_output="$(HOMEBREW_NO_AUTO_UPDATE=1 brew outdated --greedy --quiet 2>/dev/null)"
+  check_status=$?
+  check_count="$(_update_nonempty_line_count "$check_output")"
+}
+
+_update_count_apt() {
+  check_output="$(apt list --upgradeable 2>/dev/null)"
+  check_status=$?
+  check_output="$(print -r -- "$check_output" | sed '1{/^Listing/d;}')"
+  check_count="$(_update_nonempty_line_count "$check_output")"
+}
+
+_update_count_mise() {
+  check_output="$(mise outdated 2>/dev/null)"
+  check_status=$?
+  check_output="$(print -r -- "$check_output" | sed '1{/^name[[:space:]]/d;}')"
+  check_count="$(_update_nonempty_line_count "$check_output")"
+}
+
+_update_count_rustup() {
+  check_output="$(rustup check 2>/dev/null)"
+  check_status=$?
+  check_count="$(print -r -- "$check_output" | awk '/Update available/ { count++ } END { print count + 0 }')"
+}
+
+_update_count_cargo_install_update() {
+  check_output="$(cargo install-update -l 2>/dev/null)"
+  check_status=$?
+  check_count="$(print -r -- "$check_output" | awk '$NF == "Yes" { count++ } END { print count + 0 }')"
+}
+
+_update_count_uv() {
+  check_count="?"
+  check_note="no quiet outdated check; will run upgrade if confirmed"
+}
+
+_update_count_npm() {
+  check_output="$(npm outdated -g --depth=0 --parseable 2>/dev/null)"
+  check_status=$?
+  check_count="$(_update_nonempty_line_count "$check_output")"
+}
+
+_update_count_pipx() {
+  check_count="?"
+  check_note="pipx has no outdated-list command here; will run upgrade-all if confirmed"
+}
+
+_update_count_bun() {
+  check_output="$(bun outdated -g 2>/dev/null)"
+  check_status=$?
+  check_count="$(print -r -- "$check_output" | awk '/^│/ && $0 !~ /Package|─/ { count++ } END { print count + 0 }')"
+}
+
+managers=(
+  "Homebrew|brew|_update_count_homebrew"
+  "apt|apt|_update_count_apt"
+  "mise|mise|_update_count_mise"
+  "Rust toolchains|rustup|_update_count_rustup"
+  "Cargo installs|cargo-install-update|_update_count_cargo_install_update"
+  "uv tools|uv|_update_count_uv"
+  "npm globals|npm|_update_count_npm"
+  "pipx apps|pipx|_update_count_pipx"
+  "Bun globals|bun|_update_count_bun"
+)
+
+update_steps=(
+  "Homebrew|brew|brew update && brew upgrade --greedy && brew cleanup"
+  "apt|apt|sudo apt update && sudo apt upgrade -y"
+  "mise|mise|mise upgrade"
+  "Rust toolchains|rustup|rustup self update && rustup update"
+  "Cargo installs|cargo-install-update|cargo install-update -a"
+  "uv tools|uv|uv tool upgrade --all"
+  "npm globals|npm|npm update -g"
+  "pipx apps|pipx|pipx upgrade-all"
+  "Bun globals|bun|bun update -g"
+)
+
+print -P -- "%F{yellow}Update summary%f"
+print -- "--------------"
+
+for manager in "${managers[@]}"; do
+  name="${manager%%|*}"
+  manager="${manager#*|}"
+  bin="${manager%%|*}"
+  cmd="${manager#*|}"
+  check_count=""
+  check_note=""
+  check_status=0
+
+  if ! command -v "$bin" >/dev/null 2>&1; then
+    continue
+  fi
+
+  "$cmd"
+
+  if [[ "$check_count" == "?" ]]; then
+    printf "  %-22s %s\n" "$name" "check unavailable"
+    unavailable_checks+=("${name}: ${check_note}")
+  elif (( check_status != 0 && check_count == 0 )); then
+    printf "  %-22s %s\n" "$name" "check unavailable"
+    unavailable_checks+=("${name}: check failed")
+  else
+    printf "  %-22s %3d outdated\n" "$name" "$check_count"
+    total_outdated=$(( total_outdated + check_count ))
+  fi
+done
+
+print -- "--------------"
+printf "  %-22s %3d known outdated\n" "Total" "$total_outdated"
+
+if (( ${#unavailable_checks} )); then
+  print
+  print -- "Check unavailable:"
+  for manager in "${unavailable_checks[@]}"; do
+    print -- "  - ${manager}"
+  done
 fi
 
-echo "Updating Rust toolchain..."
-rustup update
+print
+print -n -- "Run updates now? [y/N] "
+read -r answer
+case "${answer:l}" in
+  y|yes) ;;
+  *)
+    print -- "No updates applied."
+    return 0
+    ;;
+esac
 
-echo "Updating Cargo packages..."
-cargo install-update -a
+print
+print -P -- "%F{yellow}Applying updates...%f"
+print
 
-echo "Updating mise runtimes..."
-mise upgrade
+for manager in "${update_steps[@]}"; do
+  name="${manager%%|*}"
+  manager="${manager#*|}"
+  bin="${manager%%|*}"
+  cmd="${manager#*|}"
 
-echo "All updates completed."
+  if ! command -v "$bin" >/dev/null 2>&1; then
+    continue
+  fi
+
+  updates_started=1
+  print -P -- "%F{cyan}--- Updating ${name}%f"
+  if eval "$cmd"; then
+    print -P -- "%F{green}${name} complete.%f"
+  else
+    print -P -- "%F{red}${name} failed; continuing with the next manager.%f"
+  fi
+  print
+done
+
+if (( updates_started )); then
+  print -P -- "%F{blue}Update run complete.%f"
+else
+  print -- "No supported package managers were found."
+fi

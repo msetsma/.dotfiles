@@ -1,7 +1,6 @@
 # Taps
 tap "nikitabobko/tap"
 tap "FelixKratz/formulae"
-tap "homebrew/cask-fonts"
 
 # Window Management & Status Bar
 cask "aerospace"
@@ -40,5 +39,5 @@ brew "python"
 brew "node"
 
 # Fonts
-cask "font-fira-code"
+cask "font-jetbrains-mono-nerd-font"
 cask "font-hack-nerd-font"

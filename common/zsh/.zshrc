@@ -26,6 +26,33 @@ if [ -z "$PATH_SET" ]; then
   export PATH_SET=1
 fi
 
+# Auto-attach Ghostty shells to the main Zellij session. Set
+# ZELLIJ_AUTO_START=0 before launching zsh to bypass this once.
+if [[ -o interactive \
+  && -z "${ZELLIJ:-}" \
+  && -z "${ZELLIJ_AUTO_STARTED:-}" \
+  && "${ZELLIJ_AUTO_START:-1}" != "0" \
+  && "${TERM_PROGRAM:-}" == "ghostty" ]] && (( $+commands[zellij] )); then
+  export ZELLIJ_AUTO_STARTED=1
+  exec zellij attach --create "${ZELLIJ_AUTO_SESSION:-main}"
+fi
+
+_zellij_rename_tab_to_cwd() {
+  [[ -n "${ZELLIJ:-}" ]] || return
+  (( $+commands[zellij] )) || return
+
+  local tab_name="${PWD:t}"
+  [[ "$PWD" == "$HOME" ]] && tab_name="~"
+  [[ -n "$tab_name" ]] || tab_name="/"
+
+  command zellij action rename-tab "$tab_name" >/dev/null 2>&1
+}
+
+if [[ -o interactive && -n "${ZELLIJ:-}" ]]; then
+  [[ ${precmd_functions[(Ie)_zellij_rename_tab_to_cwd]} -eq 0 ]] && precmd_functions+=(_zellij_rename_tab_to_cwd)
+  [[ ${chpwd_functions[(Ie)_zellij_rename_tab_to_cwd]} -eq 0 ]] && chpwd_functions+=(_zellij_rename_tab_to_cwd)
+fi
+
 # ─────────────────────────────────────────────────────────────
 # 3. Secrets & aliases
 # ─────────────────────────────────────────────────────────────
@@ -33,7 +60,33 @@ source "$ZDOTDIR/.secrets.zsh"
 source "$ZDOTDIR/aliases.zsh"
 
 # ─────────────────────────────────────────────────────────────
-# 4. Completions (before compinit)
+# 4. Zinit
+# ─────────────────────────────────────────────────────────────
+ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+if [[ ! -f "$ZINIT_HOME/zinit.zsh" ]]; then
+  print -P "%F{33}Installing zinit plugin manager...%f"
+  command mkdir -p "${ZINIT_HOME:h}" && command chmod g-rwX "${ZINIT_HOME:h}"
+  command git clone https://github.com/zdharma-continuum/zinit "$ZINIT_HOME" && \
+    print -P "%F{34}zinit installation successful.%f%b" || \
+    print -P "%F{160}zinit clone failed.%f%b"
+fi
+
+source "$ZINIT_HOME/zinit.zsh"
+autoload -Uz _zinit
+(( ${+_comps} )) && _comps[zinit]=_zinit
+
+# Load important annexes without Turbo mode.
+zinit light-mode for \
+  zdharma-continuum/zinit-annex-as-monitor \
+  zdharma-continuum/zinit-annex-bin-gem-node \
+  zdharma-continuum/zinit-annex-patch-dl \
+  zdharma-continuum/zinit-annex-rust
+
+# zsh-completions must be available before compinit builds the completion cache.
+zinit light zsh-users/zsh-completions
+
+# ─────────────────────────────────────────────────────────────
+# 5. Completions
 # ─────────────────────────────────────────────────────────────
 # Package manager site-functions (Homebrew/Linuxbrew)
 [[ -n "$PKG_PREFIX" ]] && fpath+=("$PKG_PREFIX/share/zsh/site-functions")
@@ -41,16 +94,18 @@ source "$ZDOTDIR/aliases.zsh"
 # uv/uvx completions, cached
 _uv_comp_dir="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/completions"
 mkdir -p "$_uv_comp_dir"
-[[ ! -f "$_uv_comp_dir/_uv" ]]  && uv  generate-shell-completion zsh > "$_uv_comp_dir/_uv"  2>/dev/null
-[[ ! -f "$_uv_comp_dir/_uvx" ]] && uvx --generate-shell-completion zsh > "$_uv_comp_dir/_uvx" 2>/dev/null
+(( $+commands[uv] ))  && [[ ! -s "$_uv_comp_dir/_uv" ]]  && uv  generate-shell-completion zsh > "$_uv_comp_dir/_uv"  2>/dev/null
+(( $+commands[uvx] )) && [[ ! -s "$_uv_comp_dir/_uvx" ]] && uvx --generate-shell-completion zsh > "$_uv_comp_dir/_uvx" 2>/dev/null
 
-# zsh-completions plugin needs to be on fpath before compinit
 fpath=(
   "$ZDOTDIR/functions"
-  "$ZDOTDIR/plugins/zsh-completions/src"
   "$_uv_comp_dir"
   $fpath
 )
+
+# Completion behavior
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 
 # Cached compinit (full security check once per day)
 autoload -Uz compinit
@@ -59,18 +114,12 @@ if [[ -n "$ZDOTDIR/.zcompdump"(#qN.mh+24) ]]; then
 else
   compinit -C
 fi
+zinit cdreplay -q
 
 # Autoload custom functions
 for func_file in "$ZDOTDIR/functions"/*(N); do
   autoload -Uz "${func_file:t}"
 done
-
-# ─────────────────────────────────────────────────────────────
-# 5. Plugins (order matters: syntax-highlighting LAST)
-# ─────────────────────────────────────────────────────────────
-# source "$ZDOTDIR/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
-# source "$ZDOTDIR/plugins/fzf-tab/fzf-tab.plugin.zsh"
-# source "$ZDOTDIR/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
 # ─────────────────────────────────────────────────────────────
 # 6. fzf
@@ -100,29 +149,9 @@ setopt SHARE_HISTORY HIST_IGNORE_DUPS HIST_IGNORE_SPACE HIST_VERIFY EXTENDED_HIS
 # Directory navigation
 setopt AUTO_CD AUTO_PUSHD PUSHD_IGNORE_DUPS PUSHD_SILENT
 
-# Completion behavior
-zstyle ':completion:*' menu select
-zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
-
-### Added by Zinit's installer
-if [[ ! -f $HOME/.local/share/zinit/zinit.git/zinit.zsh ]]; then
-    print -P "%F{33} %F{220}Installing %F{33}ZDHARMA-CONTINUUM%F{220} Initiative Plugin Manager (%F{33}zdharma-continuum/zinit%F{220})…%f"
-    command mkdir -p "$HOME/.local/share/zinit" && command chmod g-rwX "$HOME/.local/share/zinit"
-    command git clone https://github.com/zdharma-continuum/zinit "$HOME/.local/share/zinit/zinit.git" && \
-        print -P "%F{33} %F{34}Installation successful.%f%b" || \
-        print -P "%F{160} The clone has failed.%f%b"
-fi
-
-source "$HOME/.local/share/zinit/zinit.git/zinit.zsh"
-autoload -Uz _zinit
-(( ${+_comps} )) && _comps[zinit]=_zinit
-
-# Load a few important annexes, without Turbo
-# (this is currently required for annexes)
-zinit light-mode for \
-    zdharma-continuum/zinit-annex-as-monitor \
-    zdharma-continuum/zinit-annex-bin-gem-node \
-    zdharma-continuum/zinit-annex-patch-dl \
-    zdharma-continuum/zinit-annex-rust
-
-### End of Zinit's installer chunk
+# ─────────────────────────────────────────────────────────────
+# 9. Interactive plugins (syntax highlighting must stay last)
+# ─────────────────────────────────────────────────────────────
+zinit light Aloxaf/fzf-tab
+zinit light zsh-users/zsh-autosuggestions
+zinit light zsh-users/zsh-syntax-highlighting

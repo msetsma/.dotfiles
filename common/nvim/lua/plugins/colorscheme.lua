@@ -20,7 +20,7 @@ local catppuccin = {
     lazy = false,
     config = function()
         require('catppuccin').setup({
-            flavour = 'auto', -- latte, frappe, macchiato, mocha
+            flavour = 'macchiato', -- latte, frappe, macchiato, mocha, auto
         })
         require('catppuccin').load()
     end,
@@ -37,4 +37,4 @@ local tokyonight = {
     end,
 }
 
-return tokyonight
+return catppuccin

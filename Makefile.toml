@@ -101,13 +101,13 @@ script = [
     "echo --- Installing Tools ---",
     "scoop bucket add extras 2>nul || echo extras bucket already added",
     "scoop bucket add nerd-fonts 2>nul || echo nerd-fonts bucket already added",
-    "scoop install lazygit neovim yazi wezterm-nightly fzf ripgrep bat yasb FiraCode-NF",
+    "scoop install lazygit neovim yazi wezterm-nightly fzf ripgrep bat yasb JetBrainsMono-NF",
 
     "echo --- Installing Languages ---",
     "scoop install python go lua lua51 luarocks stylua",
 
     "echo --- Installing Dependencies ---",
-    "scoop install autohotkey gcc cmake fastfetch firacode",
+    "scoop install autohotkey gcc cmake fastfetch",
     "scoop shim add gcc ~\\scoop\\apps\\gcc\\current\\bin\\gcc.exe", # Needed for NVim Telescope FZF Native
 
     "echo --- Installing Scoopfile (if exists) ---",

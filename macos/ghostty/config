@@ -1,13 +1,14 @@
-theme = {{theme_ghostty}}
+theme = "Catppuccin Macchiato"
 window-decoration = true
+font-family = "JetBrainsMono Nerd Font"
 font-size = 14
 confirm-close-surface = false
 background-opacity = 1
-background-blur = 20
+background-blur = 15
 
 # Add padding around the terminal content (in pixels)
-window-padding-x = 0
-window-padding-y = 0
+window-padding-x = 5
+window-padding-y = 5
 
 
 # Global keybinding to summon a temp terminal

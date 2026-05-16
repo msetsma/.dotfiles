@@ -1,0 +1,52 @@
+layout {
+    default_tab_template {
+        pane size=1 borderless=true {
+            plugin location="https://github.com/dj95/zjstatus/releases/latest/download/zjstatus.wasm" {
+                format_left ""
+                format_center "{tabs}"
+                format_right ""
+                format_space "#[bg=#24273a]"
+                format_hide_on_overlength "true"
+                format_precedence "c"
+
+                tab_normal "#[fg=#363a4f,bg=#24273a]#[fg=#a5adcb,bg=#363a4f] {name}{sync_indicator}{fullscreen_indicator}{floating_indicator} #[fg=#363a4f,bg=#24273a]"
+                tab_active "#[fg=#8aadf4,bg=#24273a]#[fg=#24273a,bg=#8aadf4,bold] {name}{sync_indicator}{fullscreen_indicator}{floating_indicator} #[fg=#8aadf4,bg=#24273a]"
+                tab_sync_indicator " S"
+                tab_fullscreen_indicator " F"
+                tab_floating_indicator " W"
+
+                border_enabled "false"
+            }
+        }
+
+        pane
+
+        pane size=1 borderless=true {
+            plugin location="https://github.com/dj95/zjstatus/releases/latest/download/zjstatus.wasm" {
+                format_left "{mode}"
+                format_center ""
+                format_right ""
+                format_space "#[bg=#24273a]"
+                format_hide_on_overlength "true"
+                format_precedence "lrc"
+
+                mode_normal "#[fg=#8aadf4,bg=#24273a]#[fg=#24273a,bg=#8aadf4,bold] NORMAL #[fg=#8aadf4,bg=#24273a] #[fg=#a5adcb,bg=#24273a]C-g lock #[fg=#6e738d]· #[fg=#a5adcb]C-p panes #[fg=#6e738d]· #[fg=#a5adcb]C-t tabs #[fg=#6e738d]· #[fg=#a5adcb]C-n resize #[fg=#6e738d]· #[fg=#a5adcb]C-s scroll #[fg=#6e738d]· #[fg=#a5adcb]C-o session"
+                mode_locked "#[fg=#ed8796,bg=#24273a]#[fg=#24273a,bg=#ed8796,bold] LOCKED #[fg=#ed8796,bg=#24273a] #[fg=#a5adcb,bg=#24273a]C-g unlock"
+                mode_pane "#[fg=#8bd5ca,bg=#24273a]#[fg=#24273a,bg=#8bd5ca,bold] PANE #[fg=#8bd5ca,bg=#24273a] #[fg=#a5adcb,bg=#24273a]hjkl focus #[fg=#6e738d]· #[fg=#a5adcb]n/d/r/s new #[fg=#6e738d]· #[fg=#a5adcb]x close #[fg=#6e738d]· #[fg=#a5adcb]f full #[fg=#6e738d]· #[fg=#a5adcb]z frames #[fg=#6e738d]· #[fg=#a5adcb]w float"
+                mode_resize "#[fg=#f5a97f,bg=#24273a]#[fg=#24273a,bg=#f5a97f,bold] RESIZE #[fg=#f5a97f,bg=#24273a] #[fg=#a5adcb,bg=#24273a]hjkl grow #[fg=#6e738d]· #[fg=#a5adcb]HJKL shrink #[fg=#6e738d]· #[fg=#a5adcb]+/- size #[fg=#6e738d]· #[fg=#a5adcb]Esc normal"
+                mode_tab "#[fg=#c6a0f6,bg=#24273a]#[fg=#24273a,bg=#c6a0f6,bold] TAB #[fg=#c6a0f6,bg=#24273a] #[fg=#a5adcb,bg=#24273a]1-9 jump #[fg=#6e738d]· #[fg=#a5adcb]h/l prev/next #[fg=#6e738d]· #[fg=#a5adcb]n new #[fg=#6e738d]· #[fg=#a5adcb]r rename #[fg=#6e738d]· #[fg=#a5adcb]x close #[fg=#6e738d]· #[fg=#a5adcb]s sync"
+                mode_move "#[fg=#8aadf4,bg=#24273a]#[fg=#24273a,bg=#8aadf4,bold] MOVE #[fg=#8aadf4,bg=#24273a] #[fg=#a5adcb,bg=#24273a]hjkl move #[fg=#6e738d]· #[fg=#a5adcb]n move #[fg=#6e738d]· #[fg=#a5adcb]p back #[fg=#6e738d]· #[fg=#a5adcb]Esc normal"
+                mode_scroll "#[fg=#eed49f,bg=#24273a]#[fg=#24273a,bg=#eed49f,bold] SCROLL #[fg=#eed49f,bg=#24273a] #[fg=#a5adcb,bg=#24273a]jk line #[fg=#6e738d]· #[fg=#a5adcb]d/u half #[fg=#6e738d]· #[fg=#a5adcb]s search #[fg=#6e738d]· #[fg=#a5adcb]e edit #[fg=#6e738d]· #[fg=#a5adcb]C-c bottom"
+                mode_search "#[fg=#eed49f,bg=#24273a]#[fg=#24273a,bg=#eed49f,bold] SEARCH #[fg=#eed49f,bg=#24273a] #[fg=#a5adcb,bg=#24273a]n/p next/prev #[fg=#6e738d]· #[fg=#a5adcb]c case #[fg=#6e738d]· #[fg=#a5adcb]w wrap #[fg=#6e738d]· #[fg=#a5adcb]o word #[fg=#6e738d]· #[fg=#a5adcb]Esc normal"
+                mode_entersearch "#[fg=#eed49f,bg=#24273a]#[fg=#24273a,bg=#eed49f,bold] FIND #[fg=#eed49f,bg=#24273a] #[fg=#a5adcb,bg=#24273a]type query #[fg=#6e738d]· #[fg=#a5adcb]Enter search #[fg=#6e738d]· #[fg=#a5adcb]Esc scroll"
+                mode_session "#[fg=#a6da95,bg=#24273a]#[fg=#24273a,bg=#a6da95,bold] SESSION #[fg=#a6da95,bg=#24273a] #[fg=#a5adcb,bg=#24273a]d detach #[fg=#6e738d]· #[fg=#a5adcb]w manager #[fg=#6e738d]· #[fg=#a5adcb]c config #[fg=#6e738d]· #[fg=#a5adcb]p plugins #[fg=#6e738d]· #[fg=#a5adcb]a about"
+                mode_renametab "#[fg=#c6a0f6,bg=#24273a]#[fg=#24273a,bg=#c6a0f6,bold] RENAME TAB #[fg=#c6a0f6,bg=#24273a] #[fg=#a5adcb,bg=#24273a]type name #[fg=#6e738d]· #[fg=#a5adcb]Enter save #[fg=#6e738d]· #[fg=#a5adcb]Esc cancel"
+                mode_renamepane "#[fg=#8bd5ca,bg=#24273a]#[fg=#24273a,bg=#8bd5ca,bold] RENAME PANE #[fg=#8bd5ca,bg=#24273a] #[fg=#a5adcb,bg=#24273a]type name #[fg=#6e738d]· #[fg=#a5adcb]Enter save #[fg=#6e738d]· #[fg=#a5adcb]Esc cancel"
+
+                border_enabled "false"
+            }
+        }
+    }
+
+    tab
+}

@@ -223,7 +223,8 @@ copy_command "{{copy_command}}"
 
 // theme
 pane_frames false
-theme "{{theme_zellij}}"
+theme "catppuccin-macchiato"
+default_layout "pretty"
 
 
 // Choose what to do when zellij receives SIGTERM, SIGINT, SIGQUIT or SIGHUP

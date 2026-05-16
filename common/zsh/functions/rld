@@ -1,2 +1,11 @@
 echo "Reloading Zsh configuration..."
+if [[ -n "${ZELLIJ:-}" ]] && command -v zellij >/dev/null 2>&1; then
+  layout_file="${XDG_CONFIG_HOME:-$HOME/.config}/zellij/layouts/pretty.kdl"
+  if [[ -r "$layout_file" ]]; then
+    zellij action override-layout \
+      --retain-existing-terminal-panes \
+      "$layout_file" >/dev/null 2>&1
+    zellij action save-session >/dev/null 2>&1
+  fi
+fi
 exec zsh

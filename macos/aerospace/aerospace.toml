@@ -9,11 +9,6 @@ default-root-container-layout = "tiles"
 default-root-container-orientation = "auto"
 on-focused-monitor-changed = ["move-mouse monitor-lazy-center"]
 automatically-unhide-macos-hidden-apps = true
-# exec-on-workspace-change = [
-#   "/bin/bash",
-#   "-c",
-#   "sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE PREV_WORKSPACE=$AEROSPACE_PREV_WORKSPACE && ~/.config/sketchybar/plugins/update_workspace_icons.sh"
-# ]
 
 [key-mapping]
 preset = "qwerty"
@@ -28,12 +23,12 @@ outer.left = 2
 
 [mode.main.binding]
 # Launch/Focus Apps
-ctrl-alt-cmd-shift-c = '''exec-and-forget open -a "Visual Studio Code"'''
-ctrl-alt-cmd-shift-t = '''exec-and-forget open -a "Ghostty"'''
-ctrl-alt-cmd-shift-b = '''exec-and-forget open -a "Safari"'''
-ctrl-alt-cmd-shift-m = '''exec-and-forget open -a "Microsoft Teams"'''
-ctrl-alt-cmd-shift-n = '''exec-and-forget open -a "Obsidian"'''
-ctrl-alt-cmd-shift-l = '''exec-and-forget open "/Applications/Open WebUI.app"'''
+ctrl-alt-cmd-shift-c = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Code" "Visual Studio Code" "Visual Studio Code"'''
+ctrl-alt-cmd-shift-t = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Ghostty" "Ghostty"'''
+ctrl-alt-cmd-shift-b = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Safari" "Safari"'''
+ctrl-alt-cmd-shift-m = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Microsoft Teams" "Microsoft Teams"'''
+ctrl-alt-cmd-shift-n = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Obsidian" "Obsidian"'''
+ctrl-alt-cmd-shift-l = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Open WebUI" "/Applications/Open WebUI.app" "Open WebUI.app"'''
 ctrl-alt-cmd-shift-r = '''exec-and-forget ~/.config/aerospace/resort-windows.sh'''
 cmd-m = '''exec-and-forget ~/.config/aerospace/stash-window.sh'''
 cmd-h = []
