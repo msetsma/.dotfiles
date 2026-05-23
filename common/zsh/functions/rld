@@ -5,7 +5,6 @@ if [[ -n "${ZELLIJ:-}" ]] && command -v zellij >/dev/null 2>&1; then
     zellij action override-layout \
       --retain-existing-terminal-panes \
       "$layout_file" >/dev/null 2>&1
-    zellij action save-session >/dev/null 2>&1
   fi
 fi
 exec zsh

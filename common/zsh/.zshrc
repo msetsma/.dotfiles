@@ -26,31 +26,14 @@ if [ -z "$PATH_SET" ]; then
   export PATH_SET=1
 fi
 
-# Auto-attach Ghostty shells to the main Zellij session. Set
-# ZELLIJ_AUTO_START=0 before launching zsh to bypass this once.
+# Auto-attach Ghostty shells to tmux. Set TMUX_AUTO_START=0 to bypass.
 if [[ -o interactive \
-  && -z "${ZELLIJ:-}" \
-  && -z "${ZELLIJ_AUTO_STARTED:-}" \
-  && "${ZELLIJ_AUTO_START:-1}" != "0" \
-  && "${TERM_PROGRAM:-}" == "ghostty" ]] && (( $+commands[zellij] )); then
-  export ZELLIJ_AUTO_STARTED=1
-  exec zellij attach --create "${ZELLIJ_AUTO_SESSION:-main}"
-fi
-
-_zellij_rename_tab_to_cwd() {
-  [[ -n "${ZELLIJ:-}" ]] || return
-  (( $+commands[zellij] )) || return
-
-  local tab_name="${PWD:t}"
-  [[ "$PWD" == "$HOME" ]] && tab_name="~"
-  [[ -n "$tab_name" ]] || tab_name="/"
-
-  command zellij action rename-tab "$tab_name" >/dev/null 2>&1
-}
-
-if [[ -o interactive && -n "${ZELLIJ:-}" ]]; then
-  [[ ${precmd_functions[(Ie)_zellij_rename_tab_to_cwd]} -eq 0 ]] && precmd_functions+=(_zellij_rename_tab_to_cwd)
-  [[ ${chpwd_functions[(Ie)_zellij_rename_tab_to_cwd]} -eq 0 ]] && chpwd_functions+=(_zellij_rename_tab_to_cwd)
+  && -z "${TMUX:-}" \
+  && -z "${TMUX_AUTO_STARTED:-}" \
+  && "${TMUX_AUTO_START:-1}" != "0" \
+  && "${TERM_PROGRAM:-}" == "ghostty" ]] && (( $+commands[tmux] )); then
+  export TMUX_AUTO_STARTED=1
+  exec tmux new-session -A -s "${TMUX_AUTO_SESSION:-main}"
 fi
 
 # ─────────────────────────────────────────────────────────────

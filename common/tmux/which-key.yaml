@@ -9,7 +9,7 @@ keybindings:
 title:
   style: align=centre,bold
   prefix: tmux
-  prefix_style: fg=#cba6f7,align=centre,bold
+  prefix_style: fg=#939ab7,align=centre,bold
 
 position:
   x: C
@@ -78,7 +78,8 @@ items:
 
   - separator: true
 
-  - { name: Floating scratchpad, key: P, command: "run-shell ~/.tmux/plugins/tmux-floax/scripts/floax.sh" }
+  - { name: Agent sidebar,       key: e, command: 'run-shell "\"#{@agent_sidebar_bin}\" toggle \"#{window_id}\" \"#{pane_current_path}\""' }
+  - { name: All agent sidebars,   key: E, command: 'run-shell "\"#{@agent_sidebar_bin}\" toggle-all"' }
   - { name: Copy mode,           key: "[", command: copy-mode }
   - { name: Paste,               key: "]", command: paste-buffer }
   - { name: Reload config,       key: r,   command: "source-file ~/.tmux.conf ; display reloaded" }

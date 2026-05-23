@@ -222,8 +222,24 @@ copy_on_select true
 copy_command "{{copy_command}}"
 
 // theme
-pane_frames false
-theme "catppuccin-macchiato"
+themes {
+    catppuccin-macchiato-muted {
+        fg 202 211 245
+        bg 36 39 58
+        red 237 135 150
+        green 139 213 202
+        yellow 238 212 159
+        blue 138 173 244
+        magenta 198 160 246
+        orange 244 219 214
+        cyan 145 215 227
+        black 24 25 38
+        white 202 211 245
+    }
+}
+
+pane_frames true
+theme "catppuccin-macchiato-muted"
 default_layout "pretty"
 
 
