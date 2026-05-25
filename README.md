@@ -17,14 +17,6 @@ Windows:  native apps (WezTerm, AHK)       --> WSL2 --> unix backend (zsh, neovi
 
 Both platforms converge on the same `common/` configs for the shell and dev tools. The difference is only in the GUI layer above.
 
-### What lives where
-
-| Directory  | Purpose                          | Used by           |
-|------------|----------------------------------|--------------------|
-| `common/`  | Base layer -- shell, dev tools, editors | All platforms |
-| `macos/`   | macOS-only GUI apps              | macOS only         |
-| `windows/` | Windows-only GUI apps            | Windows host only  |
-
 ---
 
 ## Requirements
@@ -108,16 +100,7 @@ Platform-specific: `brew-*` (macOS), `scoop-*` (Windows), `apt` (WSL2/Linux).
 ### Dotfile Deployment
 
 ```bash
-cargo make deploy          # Deploy dotfiles via dotter
-cargo make dotfiles-check  # Validate without deploying
-```
-
-### Git Backup
-
-```bash
-cargo make backup                        # Quick backup (auto-commit message)
-cargo make deploy-and-backup             # Deploy + backup (all-in-one)
-cargo make backup-with-message -- "msg"  # Custom message
+dotter # Deploy dotfiles via dotter
 ```
 
 ### Python/pipx
@@ -159,15 +142,9 @@ cargo make info            # Show all available commands
 
 iPhone -> Mosh/Tailscale -> Windows -> WSL2 -> tmux -> Claude Code.
 
-Session continuity: zsh autostart uses two separate sessions on the same
-tmux server -- `main` for local WezTerm, `mobile` for remote mosh/Moshi.
-No mirroring or viewport fights. Each location has its own continuity;
-the Moshi iOS selector lists both plus any project sessions from
-`moshi <dir>`.
-
 Push notifications: `common/moshi/hook-runner.sh` gates Claude Code
 hooks via `tmux list-clients` -- pushes fire only when a Moshi client
-is actually attached. Local-only sessions stay silent.
+is actually attached.
 
 Setup:
 - [docs/ssh-mosh-setup-guide.md](docs/ssh-mosh-setup-guide.md) -- host SSH/Mosh/Tailscale

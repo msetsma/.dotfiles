@@ -1,10 +1,8 @@
 echo "Reloading Zsh configuration..."
-if [[ -n "${ZELLIJ:-}" ]] && command -v zellij >/dev/null 2>&1; then
-  layout_file="${XDG_CONFIG_HOME:-$HOME/.config}/zellij/layouts/pretty.kdl"
-  if [[ -r "$layout_file" ]]; then
-    zellij action override-layout \
-      --retain-existing-terminal-panes \
-      "$layout_file" >/dev/null 2>&1
-  fi
+
+if command -v tmux >/dev/null 2>&1 && tmux info >/dev/null 2>&1; then
+  echo "Reloading tmux configuration..."
+  tmux source-file "${HOME}/.tmux.conf"
 fi
+
 exec zsh

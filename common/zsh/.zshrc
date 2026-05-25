@@ -26,12 +26,12 @@ if [ -z "$PATH_SET" ]; then
   export PATH_SET=1
 fi
 
-# Auto-attach Ghostty shells to tmux. Set TMUX_AUTO_START=0 to bypass.
+# Auto-attach interactive shells to tmux. Set TMUX_AUTO_START=0 to bypass.
 if [[ -o interactive \
   && -z "${TMUX:-}" \
   && -z "${TMUX_AUTO_STARTED:-}" \
   && "${TMUX_AUTO_START:-1}" != "0" \
-  && "${TERM_PROGRAM:-}" == "ghostty" ]] && (( $+commands[tmux] )); then
+  && "${TERM:-}" != "dumb" ]] && (( $+commands[tmux] )); then
   export TMUX_AUTO_STARTED=1
   exec tmux new-session -A -s "${TMUX_AUTO_SESSION:-main}"
 fi
