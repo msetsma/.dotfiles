@@ -52,7 +52,8 @@
     "rust-analyzer-lsp@claude-plugins-official": false,
     "caveman@caveman": true,
     "everything-claude-code@everything-claude-code": true,
-    "superpowers@claude-plugins-official": true
+    "superpowers@claude-plugins-official": true,
+    "understand-anything@understand-anything": true
   },
   "extraKnownMarketplaces": {
     "caveman": {
@@ -65,6 +66,12 @@
       "source": {
         "source": "git",
         "url": "https://github.com/affaan-m/everything-claude-code.git"
+      }
+    },
+    "understand-anything": {
+      "source": {
+        "source": "github",
+        "repo": "Lum1104/Understand-Anything"
       }
     }
   },

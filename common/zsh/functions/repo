@@ -1,6 +1,25 @@
 #!/usr/bin/env zsh
 # Open the current repo in the browser (supports GitHub and Azure DevOps)
 
+_repo_open_url() {
+  local url="$1"
+
+  if (( ${IS_MAC:-0} )) && (( $+commands[open] )); then
+    command open "$url"
+  elif (( ${IS_WSL_INTEROP:-0} )) && (( $+commands[wslview] )); then
+    command wslview "$url"
+  elif (( $+commands[xdg-open] )); then
+    command xdg-open "$url"
+  elif (( ${IS_WSL_INTEROP:-0} )) && (( $+commands[wslview] )); then
+    command wslview "$url"
+  elif (( $+commands[open] )); then
+    command open "$url"
+  else
+    echo "No URL opener found. Enable WSL interop for wslview or install xdg-utils for Linux." >&2
+    return 1
+  fi
+}
+
 local remote_url
 remote_url=$(git remote get-url origin 2>/dev/null) || {
   echo "Not a git repository or no 'origin' remote found" >&2
@@ -11,9 +30,9 @@ if [[ "$remote_url" == *"github.com"* ]]; then
   # Normalize SSH or HTTPS GitHub URLs to browser URL
   local url="${remote_url%.git}"
   url="${url/git@github.com:/https://github.com/}"
-  open "$url"
+  _repo_open_url "$url"
 elif [[ "$remote_url" == *"dev.azure.com"* || "$remote_url" == *"visualstudio.com"* ]]; then
-  open "$(az repos show --repository "$(basename "$PWD")" --query webUrl -o tsv)"
+  _repo_open_url "$(az repos show --repository "$(basename "$PWD")" --query webUrl -o tsv)"
 else
   echo "Unsupported remote: $remote_url" >&2
   return 1

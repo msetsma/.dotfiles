@@ -1,5 +1,13 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
+format = """
+$directory\
+$git_branch\
+$git_status\
+$custom\
+$line_break\
+$character"""
+
 [aws]
 symbol = " "
 
@@ -88,6 +96,12 @@ symbol = " "
 [git_commit]
 tag_symbol = '  '
 
+[custom.git_worktree]
+command = "printf '󰔱'"
+when = '[ "$(git rev-parse --git-dir 2>/dev/null)" != "$(git rev-parse --git-common-dir 2>/dev/null)" ]'
+format = "[$output]($style) "
+style = "bold yellow"
+
 [golang]
 symbol = " "
 
@@ -127,9 +141,6 @@ symbol = "󱃾 "
 [lua]
 symbol = " "
 
-[maven]
-symbol = " "
-
 [memory_usage]
 symbol = "󰍛 "
 
@@ -153,6 +164,7 @@ symbol = " "
 
 [nodejs]
 symbol = " "
+disabled = true
 
 [ocaml]
 symbol = " "
@@ -228,6 +240,7 @@ Zorin = " "
 
 [package]
 symbol = "󰏗 "
+disabled = true
 
 [perl]
 symbol = " "
@@ -249,6 +262,7 @@ symbol = " "
 
 [python]
 symbol = " "
+disabled = true
 
 [raku]
 symbol = "󱖊 "
@@ -303,6 +317,9 @@ symbol = " "
 
 [xmake]
 symbol = " "
+
+[username]
+disabled = true
 
 [zig]
 symbol = " "

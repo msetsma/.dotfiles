@@ -3,7 +3,7 @@
 if (( IS_MAC )); then
   _clip() { pbcopy }
   alias -g copy='| pbcopy'
-elif (( IS_WSL )); then
+elif (( IS_WSL_INTEROP )); then
   _clip() { clip.exe }
   alias -g copy='| clip.exe'
 else
@@ -14,9 +14,9 @@ else
 fi
 
 # open abstraction
-if (( IS_WSL )); then
+if (( IS_WSL_INTEROP )) && (( $+commands[wslview] )); then
   alias open='wslview'
-elif ! (( IS_MAC )); then
+elif ! (( IS_MAC )) && (( $+commands[xdg-open] )); then
   alias open='xdg-open'
 fi
 

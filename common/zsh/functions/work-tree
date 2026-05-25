@@ -1,0 +1,150 @@
+# ---------------------------------------------------------------------------
+# Claude Code worktree helpers
+#
+# Convention: a worktree for feature <name> on repo <repo> lives at the
+# sibling path "<repo>-<name>" on branch "feat/<name>". All helpers rely on
+# this so teardown and listing can find worktrees without bookkeeping.
+# ---------------------------------------------------------------------------
+
+# Resolve the repo root, or fail with a message. Used by the others.
+_ccwt_root() {
+  git rev-parse --show-toplevel 2>/dev/null || {
+    echo "ccwt: not inside a git repository" >&2
+    return 1
+  }
+}
+
+# Create a worktree + branch, sync the Python env, then launch an agent.
+# Usage: ccwt <feature-name> [--no-launch]
+ccwt() {
+  local name="$1"
+  if [[ -z "$name" || "$name" == --* ]]; then
+    echo "usage: ccwt <feature-name> [--no-launch]" >&2
+    return 1
+  fi
+  local no_launch=0
+  [[ "$2" == "--no-launch" ]] && no_launch=1
+
+  local root branch dir
+  root="$(_ccwt_root)" || return 1
+  branch="feat/${name}"
+  dir="${root}-${name}"
+
+  if [[ -e "$dir" ]]; then
+    echo "ccwt: path already exists: $dir" >&2
+    return 1
+  fi
+
+  git worktree add "$dir" -b "$branch" || return 1
+
+  # Sync the env so the agent can actually import the package. Untracked
+  # state like .venv and .env never propagates to a fresh worktree.
+  if [[ -f "$dir/pyproject.toml" || -f "$dir/uv.lock" ]]; then
+    echo "ccwt: syncing environment in $dir ..."
+    ( cd "$dir" && uv sync ) || echo "ccwt: uv sync failed, env may be incomplete" >&2
+  fi
+
+  # Carry over a gitignored .env from the main checkout if present.
+  if [[ -f "$root/.env" && ! -f "$dir/.env" ]]; then
+    cp "$root/.env" "$dir/.env"
+    echo "ccwt: copied .env into worktree"
+  fi
+
+  if [[ "$no_launch" == 1 ]]; then
+    echo "ccwt: worktree ready at $dir on $branch (launch skipped)"
+    return 0
+  fi
+
+  # In tmux: new window per agent so a lead session can read it by name.
+  # Outside tmux: just drop into the directory.
+  if [[ -n "$TMUX" ]]; then
+    tmux new-window -c "$dir" -n "$name" claude
+    echo "ccwt: launched agent in tmux window '$name'"
+  else
+    cd "$dir" || return 1
+    echo "ccwt: in $dir on $branch, launch with: claude"
+  fi
+}
+
+# List active worktrees with their branches.
+ccwt-ls() {
+  _ccwt_root >/dev/null || return 1
+  git worktree list
+}
+
+# Tear down a worktree + its branch. Refuses if there are uncommitted
+# changes unless --force is given.
+# Usage: ccwt-rm <feature-name> [--force]
+ccwt-rm() {
+  local name="$1"
+  if [[ -z "$name" || "$name" == --* ]]; then
+    echo "usage: ccwt-rm <feature-name> [--force]" >&2
+    return 1
+  fi
+  local force=0
+  [[ "$2" == "--force" ]] && force=1
+
+  local root branch dir
+  root="$(_ccwt_root)" || return 1
+  branch="feat/${name}"
+  dir="${root}-${name}"
+
+  if [[ ! -d "$dir" ]]; then
+    echo "ccwt-rm: no worktree at $dir" >&2
+    return 1
+  fi
+
+  # Guard against discarding uncommitted agent work.
+  if [[ "$force" == 0 ]] && [[ -n "$(git -C "$dir" status --porcelain)" ]]; then
+    echo "ccwt-rm: $dir has uncommitted changes. Commit them or pass --force." >&2
+    return 1
+  fi
+
+  # Close the matching tmux window if one exists.
+  if [[ -n "$TMUX" ]] && tmux list-windows -F '#W' | grep -qx "$name"; then
+    tmux kill-window -t "$name" 2>/dev/null
+  fi
+
+  local rm_flags=(--force)
+  [[ "$force" == 1 ]] && rm_flags+=(--force)  # double --force discards changes
+  git worktree remove "${rm_flags[@]}" "$dir" || return 1
+
+  # Delete the branch. -d is safe (refuses if unmerged); -D under --force.
+  if [[ "$force" == 1 ]]; then
+    git branch -D "$branch" 2>/dev/null
+  else
+    git branch -d "$branch" 2>/dev/null || \
+      echo "ccwt-rm: branch $branch not deleted (unmerged). Use git branch -D to force."
+  fi
+
+  git worktree prune
+  echo "ccwt-rm: removed worktree $dir"
+  [[ "$force" == 1 ]] && echo "ccwt-rm: deleted branch $branch"
+}
+
+# Remove all worktrees that are clean and fully merged into the current
+# branch. A safe bulk cleanup after an integration session. Add --dry-run
+# to preview.
+ccwt-sweep() {
+  local root
+  root="$(_ccwt_root)" || return 1
+  local dry=0
+  [[ "$1" == "--dry-run" ]] && dry=1
+
+  # Iterate worktree paths, skipping the main checkout.
+  git worktree list --porcelain | awk '/^worktree /{print $2}' | while read -r wt; do
+    [[ "$wt" == "$root" ]] && continue
+    [[ -n "$(git -C "$wt" status --porcelain)" ]] && continue  # skip dirty
+
+    local name="${wt##*-}"
+    local branch="feat/${name}"
+    # Only sweep if the branch is fully merged into HEAD.
+    if git branch --merged | grep -qx "  $branch"; then
+      if [[ "$dry" == 1 ]]; then
+        echo "would remove: $wt ($branch)"
+      else
+        ccwt-rm "$name"
+      fi
+    fi
+  done
+}
