@@ -181,6 +181,7 @@ Shell configs use `common/zsh/platform.zsh` to detect the runtime environment:
 
 - `IS_MAC` -- macOS (Darwin)
 - `IS_WSL` -- WSL2 (Linux with Microsoft kernel)
+- `IS_WSL_INTEROP` -- WSL2 with Windows interop enabled
 - `IS_LINUX` -- generic Linux
 
 This drives platform-specific behavior like clipboard (`pbcopy` vs `clip.exe`), URL opening (`open` vs `wslview`), and credential storage (Keychain vs env files).
