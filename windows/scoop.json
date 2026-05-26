@@ -1,0 +1,274 @@
+{
+    "buckets": [
+        {
+            "Name": "main",
+            "Source": "https://github.com/ScoopInstaller/Main.git",
+            "Updated": "2026-05-25T04:44:40-04:00",
+            "Manifests": 1551
+        },
+        {
+            "Name": "extras",
+            "Source": "https://github.com/ScoopInstaller/Extras",
+            "Updated": "2026-05-25T01:51:05-04:00",
+            "Manifests": 2303
+        },
+        {
+            "Name": "versions",
+            "Source": "https://github.com/ScoopInstaller/Versions",
+            "Updated": "2026-05-25T03:34:55-04:00",
+            "Manifests": 582
+        },
+        {
+            "Name": "nerd-fonts",
+            "Source": "https://github.com/matthewjberger/scoop-nerd-fonts",
+            "Updated": "2026-05-24T12:05:13-04:00",
+            "Manifests": 367
+        },
+        {
+            "Name": "CrypticButter",
+            "Source": "https://github.com/CrypticButter/ScoopBucket",
+            "Updated": "2024-05-01T08:51:07-04:00",
+            "Manifests": 1
+        }
+    ],
+    "apps": [
+        {
+            "Version": "24.09",
+            "Info": "",
+            "Updated": "2025-01-21T09:41:14.8878006-05:00",
+            "Name": "7zip",
+            "Source": "main"
+        },
+        {
+            "Version": "2.0.18",
+            "Info": "",
+            "Updated": "2025-01-21T09:41:13.3283274-05:00",
+            "Name": "autohotkey",
+            "Source": "extras"
+        },
+        {
+            "Version": "0.25.0",
+            "Info": "",
+            "Updated": "2025-01-21T06:38:51.1239315-05:00",
+            "Name": "bat",
+            "Source": "main"
+        },
+        {
+            "Version": "2024-12-31",
+            "Info": "",
+            "Updated": "2025-01-21T09:45:31.1894643-05:00",
+            "Name": "cacert",
+            "Source": "main"
+        },
+        {
+            "Version": "3.31.4",
+            "Info": "",
+            "Updated": "2025-01-21T09:41:35.0471281-05:00",
+            "Name": "cmake",
+            "Source": "main"
+        },
+        {
+            "Version": "3.14.1",
+            "Info": "",
+            "Updated": "2025-08-19T05:48:41.8182535-04:00",
+            "Name": "dark",
+            "Source": "main"
+        },
+        {
+            "Version": "2.53.0",
+            "Info": "",
+            "Updated": "2025-10-11T08:19:20.3573839-04:00",
+            "Name": "fastfetch",
+            "Source": "main"
+        },
+        {
+            "Version": "10.2.0",
+            "Info": "",
+            "Updated": "2025-01-21T09:49:29.1377972-05:00",
+            "Name": "fd",
+            "Source": "main"
+        },
+        {
+            "Version": "6.2",
+            "Info": "",
+            "Updated": "2025-01-21T09:41:36.3267111-05:00",
+            "Name": "firacode",
+            "Source": "nerd-fonts"
+        },
+        {
+            "Version": "3.4.0",
+            "Info": "",
+            "Updated": "2026-04-29T06:21:04.8330644-04:00",
+            "Name": "FiraCode-NF",
+            "Source": "nerd-fonts"
+        },
+        {
+            "Version": "0.58.0",
+            "Info": "",
+            "Updated": "2025-01-21T06:38:49.986663-05:00",
+            "Name": "fzf",
+            "Source": "main"
+        },
+        {
+            "Version": "13.2.0",
+            "Info": "",
+            "Updated": "2025-01-21T09:41:22.9164263-05:00",
+            "Name": "gcc",
+            "Source": "main"
+        },
+        {
+            "Version": "2.88.1",
+            "Info": "",
+            "Updated": "2026-03-17T06:01:34.2313217-04:00",
+            "Name": "gh",
+            "Source": "main"
+        },
+        {
+            "Version": "1.23.5",
+            "Info": "",
+            "Updated": "2025-01-21T09:46:59.6055868-05:00",
+            "Name": "go",
+            "Source": "main"
+        },
+        {
+            "Version": "3.4.0",
+            "Info": "",
+            "Updated": "2026-05-09T09:01:15.6539142-04:00",
+            "Name": "JetBrainsMono-NF",
+            "Source": "nerd-fonts"
+        },
+        {
+            "Version": "0.1.40",
+            "Info": "",
+            "Updated": "2026-03-22T07:14:37.3201994-04:00",
+            "Name": "komorebi",
+            "Source": "extras"
+        },
+        {
+            "Version": "0.45.2",
+            "Info": "",
+            "Updated": "2025-01-21T06:38:43.6147714-05:00",
+            "Name": "lazygit",
+            "Source": "extras"
+        },
+        {
+            "Version": "1.17.0",
+            "Info": "",
+            "Updated": "2025-12-10T10:35:14.9509727-05:00",
+            "Name": "localsend",
+            "Source": "extras"
+        },
+        {
+            "Version": "5.4.7-2",
+            "Info": "",
+            "Updated": "2025-01-21T09:46:11.6002077-05:00",
+            "Name": "lua",
+            "Source": "main"
+        },
+        {
+            "Version": "5.1.5",
+            "Info": "",
+            "Updated": "2025-01-21T09:52:00.0055545-05:00",
+            "Name": "lua51",
+            "Source": "versions"
+        },
+        {
+            "Version": "3.11.1",
+            "Info": "",
+            "Updated": "2025-01-21T09:46:12.1803409-05:00",
+            "Name": "luarocks",
+            "Source": "main"
+        },
+        {
+            "Version": "4.4.1",
+            "Info": "",
+            "Updated": "2025-09-06T06:06:33.7629733-04:00",
+            "Name": "make",
+            "Source": "main"
+        },
+        {
+            "Version": "0.10.3",
+            "Info": "",
+            "Updated": "2025-01-21T06:09:48.5816357-05:00",
+            "Name": "neovim",
+            "Source": "main"
+        },
+        {
+            "Version": "7.99",
+            "Info": "",
+            "Updated": "2026-05-02T09:16:38.2785112-04:00",
+            "Name": "nmap",
+            "Source": "main"
+        },
+        {
+            "Version": "0.107.0",
+            "Info": "",
+            "Updated": "2025-09-06T07:34:19.882292-04:00",
+            "Name": "nu",
+            "Source": "main"
+        },
+        {
+            "Version": "1.12.7",
+            "Info": "",
+            "Updated": "2026-04-06T11:09:06.9001827-04:00",
+            "Name": "obsidian",
+            "Source": "extras"
+        },
+        {
+            "Version": "14.1.1",
+            "Info": "",
+            "Updated": "2025-01-21T06:38:50.4368129-05:00",
+            "Name": "ripgrep",
+            "Source": "main"
+        },
+        {
+            "Version": "0.12.12",
+            "Info": "",
+            "Updated": "2025-09-06T06:59:47.2727797-04:00",
+            "Name": "ruff",
+            "Source": "main"
+        },
+        {
+            "Version": "1.115.0",
+            "Info": "",
+            "Updated": "2026-04-11T05:39:10.001766-04:00",
+            "Name": "vscode",
+            "Source": "extras"
+        },
+        {
+            "Version": "nightly-20250121",
+            "Info": "",
+            "Updated": "2025-01-21T06:38:49.1530979-05:00",
+            "Name": "wezterm-nightly",
+            "Source": "versions"
+        },
+        {
+            "Version": "1.21.4",
+            "Info": "",
+            "Updated": "2025-01-21T09:45:33.3368486-05:00",
+            "Name": "wget",
+            "Source": "main"
+        },
+        {
+            "Version": "0.2.6",
+            "Info": "",
+            "Updated": "2025-01-23T07:33:59.1041427-05:00",
+            "Name": "whkd",
+            "Source": "extras"
+        },
+        {
+            "Version": "1.9.1",
+            "Info": "",
+            "Updated": "2026-03-22T06:30:57.2027145-04:00",
+            "Name": "yasb",
+            "Source": "extras"
+        },
+        {
+            "Version": "25.5.31",
+            "Info": "",
+            "Updated": "2025-08-19T05:47:08.890117-04:00",
+            "Name": "yazi",
+            "Source": "main"
+        }
+    ]
+}

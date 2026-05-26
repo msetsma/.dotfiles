@@ -27,14 +27,14 @@ if [ -z "$PATH_SET" ]; then
 fi
 
 # Auto-attach interactive shells to tmux. Set TMUX_AUTO_START=0 to bypass.
-if [[ -o interactive \
-  && -z "${TMUX:-}" \
-  && -z "${TMUX_AUTO_STARTED:-}" \
-  && "${TMUX_AUTO_START:-1}" != "0" \
-  && "${TERM:-}" != "dumb" ]] && (( $+commands[tmux] )); then
-  export TMUX_AUTO_STARTED=1
-  exec tmux new-session -A -s "${TMUX_AUTO_SESSION:-main}"
-fi
+# if [[ -o interactive \
+#   && -z "${TMUX:-}" \
+#   && -z "${TMUX_AUTO_STARTED:-}" \
+#   && "${TMUX_AUTO_START:-1}" != "0" \
+#   && "${TERM:-}" != "dumb" ]] && (( $+commands[tmux] )); then
+#   export TMUX_AUTO_STARTED=1
+#   exec tmux new-session -A -s "${TMUX_AUTO_SESSION:-main}"
+# fi
 
 # ─────────────────────────────────────────────────────────────
 # 3. Secrets & aliases

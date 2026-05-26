@@ -12,12 +12,49 @@ config.launch_menu = {
 }
 
 -- Colors
-config.color_scheme = 'Catppuccin Mocha'
-local color_table = wezterm.color.get_builtin_schemes()[config.color_scheme]
+local color_table = {
+    foreground = '#cad3f5',
+    background = '#24273a',
+    cursor_bg = '#f4dbd6',
+    cursor_fg = '#24273a',
+    selection_bg = '#5b6078',
+    selection_fg = '#cad3f5',
+    ansi = {
+        '#494d64',
+        '#ed8796',
+        '#a6da95',
+        '#eed49f',
+        '#8aadf4',
+        '#f5bde6',
+        '#8bd5ca',
+        '#a5adcb',
+    },
+    brights = {
+        '#5b6078',
+        '#ec7486',
+        '#8ccf7f',
+        '#e1c682',
+        '#78a1f6',
+        '#f2a9dd',
+        '#63cbc0',
+        '#b8c0e0',
+    },
+    indexed = {
+        [16] = '#f4dbd6',
+        [17] = '#f0c6c6',
+    },
+}
 wezterm.GLOBAL.color_table = color_table
 config.colors = {
     compose_cursor = color_table.ansi[2],
-    cursor_bg = color_table.indexed[16] or color_table.ansi[2],
+    cursor_bg = color_table.cursor_bg,
+    cursor_fg = color_table.cursor_fg,
+    foreground = color_table.foreground,
+    background = color_table.background,
+    selection_bg = color_table.selection_bg,
+    selection_fg = color_table.selection_fg,
+    ansi = color_table.ansi,
+    brights = color_table.brights,
     tab_bar = {
         background = color_table.background,
         active_tab = { bg_color = color_table.background, fg_color = color_table.foreground },

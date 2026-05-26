@@ -65,3 +65,5 @@ target/
 
 # LLM 
 .claude/
+.agents/
+.codex/
