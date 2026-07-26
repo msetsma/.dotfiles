@@ -16,6 +16,7 @@ we can design and validate access rules. It should make it easy to answer:
 Show shared and different group membership for two users.
 
 ```sh
+entra compare users
 entra compare-users alice@example.com bob@example.com
 ```
 
@@ -31,6 +32,7 @@ Useful output:
 Show overlap and differences between two groups.
 
 ```sh
+entra compare groups
 entra compare-groups "Group A" "Group B"
 ```
 

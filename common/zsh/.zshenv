@@ -2,7 +2,14 @@ export EDITOR="nvim"
 export VISUAL="nvim"
 export XDG_CONFIG_HOME="$HOME/.config"
 export ZSH="${ZDOTDIR:-$XDG_CONFIG_HOME/zsh}/ohmyzsh"
-export PATH="/Users/msetsma/.bun/bin:$PATH"
+
+export BUN_INSTALL="$HOME/.bun"
+
+typeset -gU path PATH
+if [[ -d "$BUN_INSTALL/bin" ]]; then
+  path=("$BUN_INSTALL/bin" "${path[@]}")
+fi
+export PATH
 
 export HOMEBREW_NO_ENV_HINTS=1
 

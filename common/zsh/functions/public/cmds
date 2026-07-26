@@ -1,0 +1,125 @@
+# cmds - fuzzy search aliases, functions, and most used commands
+# usage: cmds [count]
+#   count: number of top commands to show (default: 75)
+
+local count="${1:-75}"
+
+# Determine clipboard command for fzf bind (subshell can't use _clip)
+local clip_cmd
+if (( ${IS_MAC:-0} )) && (( $+commands[pbcopy] )); then
+  clip_cmd="pbcopy"
+elif (( ${IS_WSL_INTEROP:-0} )) && (( $+commands[clip.exe] )); then
+  clip_cmd="clip.exe"
+elif (( $+commands[wl-copy] )); then
+  clip_cmd="wl-copy"
+elif command -v xclip &>/dev/null; then
+  clip_cmd="xclip -selection clipboard"
+elif command -v xsel &>/dev/null; then
+  clip_cmd="xsel --clipboard --input"
+else
+  clip_cmd="cat >/dev/null"
+fi
+
+if ! command -v fzf >/dev/null 2>&1; then
+  echo "cmds requires fzf" >&2
+  return 1
+fi
+
+local public_dir candidate stale_public_dir current_file
+local -a public_dir_candidates
+
+[[ -n "${_zsh_source_dir:-}" ]] && public_dir_candidates+=("$_zsh_source_dir/functions/public")
+
+current_file="${(%):-%x}"
+[[ "$current_file" == */* ]] && public_dir_candidates+=("${current_file:A:h}")
+
+for candidate in "${fpath[@]}"; do
+  [[ "${candidate:t}" == "public" && -r "$candidate/cmds" ]] && public_dir_candidates+=("$candidate")
+done
+
+[[ -n "${ZDOTDIR:-}" ]] && stale_public_dir="${ZDOTDIR:A}/functions/public"
+for candidate in "${public_dir_candidates[@]}"; do
+  candidate="${candidate:A}"
+  [[ -n "$stale_public_dir" && "$candidate" == "$stale_public_dir" ]] && continue
+  if [[ -d "$candidate" && -r "$candidate/cmds" ]]; then
+    public_dir="$candidate"
+    break
+  fi
+done
+
+local row_source
+row_source=$(
+  {
+    local name func_file summary uses cmd
+    local -A seen
+    local -a rows
+    local max_name=0
+
+    for name in ${(ok)aliases}; do
+      seen[$name]=1
+      rows+=("${name}"$'\t'"${aliases[$name]}"$'\t'"${name}")
+      (( ${#name} > max_name )) && max_name=${#name}
+    done
+
+    for name in ${(ok)galiases}; do
+      seen[$name]=1
+      rows+=("${name}"$'\t'"${galiases[$name]}"$'\t'"${name}")
+      (( ${#name} > max_name )) && max_name=${#name}
+    done
+
+    if [[ -n "$public_dir" ]]; then
+      for func_file in "$public_dir"/*(N-.); do
+        name="${func_file:t}"
+        [[ -n "${seen[$name]}" ]] && continue
+        seen[$name]=1
+        summary="$(awk '
+          NF && $1 != "#" { exit }
+          /^#/ {
+            sub(/^#[[:space:]]?/, "")
+            print
+            exit
+          }
+        ' "$func_file")"
+        [[ -z "$summary" ]] && summary="custom zsh function"
+        rows+=("${name}"$'\t'"${summary}"$'\t'"${name}")
+        (( ${#name} > max_name )) && max_name=${#name}
+      done
+    fi
+
+    if [[ -r "$HISTFILE" ]]; then
+      LC_ALL=C sed 's/^: [0-9]*:[0-9]*;//' "$HISTFILE" \
+        | LC_ALL=C awk 'NF { print $1 }' \
+        | LC_ALL=C sort \
+        | LC_ALL=C uniq -c \
+        | LC_ALL=C sort -rn \
+        | head -n "$count" \
+        | while read -r uses cmd; do
+            [[ -z "$cmd" ]] && continue
+            [[ -n "${seen[$cmd]}" ]] && continue
+            seen[$cmd]=1
+            rows+=("${cmd}"$'\t'"used ${uses} times"$'\t'"${cmd}")
+            (( ${#cmd} > max_name )) && max_name=${#cmd}
+          done
+    fi
+
+    local row row_name row_detail row_cmd
+    for row in "${rows[@]}"; do
+      IFS=$'\t' read -r row_name row_detail row_cmd <<< "$row"
+      printf '\033[1;36m%-*s\033[0m  \033[2m%s\033[0m\t%s\n' "$max_name" "$row_name" "$row_detail" "$row_cmd"
+    done
+  }
+)
+
+printf '%s\n' "$row_source" \
+  | fzf \
+    --ansi \
+    --header "enter inserts / ctrl-y copies" \
+    --delimiter $'\t' \
+    --with-nth "1" \
+    --bind "enter:become(echo {2})" \
+    --bind "ctrl-y:execute-silent(echo -n {2} | ${clip_cmd})+abort" \
+    --height "70%" \
+    --layout reverse \
+    --border rounded \
+    --prompt "cmds > " \
+    --pointer ">"

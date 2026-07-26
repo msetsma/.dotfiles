@@ -32,4 +32,5 @@ wid="$focused"
 target="6"
 
 "$AERO" move-node-to-workspace --window-id "$wid" "$target" >/dev/null 2>&1 || exit 0
+"$AERO" layout --window-id "$wid" tiling >/dev/null 2>&1 || true
 "$AERO" flatten-workspace-tree --workspace "$target" >/dev/null 2>&1 || true

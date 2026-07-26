@@ -1,8 +1,0 @@
-echo "Reloading Zsh configuration..."
-
-if command -v tmux >/dev/null 2>&1 && tmux info >/dev/null 2>&1; then
-  echo "Reloading tmux configuration..."
-  tmux source-file "${HOME}/.tmux.conf"
-fi
-
-exec zsh

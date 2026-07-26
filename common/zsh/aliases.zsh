@@ -1,25 +1,3 @@
-# clipboard abstraction
-# WSL2 uses clip.exe (Windows interop), macOS uses pbcopy
-if (( IS_MAC )); then
-  _clip() { pbcopy }
-  alias -g copy='| pbcopy'
-elif (( IS_WSL_INTEROP )); then
-  _clip() { clip.exe }
-  alias -g copy='| clip.exe'
-else
-  if command -v xclip &>/dev/null; then
-    _clip() { xclip -selection clipboard }
-    alias -g copy='| xclip -selection clipboard'
-  fi
-fi
-
-# open abstraction
-if (( IS_WSL_INTEROP )) && (( $+commands[wslview] )); then
-  alias open='wslview'
-elif ! (( IS_MAC )) && (( $+commands[xdg-open] )); then
-  alias open='xdg-open'
-fi
-
 # general
 alias c='clear'
 alias home='cd $HOME'
@@ -38,14 +16,16 @@ alias lt='eza --icons --tree --level=1 --group-directories-first -h --long --no-
 alias lt1='eza --icons --tree --level=1 --group-directories-first -h --long --no-permissions --no-user --no-time'
 alias lt2='eza --icons --tree --level=2 --group-directories-first -h --long --no-permissions --no-user --no-time'
 alias lt3='eza --icons --tree --level=3 --group-directories-first -h --long --no-permissions --no-user --no-time'
-alias lta='eza --icons --tree --group-directories-first -h --long --no-permissions --no-user --no-time'
+alias lta='eza --icons --tree --group-directories-first -h --long --total-size --no-permissions --no-user --no-time'
 alias ltcopy='eza --tree | _clip'
 
 # git
-alias gitfzf='~/.config/bash/git_fzf_checkout.sh'
+alias gfzf='~/.config/bash/git_fzf_checkout.sh'
+alias gaa='git add .'
+alias gs='git status'
 
 # because microsoft is dumb
-alias az='PYTHONWARNINGS="ignore::UserWarning" az'
+# alias az='PYTHONWARNINGS="ignore::UserWarning" az'
 
 # databricks
 alias db='databricks'
@@ -61,3 +41,4 @@ alias entra='~/.config/bash/entra.sh'
 
 # lazy docker
 alias lzd='lazydocker'
+alias lzg='lazygit'

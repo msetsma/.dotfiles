@@ -1,0 +1,7 @@
+# Insert a command selected from cmds into the current prompt.
+local selected
+selected="$(cmds 200)" || return
+[[ -n "$selected" ]] || return
+
+LBUFFER+="$selected"
+zle reset-prompt

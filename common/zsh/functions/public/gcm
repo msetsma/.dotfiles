@@ -1,0 +1,7 @@
+# Commit staged changes with a one-line message.
+if [[ $# -eq 0 || -z "${*//[[:space:]]/}" ]]; then
+  echo 'usage: gcm <commit message>' >&2
+  return 1
+fi
+
+git commit -m "$*"

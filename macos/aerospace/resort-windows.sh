@@ -48,24 +48,76 @@ APPLESCRIPT
 unminimized_first=0
 unminimize_all_windows
 
-typeset -A APP_SLOT=(
+typeset -A BUILTIN_APP=(
+	Hermes 1
 	"Microsoft Outlook" 1
 	Outlook 1
-	"Microsoft Teams" 2
-	Messages 2
-	Obsidian 3
-	"Open WebUI" 4
-	"Open WebUI.app" 4
+	"Microsoft Teams" 1
+	Messages 1
+	Obsidian 1
+	"Open WebUI" 1
+	"Open WebUI.app" 1
 )
 
-OTHER_SLOT="5"
-MINIMIZED_SLOT="6"
-DYNAMIC_START="7"
+WINDOWS_PER_WORKSPACE=2
+HORIZONTAL_LAYOUT="h_tiles"
+VERTICAL_LAYOUT="v_tiles"
+typeset -a SINGLE_MONITOR_APP_ORDER=(
+	Hermes
+	"Microsoft Outlook"
+	"Microsoft Teams"
+	Messages
+	Obsidian
+	"Open WebUI"
+	Ghostty
+	Safari
+	Code
+)
 typeset -A TOUCHED_WORKSPACES=()
+typeset -A WORKSPACE_SAMPLE_WINDOW=()
+typeset -A WORKSPACE_LAYOUT=()
+typeset -A WORKSPACE_MONITOR=()
 
 mark_workspace_touched() {
 	local workspace="$1"
 	[[ -n "$workspace" ]] && TOUCHED_WORKSPACES[$workspace]=1
+}
+
+remember_workspace_window() {
+	local workspace="$1"
+	local wid="$2"
+
+	[[ -z "$workspace" || -z "$wid" ]] && return 0
+	if [[ -z "${WORKSPACE_SAMPLE_WINDOW[$workspace]-}" ]]; then
+		WORKSPACE_SAMPLE_WINDOW[$workspace]="$wid"
+	fi
+}
+
+set_workspace_layout() {
+	local workspace="$1"
+	local layout="$2"
+
+	[[ -z "$workspace" || -z "$layout" ]] && return 0
+	WORKSPACE_LAYOUT[$workspace]="$layout"
+}
+
+set_workspace_monitor() {
+	local workspace="$1"
+	local monitor="$2"
+
+	[[ -z "$workspace" || -z "$monitor" ]] && return 0
+	WORKSPACE_MONITOR[$workspace]="$monitor"
+}
+
+apply_workspace_layouts() {
+	local workspace wid layout
+
+	for workspace in ${(kon)WORKSPACE_LAYOUT}; do
+		wid="${WORKSPACE_SAMPLE_WINDOW[$workspace]-}"
+		layout="${WORKSPACE_LAYOUT[$workspace]-}"
+		[[ -z "$wid" || -z "$layout" ]] && continue
+		"$AERO" layout --window-id "$wid" "$layout" >/dev/null 2>&1 || true
+	done
 }
 
 flatten_touched_workspaces() {
@@ -74,6 +126,13 @@ flatten_touched_workspaces() {
 	for workspace in ${(kon)TOUCHED_WORKSPACES}; do
 		"$AERO" flatten-workspace-tree --workspace "$workspace" >/dev/null 2>&1 || true
 	done
+}
+
+ensure_window_tiling() {
+	local wid="$1"
+
+	[[ -z "$wid" ]] && return 0
+	"$AERO" layout --window-id "$wid" tiling >/dev/null 2>&1 || true
 }
 
 move_window() {
@@ -85,6 +144,8 @@ move_window() {
 	mark_workspace_touched "$target"
 
 	if [[ "$current" == "$target" ]]; then
+		remember_workspace_window "$target" "$wid"
+		ensure_window_tiling "$wid"
 		return 0
 	fi
 
@@ -92,13 +153,18 @@ move_window() {
 		print -u2 "resort-windows: failed to move window $wid to workspace $target"
 		return 0
 	fi
+	remember_workspace_window "$target" "$wid"
+	ensure_window_tiling "$wid"
 }
 
 detect_monitors() {
 	local record id name is_main
+	typeset -a external_monitors
 	typeset -g builtin_monitor=""
 	typeset -g external_monitor=""
+	typeset -g reference_monitor=""
 	typeset -g main_monitor=""
+	typeset -g ultrawide_monitor=""
 
 	for record in "${(@f)$($AERO list-monitors --format "%{monitor-id}%{tab}%{monitor-name}%{tab}%{monitor-is-main}" 2>/dev/null)}"; do
 		IFS=$'\t' read -r id name is_main <<< "$record"
@@ -110,13 +176,48 @@ detect_monitors() {
 
 		if [[ "${name:l}" == *built-in* ]]; then
 			builtin_monitor="$id"
-		elif [[ -z "$external_monitor" ]]; then
-			external_monitor="$id"
+		else
+			external_monitors+=("$id")
+			if [[ -z "$external_monitor" ]]; then
+				external_monitor="$id"
+			fi
+			if [[ "$is_main" == "true" ]]; then
+				external_monitor="$id"
+			fi
+			if [[ "${name:l}" == *u3415w* ]]; then
+				# Ultrawide: always the horizontal (side-by-side) display.
+				ultrawide_monitor="$id"
+			elif [[ "${name:l}" == *dell* ]]; then
+				# Any other Dell: vertical-stacking reference display.
+				reference_monitor="$id"
+			fi
 		fi
 	done
 
 	if [[ -z "$builtin_monitor" ]]; then
 		builtin_monitor="$main_monitor"
+	fi
+
+	if [[ -n "$ultrawide_monitor" ]]; then
+		external_monitor="$ultrawide_monitor"
+	fi
+
+	if (( ${#external_monitors[@]} < 2 )); then
+		reference_monitor=""
+	elif [[ -z "$reference_monitor" ]]; then
+		for id in "${external_monitors[@]}"; do
+			if [[ "$id" != "$external_monitor" ]]; then
+				reference_monitor="$id"
+				break
+			fi
+		done
+	elif [[ "$reference_monitor" == "$external_monitor" ]]; then
+		for id in "${external_monitors[@]}"; do
+			if [[ "$id" != "$reference_monitor" ]]; then
+				external_monitor="$id"
+				break
+			fi
+		done
 	fi
 }
 
@@ -129,18 +230,19 @@ move_workspace_to_monitor() {
 }
 
 route_workspaces_to_monitors() {
-	local workspace
+	local workspace monitor
 
 	detect_monitors
-	[[ -z "$builtin_monitor" || -z "$external_monitor" ]] && return 0
 
-	for workspace in {1..6}; do
-		move_workspace_to_monitor "$workspace" "$builtin_monitor"
+	for workspace in ${(kon)WORKSPACE_MONITOR}; do
+		monitor="${WORKSPACE_MONITOR[$workspace]-}"
+		move_workspace_to_monitor "$workspace" "$monitor"
 	done
+}
 
-	for (( workspace = DYNAMIC_START; workspace < next_dynamic_workspace; workspace++ )); do
-		move_workspace_to_monitor "$workspace" "$external_monitor"
-	done
+has_external_monitor() {
+	detect_monitors
+	[[ -n "$external_monitor" ]]
 }
 
 load_windows() {
@@ -178,6 +280,25 @@ is_code() {
 
 is_ghostty() {
 	[[ "$1" == "Ghostty" ]]
+}
+
+app_group_key() {
+	local app="$1"
+
+	case "$app" in
+		Outlook|"Microsoft Outlook")
+			print -- "Microsoft Outlook"
+			;;
+		"Open WebUI.app"|"Open WebUI")
+			print -- "Open WebUI"
+			;;
+		"Visual Studio Code"|Code)
+			print -- "Code"
+			;;
+		*)
+			print -- "$app"
+			;;
+	esac
 }
 
 is_minimized() {
@@ -223,28 +344,6 @@ read_record() {
 	IFS=$'\t' read -r wid app old_workspace monitor title <<< "$record"
 }
 
-process_fixed() {
-	local record wid app old_workspace monitor title target slot
-
-	for record in "$@"; do
-		read_record "$record"
-		slot="${APP_SLOT[$app]-}"
-		[[ -z "$slot" ]] && continue
-		move_window "$wid" "$slot" "$old_workspace"
-	done
-}
-
-process_bucket() {
-	local slot="$1"
-	shift
-
-	local record wid app old_workspace monitor title target
-	for record in "$@"; do
-		read_record "$record"
-		move_window "$wid" "$slot" "$old_workspace"
-	done
-}
-
 move_record_to_workspace() {
 	local record="$1"
 	local workspace="$2"
@@ -254,18 +353,37 @@ move_record_to_workspace() {
 	move_window "$wid" "$workspace" "$old_workspace"
 }
 
+assign_records_to_compact_workspaces() {
+	local monitor="$1"
+	local layout="$2"
+	shift 2
+
+	local record count=0
+	for record in "$@"; do
+		set_workspace_layout "$next_workspace" "$layout"
+		set_workspace_monitor "$next_workspace" "$monitor"
+		move_record_to_workspace "$record" "$next_workspace"
+		count=$(( count + 1 ))
+		if (( count == WINDOWS_PER_WORKSPACE )); then
+			next_workspace=$(( next_workspace + 1 ))
+			count=0
+		fi
+	done
+
+	if (( count > 0 )); then
+		next_workspace=$(( next_workspace + 1 ))
+	fi
+}
+
 process_external_pairs() {
-	local workspace="$DYNAMIC_START"
-	local count=0
 	local i record
-	typeset -a external_records
+	typeset -a first_external_records external_records reference_records
 
 	if (( ${#ghostty_records[@]} > 0 )); then
-		move_record_to_workspace "${ghostty_records[1]}" "$workspace"
-		if (( ${#safari_records[@]} > 0 )); then
-			move_record_to_workspace "${safari_records[1]}" "$workspace"
+		first_external_records+=("${ghostty_records[1]}")
+		if [[ -z "$reference_monitor" ]] && (( ${#safari_records[@]} > 0 )); then
+			first_external_records+=("${safari_records[1]}")
 		fi
-		workspace=$(( workspace + 1 ))
 	fi
 
 	for (( i = 2; i <= ${#ghostty_records[@]}; i++ )); do
@@ -273,6 +391,10 @@ process_external_pairs() {
 	done
 
 	for (( i = 1; i <= ${#safari_records[@]}; i++ )); do
+		if [[ -n "$reference_monitor" ]]; then
+			reference_records+=("${safari_records[$i]}")
+			continue
+		fi
 		if (( ${#ghostty_records[@]} > 0 && i == 1 )); then
 			continue
 		fi
@@ -283,30 +405,82 @@ process_external_pairs() {
 		external_records+=("$record")
 	done
 
-	for record in "${external_records[@]}"; do
-		move_record_to_workspace "$record" "$workspace"
-		count=$(( count + 1 ))
-		if (( count == 2 )); then
-			workspace=$(( workspace + 1 ))
-			count=0
+	assign_records_to_compact_workspaces "$external_monitor" "$HORIZONTAL_LAYOUT" "${first_external_records[@]}"
+	assign_records_to_compact_workspaces "$external_monitor" "$HORIZONTAL_LAYOUT" "${external_records[@]}"
+	assign_records_to_compact_workspaces "$reference_monitor" "$VERTICAL_LAYOUT" "${reference_records[@]}"
+}
+
+process_single_monitor_app_workspaces() {
+	local record wid app old_workspace monitor title key workspace count
+	typeset -A seen_group completed_group
+	typeset -a groups ordered_groups
+
+	for record in "${windows[@]}"; do
+		read_record "$record"
+		[[ -z "$wid" || -z "$app" ]] && continue
+
+		key="$(app_group_key "$app")"
+		if [[ -z "${seen_group[$key]-}" ]]; then
+			seen_group[$key]=1
+			groups+=("$key")
 		fi
 	done
 
-	if (( count > 0 )); then
-		workspace=$(( workspace + 1 ))
-	fi
+	for key in "${SINGLE_MONITOR_APP_ORDER[@]}"; do
+		if [[ -n "${seen_group[$key]-}" ]]; then
+			ordered_groups+=("$key")
+			completed_group[$key]=1
+		fi
+	done
 
-	next_dynamic_workspace="$workspace"
+	for key in "${(@o)groups}"; do
+		[[ -n "${completed_group[$key]-}" ]] && continue
+		ordered_groups+=("$key")
+	done
+
+	workspace=1
+	for key in "${ordered_groups[@]}"; do
+		count=0
+		for record in "${windows[@]}"; do
+			read_record "$record"
+			[[ -z "$wid" || -z "$app" ]] && continue
+			[[ "$(app_group_key "$app")" != "$key" ]] && continue
+
+			set_workspace_layout "$workspace" "$HORIZONTAL_LAYOUT"
+			move_window "$wid" "$workspace" "$old_workspace"
+			count=$(( count + 1 ))
+			if (( count == WINDOWS_PER_WORKSPACE )); then
+				workspace=$(( workspace + 1 ))
+				count=0
+			fi
+		done
+
+		if (( count > 0 )); then
+			workspace=$(( workspace + 1 ))
+		fi
+	done
 }
 
 typeset -a minimized_records fixed_records other_records ghostty_records safari_records code_records
 typeset -a windows
-next_dynamic_workspace="$DYNAMIC_START"
+next_workspace=1
 
 load_windows
-ensure_safari_for_ghostty
+if has_external_monitor; then
+	external_monitor_attached=1
+	ensure_safari_for_ghostty
+else
+	external_monitor_attached=0
+fi
 
 if (( ${#windows[@]} == 0 )); then
+	exit 0
+fi
+
+if (( ! external_monitor_attached )); then
+	process_single_monitor_app_workspaces
+	flatten_touched_workspaces
+	apply_workspace_layouts
 	exit 0
 fi
 
@@ -322,16 +496,17 @@ for record in "${windows[@]}"; do
 		safari_records+=("$record")
 	elif is_code "$app"; then
 		code_records+=("$record")
-	elif [[ -n "${APP_SLOT[$app]-}" ]]; then
+	elif [[ -n "${BUILTIN_APP[$app]-}" ]]; then
 		fixed_records+=("$record")
 	else
 		other_records+=("$record")
 	fi
 done
 
-process_fixed "${fixed_records[@]}"
-process_bucket "$OTHER_SLOT" "${other_records[@]}"
-process_bucket "$MINIMIZED_SLOT" "${minimized_records[@]}"
+assign_records_to_compact_workspaces "$builtin_monitor" "$HORIZONTAL_LAYOUT" "${fixed_records[@]}"
+assign_records_to_compact_workspaces "$builtin_monitor" "$HORIZONTAL_LAYOUT" "${other_records[@]}"
+assign_records_to_compact_workspaces "$builtin_monitor" "$HORIZONTAL_LAYOUT" "${minimized_records[@]}"
 process_external_pairs
 route_workspaces_to_monitors
 flatten_touched_workspaces
+apply_workspace_layouts

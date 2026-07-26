@@ -1,0 +1,123 @@
+# Open a command-line editing helper palette.
+zle -I
+
+if ! (( $+commands[fzf] )); then
+  zle -M "fzf is not available"
+  return 127
+fi
+
+local -a helper_rows
+helper_rows=(
+  $'copy-line\tcopy current command line to clipboard\tcopy-line'
+  $'cut-line\tcopy current command line, then clear it\tcut-line'
+  $'clear-line\tclear current command line\tclear-line'
+  $'undo\tundo last command-line edit\tundo'
+  $'redo\tredo last undone command-line edit\tredo'
+  $'start\tmove cursor to beginning of line\tstart'
+  $'end\tmove cursor to end of line\tend'
+  $'tmux-output\tcopy last tmux command output\ttmux-output'
+)
+
+local row name description action
+local max_name=0
+for row in "${helper_rows[@]}"; do
+  IFS=$'\t' read -r name description action <<< "$row"
+  (( ${#name} > max_name )) && max_name=${#name}
+done
+
+local row_source selected
+row_source=$(
+  for row in "${helper_rows[@]}"; do
+    IFS=$'\t' read -r name description action <<< "$row"
+    printf '\033[1;36m%-*s\033[0m  \033[2m%s\033[0m\t%s\n' "$max_name" "$name" "$description" "$action"
+  done
+)
+
+selected="$(
+  printf '%s\n' "$row_source" \
+    | fzf \
+      --ansi \
+      --header "enter runs action" \
+      --delimiter $'\t' \
+      --with-nth "1" \
+      --bind "enter:become(echo {2})" \
+      --height "55%" \
+      --layout reverse \
+      --border rounded \
+      --prompt "zle > " \
+      --pointer ">"
+)" || {
+  zle reset-prompt
+  return
+}
+
+[[ -n "$selected" ]] || {
+  zle reset-prompt
+  return
+}
+
+case "$selected" in
+  copy-line)
+    if [[ -z "$BUFFER" ]]; then
+      zle -M "Command line is empty"
+      zle reset-prompt
+      return 1
+    fi
+    if ! whence -w _clip >/dev/null 2>&1; then
+      zle -M "_clip is not available"
+      zle reset-prompt
+      return 127
+    fi
+    print -rn -- "$BUFFER" | _clip
+    local copy_status=$?
+    (( copy_status == 0 )) && zle -M "Copied command line" || zle -M "Failed to copy command line"
+    zle reset-prompt
+    return "$copy_status"
+    ;;
+  cut-line)
+    if [[ -z "$BUFFER" ]]; then
+      zle -M "Command line is empty"
+      zle reset-prompt
+      return 1
+    fi
+    if ! whence -w _clip >/dev/null 2>&1; then
+      zle -M "_clip is not available"
+      zle reset-prompt
+      return 127
+    fi
+    print -rn -- "$BUFFER" | _clip
+    local cut_status=$?
+    if (( cut_status == 0 )); then
+      BUFFER=""
+      CURSOR=0
+      zle -M "Cut command line"
+    else
+      zle -M "Failed to cut command line"
+    fi
+    zle reset-prompt
+    return "$cut_status"
+    ;;
+  clear-line)
+    BUFFER=""
+    CURSOR=0
+    zle -M "Cleared command line"
+    ;;
+  undo)
+    zle undo
+    ;;
+  redo)
+    zle redo
+    ;;
+  start)
+    CURSOR=0
+    ;;
+  end)
+    CURSOR=${#BUFFER}
+    ;;
+  tmux-output)
+    zle clip-widget
+    return $?
+    ;;
+esac
+
+zle reset-prompt

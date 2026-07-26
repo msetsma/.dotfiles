@@ -1,113 +1,129 @@
 # ─────────────────────────────────────────────────────────────
 # 1. Environment & platform detection
 # ─────────────────────────────────────────────────────────────
-source "$ZDOTDIR/.zshenv"
-source "$ZDOTDIR/platform.zsh"
+_zsh_source_dir="${${(%):-%x}:A:h}"
+source "$_zsh_source_dir/platform.zsh"
+
+typeset -gU path PATH fpath
+
+# Hermes Agent relocated home (hermes-system repo). See ~/hermes-system/README.md
+export HERMES_HOME="$HOME/hermes-system"
 
 # ─────────────────────────────────────────────────────────────
 # 2. PATH (must come before anything that calls binaries)
 # ─────────────────────────────────────────────────────────────
+export GOPATH="$HOME/go"
 
-# Only set PATH once
-if [ -z "$PATH_SET" ]; then
-  export GOPATH="$HOME/go"
+path_dirs=(
+  "$HOME/.cargo/bin"
+  "$HOME/.local/bin"
+  "/usr/local/go/bin"
+  "$GOPATH/bin"
+)
 
-  path_dirs=(
-    "$HOME/.cargo/bin"
-    "$HOME/.local/bin"
-    "/usr/local/go/bin"
-    "$GOPATH/bin"
-  )
+[[ -n "$PKG_PREFIX" ]] && path_dirs=("$PKG_PREFIX/bin" "${path_dirs[@]}")
+(( IS_MAC )) && path_dirs=("/usr/local/bin" "${path_dirs[@]}")  # Intel fallback
 
-  [[ -n "$PKG_PREFIX" ]] && path_dirs=("$PKG_PREFIX/bin" "${path_dirs[@]}")
-  (( IS_MAC )) && path_dirs=("/usr/local/bin" "${path_dirs[@]}")  # Intel fallback
-
-  export PATH="$(IFS=:; echo "${path_dirs[*]}"):$PATH"
-  export PATH_SET=1
-fi
-
-# Auto-attach interactive shells to tmux. Set TMUX_AUTO_START=0 to bypass.
-# if [[ -o interactive \
-#   && -z "${TMUX:-}" \
-#   && -z "${TMUX_AUTO_STARTED:-}" \
-#   && "${TMUX_AUTO_START:-1}" != "0" \
-#   && "${TERM:-}" != "dumb" ]] && (( $+commands[tmux] )); then
-#   export TMUX_AUTO_STARTED=1
-#   exec tmux new-session -A -s "${TMUX_AUTO_SESSION:-main}"
-# fi
+path=("${path_dirs[@]}" "${path[@]}")
+export PATH
 
 # ─────────────────────────────────────────────────────────────
-# 3. Secrets & aliases
+# 3. Terminal integrations
 # ─────────────────────────────────────────────────────────────
-source "$ZDOTDIR/.secrets.zsh"
-source "$ZDOTDIR/aliases.zsh"
+source "$_zsh_source_dir/integrations/tmux/init.zsh"
 
 # ─────────────────────────────────────────────────────────────
-# 4. Zinit
+# 4. Secrets & aliases
+# ─────────────────────────────────────────────────────────────
+[[ -r "$ZDOTDIR/.secrets.zsh" ]] && source "$ZDOTDIR/.secrets.zsh"
+source "$_zsh_source_dir/adapters.zsh"
+source "$_zsh_source_dir/aliases.zsh"
+
+# ─────────────────────────────────────────────────────────────
+# 5. Zinit
 # ─────────────────────────────────────────────────────────────
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
-if [[ ! -f "$ZINIT_HOME/zinit.zsh" ]]; then
-  print -P "%F{33}Installing zinit plugin manager...%f"
-  command mkdir -p "${ZINIT_HOME:h}" && command chmod g-rwX "${ZINIT_HOME:h}"
-  command git clone https://github.com/zdharma-continuum/zinit "$ZINIT_HOME" && \
-    print -P "%F{34}zinit installation successful.%f%b" || \
-    print -P "%F{160}zinit clone failed.%f%b"
+_zinit_available=0
+if [[ -r "$ZINIT_HOME/zinit.zsh" ]]; then
+  source "$ZINIT_HOME/zinit.zsh"
+  _zinit_available=1
+  autoload -Uz _zinit
+  (( ${+_comps} )) && _comps[zinit]=_zinit
+
+  # Zinit annexes extend install behavior for plugins that need download/patch/build helpers.
+  zinit light-mode for \
+    zdharma-continuum/zinit-annex-as-monitor \
+    zdharma-continuum/zinit-annex-patch-dl \
+    zdharma-continuum/zinit-annex-rust
+
+  # zsh-completions must be available before compinit builds the completion cache.
+  zinit light zsh-users/zsh-completions # Extra completion definitions.
+else
+  print -u2 -P "%F{220}zinit not found at $ZINIT_HOME; skipping zinit plugins. Install zinit manually to enable them.%f"
 fi
 
-source "$ZINIT_HOME/zinit.zsh"
-autoload -Uz _zinit
-(( ${+_comps} )) && _comps[zinit]=_zinit
-
-# Load important annexes without Turbo mode.
-zinit light-mode for \
-  zdharma-continuum/zinit-annex-as-monitor \
-  zdharma-continuum/zinit-annex-bin-gem-node \
-  zdharma-continuum/zinit-annex-patch-dl \
-  zdharma-continuum/zinit-annex-rust
-
-# zsh-completions must be available before compinit builds the completion cache.
-zinit light zsh-users/zsh-completions
-
 # ─────────────────────────────────────────────────────────────
-# 5. Completions
+# 6. Function & completion paths
 # ─────────────────────────────────────────────────────────────
-# Package manager site-functions (Homebrew/Linuxbrew)
+# Package manager completion definitions.
 [[ -n "$PKG_PREFIX" ]] && fpath+=("$PKG_PREFIX/share/zsh/site-functions")
 
-# uv/uvx completions, cached
+# Generated uv/uvx completion definitions.
 _uv_comp_dir="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/completions"
 mkdir -p "$_uv_comp_dir"
 (( $+commands[uv] ))  && [[ ! -s "$_uv_comp_dir/_uv" ]]  && uv  generate-shell-completion zsh > "$_uv_comp_dir/_uv"  2>/dev/null
 (( $+commands[uvx] )) && [[ ! -s "$_uv_comp_dir/_uvx" ]] && uvx --generate-shell-completion zsh > "$_uv_comp_dir/_uvx" 2>/dev/null
 
+# Custom function directories.
+# public = commands to run directly
+# private = helpers
+# widgets = ZLE keybinding handlers
+_zsh_function_dirs=(
+  "$_zsh_source_dir/functions/public"
+  "$_zsh_source_dir/functions/private"
+  "$_zsh_source_dir/functions/widgets"
+)
+
+# zsh searches fpath for autoloadable functions and completion definitions.
 fpath=(
-  "$ZDOTDIR/functions"
+  "$_zsh_source_dir/functions/completions"
+  $_zsh_function_dirs
   "$_uv_comp_dir"
   $fpath
 )
 
-# Completion behavior
+# ─────────────────────────────────────────────────────────────
+# 7. Completion behavior
+# ─────────────────────────────────────────────────────────────
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 
-# Cached compinit (full security check once per day)
+# Cached compinit; run the full security check once per day.
 autoload -Uz compinit
 if [[ -n "$ZDOTDIR/.zcompdump"(#qN.mh+24) ]]; then
   compinit
 else
   compinit -C
 fi
-zinit cdreplay -q
+(( _zinit_available )) && zinit cdreplay -q
 
-# Autoload custom functions
-for func_file in "$ZDOTDIR/functions"/*(N); do
-  autoload -Uz "${func_file:t}"
+# ─────────────────────────────────────────────────────────────
+# 8. Custom function autoloads & keybindings
+# ─────────────────────────────────────────────────────────────
+for func_dir in "${_zsh_function_dirs[@]}"; do
+  for func_file in "$func_dir"/*(N-.); do
+    autoload -Uz "${func_file:t}"
+  done
 done
 
+[[ -o interactive && -t 0 ]] && source "$_zsh_source_dir/keybindings.zsh"
+
 # ─────────────────────────────────────────────────────────────
-# 6. fzf
+# 9. fzf
 # ─────────────────────────────────────────────────────────────
-[ -f "$HOME/.fzf.zsh" ] && source <(fzf --zsh)
+if [[ -o interactive && -t 0 ]] && (( $+commands[fzf] )); then
+  source <(fzf --zsh)
+fi
 export FZF_DEFAULT_COMMAND='rg --files --hidden --glob "!.git"'
 export FZF_CTRL_T_OPTS="
   --walker-skip .git,node_modules,target
@@ -115,26 +131,37 @@ export FZF_CTRL_T_OPTS="
   --bind 'ctrl-/:change-preview-window(down|hidden|)'"
 
 # ─────────────────────────────────────────────────────────────
-# 7. Prompt & runtime managers
+# 10. Prompt & runtime managers
 # ─────────────────────────────────────────────────────────────
 (( $+commands[starship] )) && eval "$(starship init zsh)"
 (( $+commands[mise] ))     && eval "$(mise activate zsh)"
 
 # ─────────────────────────────────────────────────────────────
-# 8. Sensible zsh defaults (previously provided by OMZ)
+# 11. Sensible zsh defaults (previously provided by OMZ)
 # ─────────────────────────────────────────────────────────────
 # History
 HISTFILE="$ZDOTDIR/.zsh_history"
 HISTSIZE=50000
 SAVEHIST=50000
+
+# SHARE_HISTORY keeps history synced across open shells.
+# HIST_IGNORE_* skips duplicate commands and commands prefixed with a space.
+# HIST_VERIFY loads history expansions into the prompt before running them.
+# EXTENDED_HISTORY stores timestamps and command durations.
 setopt SHARE_HISTORY HIST_IGNORE_DUPS HIST_IGNORE_SPACE HIST_VERIFY EXTENDED_HISTORY
 
 # Directory navigation
+# AUTO_CD lets a bare directory path act like cd.
+# AUTO_PUSHD records directory jumps in the stack; PUSHD_* keeps that stack tidy.
 setopt AUTO_CD AUTO_PUSHD PUSHD_IGNORE_DUPS PUSHD_SILENT
 
 # ─────────────────────────────────────────────────────────────
-# 9. Interactive plugins (syntax highlighting must stay last)
+# 12. Interactive plugins (syntax highlighting must stay last)
 # ─────────────────────────────────────────────────────────────
-zinit light Aloxaf/fzf-tab
-zinit light zsh-users/zsh-autosuggestions
-zinit light zsh-users/zsh-syntax-highlighting
+if (( _zinit_available )); then
+  ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+  zinit light Aloxaf/fzf-tab # Replace tab completion menu with fzf.
+  zinit light zsh-users/zsh-autosuggestions # Suggest commands from history/completion.
+  zinit light zsh-users/zsh-syntax-highlighting # Highlight commands as you type.
+fi
+export PATH="/opt/homebrew/sbin:$PATH"

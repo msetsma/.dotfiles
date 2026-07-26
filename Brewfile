@@ -19,23 +19,19 @@ brew "fd"
 brew "bat"
 brew "eza"
 
-# File Management
-brew "yazi"
-
-# Git
-brew "lazygit"
-
 # Dev Tools
 brew "fastfetch"
 brew "cmake"
 brew "openssl"
 brew "neovim"
 brew "lazydocker"
+brew "lazygit"
+brew "uv"
+brew "azure-cli"
 
 # Languages
 brew "lua"
 brew "go"
-brew "python"
 brew "node"
 
 # Fonts

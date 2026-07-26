@@ -1,0 +1,65 @@
+# Copy the last tmux command output, then redraw the current prompt.
+zle -I
+
+if [[ -z "$TMUX" ]]; then
+  zle -M "Not inside tmux"
+  return 1
+fi
+
+if ! whence -w _clip >/dev/null 2>&1; then
+  zle -M "_clip is not available"
+  return 127
+fi
+
+if (( ! ${__zsh_tmux_clip_ready:-0} )); then
+  zle -M "No command output recorded"
+  return 1
+fi
+
+local captured_pane
+captured_pane="$(_zsh_tmux_clip_capture_pane)" || {
+  zle -M "Could not capture tmux pane"
+  return 1
+}
+
+local -a pane_lines output_lines
+pane_lines=("${(@f)captured_pane}")
+
+local start="${__zsh_tmux_clip_start_line:-0}"
+local end="${__zsh_tmux_clip_end_line:-0}"
+local line_count="${#pane_lines}"
+
+if (( end > line_count )); then
+  local dropped=$(( end - line_count ))
+  start=$(( start - dropped ))
+  end=$line_count
+fi
+
+(( start < 0 )) && start=0
+if (( start > end || end > line_count )); then
+  zle -M "Recorded command output is no longer in tmux history"
+  return 1
+fi
+
+if (( end > start )); then
+  output_lines=("${(@)pane_lines[$((start + 1)),$end]}")
+else
+  output_lines=()
+fi
+
+local output="${(F)output_lines}"
+local captured_command="${__zsh_tmux_clip_command:-}"
+
+{
+  printf '$ %s\n' "$captured_command"
+  [[ -n "$output" ]] && printf '\n%s' "$output"
+} | _clip
+local clip_status=$?
+if (( clip_status == 0 )); then
+  zle -M "Copied last command output"
+else
+  zle -M "Failed to copy output"
+fi
+
+zle reset-prompt
+return "$clip_status"

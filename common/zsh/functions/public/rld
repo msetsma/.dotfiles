@@ -1,0 +1,48 @@
+emulate -L zsh
+
+local deploy=0
+case "${1:-}" in
+  --deploy)
+    deploy=1
+    shift
+    ;;
+  -h|--help)
+    print "usage: rld [--deploy]"
+    print "  --deploy  run dotter before reloading shell/tmux"
+    return 0
+    ;;
+  "")
+    ;;
+  *)
+    print -u2 "usage: rld [--deploy]"
+    return 2
+    ;;
+esac
+
+if (( $# )); then
+  print -u2 "usage: rld [--deploy]"
+  return 2
+fi
+
+if (( deploy )); then
+  if ! command -v dotter >/dev/null 2>&1; then
+    print -u2 "dotter is not available"
+    return 127
+  fi
+
+  print "deploying dotfiles..."
+  dotter || return
+fi
+
+print "Reloading zsh..."
+
+if command -v tmux >/dev/null 2>&1 && tmux info >/dev/null 2>&1; then
+  print "Reloading tmux..."
+  tmux source-file "${HOME}/.tmux.conf" || return
+fi
+
+if [[ -o login ]]; then
+  exec zsh -l
+else
+  exec zsh
+fi

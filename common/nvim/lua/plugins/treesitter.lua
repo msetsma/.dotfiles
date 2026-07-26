@@ -13,6 +13,7 @@ return {
                     'c',
                     'dockerfile',
                     'go',
+                    'html',
                     'json',
                     'lua',
                     'markdown',
