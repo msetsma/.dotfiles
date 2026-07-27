@@ -5,6 +5,9 @@ export ZSH="${ZDOTDIR:-$XDG_CONFIG_HOME/zsh}/ohmyzsh"
 
 export BUN_INSTALL="$HOME/.bun"
 
+# Hermes Agent relocated home (hermes-system repo). See ~/hermes-system/README.md
+export HERMES_HOME="$HOME/hermes-system"
+
 typeset -gU path PATH
 if [[ -d "$BUN_INSTALL/bin" ]]; then
   path=("$BUN_INSTALL/bin" "${path[@]}")

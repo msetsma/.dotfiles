@@ -6,9 +6,6 @@ source "$_zsh_source_dir/platform.zsh"
 
 typeset -gU path PATH fpath
 
-# Hermes Agent relocated home (hermes-system repo). See ~/hermes-system/README.md
-export HERMES_HOME="$HOME/hermes-system"
-
 # ─────────────────────────────────────────────────────────────
 # 2. PATH (must come before anything that calls binaries)
 # ─────────────────────────────────────────────────────────────
