@@ -41,20 +41,21 @@ script = [
 ]
 
 [tasks.install-rust-tools]
+description = "Cargo-only tools. Everything else comes from the platform package manager."
 script = [
     "cargo install dotter",
     "cargo install cargo-update",
-    "cargo install vivid",
-    "cargo install eza",
-    "cargo install bottom",
-    "cargo install bat",
 ]
 
 [tasks.install-mise]
 description = "Install mise runtime manager"
 windows_alias = "install-mise-cargo"
-mac_alias = "install-mise-cargo"
+mac_alias = "install-mise-brew"
 linux_alias = "install-mise-apt"
+
+[tasks.install-mise-brew]
+condition = { platforms = ["mac"] }
+script = ["brew install mise"]
 
 [tasks.install-mise-cargo]
 script = ["cargo install mise"]
@@ -101,7 +102,7 @@ script = [
     "echo --- Installing Tools ---",
     "scoop bucket add extras 2>nul || echo extras bucket already added",
     "scoop bucket add nerd-fonts 2>nul || echo nerd-fonts bucket already added",
-    "scoop install lazygit neovim yazi wezterm-nightly fzf ripgrep bat yasb JetBrainsMono-NF",
+    "scoop install lazygit neovim wezterm-nightly fzf ripgrep bat yasb JetBrainsMono-NF",
 
     "echo --- Installing Languages ---",
     "scoop install python go lua lua51 luarocks stylua",
@@ -111,8 +112,8 @@ script = [
     "scoop shim add gcc ~\\scoop\\apps\\gcc\\current\\bin\\gcc.exe", # Needed for NVim Telescope FZF Native
 
     "echo --- Installing Scoopfile (if exists) ---",
-    "if exist %USERPROFILE%\\.dotfiles\\scoopfile.json (",
-    "  for /f \"tokens=1\" %%i in (%USERPROFILE%\\.dotfiles\\scoopfile.json) do scoop install %%i 2>nul || echo Skipping %%i",
+    "if exist %USERPROFILE%\\.dotfiles\\windows\\scoop.json (",
+    "  for /f \"tokens=1\" %%i in (%USERPROFILE%\\.dotfiles\\windows\\scoop.json) do scoop install %%i 2>nul || echo Skipping %%i",
     ")",
 
     "echo --- Installing Python CLI tools via uv ---",
@@ -121,8 +122,7 @@ script = [
     ")",
 
     "echo --- Setting Environment Variables ---",
-    'setx XDG_CONFIG_HOME "%USERPROFILE%\\.config"', # Nushell home directory
-    'setx YAZI_CONFIG_HOME "%USERPROFILE%\\.config\\yazi"', # Yazi config file
+    'setx XDG_CONFIG_HOME "%USERPROFILE%\\.config"',
 ]
 
 [tasks.mac-tools]
@@ -130,15 +130,8 @@ script = [
     "echo '--- Installing via Brewfile ---'",
     "brew bundle --file=~/.dotfiles/Brewfile",
 
-    "echo '--- Installing Oh My Zsh ---'",
-    'export ZSH="$HOME/.config/zsh/ohmyzsh"',
-    'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"',
-
-    "echo '--- Installing Oh My Zsh Plugins ---'",
-    "git clone https://github.com/Aloxaf/fzf-tab $HOME/.config/zsh/ohmyzsh/custom/plugins/fzf-tab 2>/dev/null || true",
-    "git clone https://github.com/zsh-users/zsh-autosuggestions $HOME/.config/zsh/ohmyzsh/custom/plugins/zsh-autosuggestions 2>/dev/null || true",
-    "git clone https://github.com/zsh-users/zsh-syntax-highlighting $HOME/.config/zsh/ohmyzsh/custom/plugins/zsh-syntax-highlighting 2>/dev/null || true",
-    "git clone https://github.com/zsh-users/zsh-completions $HOME/.config/zsh/ohmyzsh/custom/plugins/zsh-completions 2>/dev/null || true",
+    "echo '--- Installing zinit (plugins load from .zshrc) ---'",
+    "git clone https://github.com/zdharma-continuum/zinit.git $HOME/.local/share/zinit/zinit.git 2>/dev/null || true",
 
     "echo '--- Installing Python CLI tools via uv ---'",
     "if [ -f ~/.dotfiles/uv-tools.txt ]; then",
@@ -146,9 +139,6 @@ script = [
     "    [ -n \"$package\" ] && uv tool install $package 2>/dev/null || echo \"Skipping $package\"",
     "  done < ~/.dotfiles/uv-tools.txt",
     "fi",
-
-    "echo '--- Setting Environment Variables ---'",
-    "export YAZI_CONFIG_HOME=\"~/.config/yazi\"",
 ]
 
 [tasks.linux-tools]
@@ -158,19 +148,11 @@ script = [
     "sudo apt update",
     "sudo apt install -y zsh fzf ripgrep fd-find bat neovim cmake curl git build-essential pkg-config libssl-dev fastfetch tmux mosh",
 
-    "echo '--- Installing Oh My Zsh ---'",
-    'export ZSH="$HOME/.config/zsh/ohmyzsh"',
-    'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended 2>/dev/null || true',
-
-    "echo '--- Installing Oh My Zsh Plugins ---'",
-    "git clone https://github.com/Aloxaf/fzf-tab $HOME/.config/zsh/ohmyzsh/custom/plugins/fzf-tab 2>/dev/null || true",
-    "git clone https://github.com/zsh-users/zsh-autosuggestions $HOME/.config/zsh/ohmyzsh/custom/plugins/zsh-autosuggestions 2>/dev/null || true",
-    "git clone https://github.com/zsh-users/zsh-syntax-highlighting $HOME/.config/zsh/ohmyzsh/custom/plugins/zsh-syntax-highlighting 2>/dev/null || true",
-    "git clone https://github.com/zsh-users/zsh-completions $HOME/.config/zsh/ohmyzsh/custom/plugins/zsh-completions 2>/dev/null || true",
+    "echo '--- Installing zinit (plugins load from .zshrc) ---'",
+    "git clone https://github.com/zdharma-continuum/zinit.git $HOME/.local/share/zinit/zinit.git 2>/dev/null || true",
 
     "echo '--- Installing CLI tools ---'",
     "curl -sS https://starship.rs/install.sh | sh -s -- -y",
-    "cargo install yazi-fm yazi-cli",
     "go install github.com/jesseduffield/lazygit@latest",
     "go install github.com/jesseduffield/lazydocker@latest",
 

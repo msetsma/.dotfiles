@@ -1,7 +1,4 @@
 start-at-login = true
-after-startup-command = [
-  "exec-and-forget borders active_color=0xffe1e3e4 inactive_color=0xff494d64 width=2.0",
-]
 enable-normalization-flatten-containers = true
 enable-normalization-opposite-orientation-for-nested-containers = true
 accordion-padding = 24
@@ -29,7 +26,6 @@ ctrl-alt-cmd-b = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Safari" 
 ctrl-alt-cmd-m = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Microsoft Teams" "Microsoft Teams"'''
 ctrl-alt-cmd-n = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Obsidian" "Obsidian"'''
 ctrl-alt-cmd-l = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Open WebUI" "/Applications/Open WebUI.app" "Open WebUI.app"'''
-ctrl-alt-cmd-h = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Hermes" "/Users/msetsma/.hermes/hermes-agent/apps/desktop/release/mac-arm64/Hermes.app"'''
 ctrl-alt-cmd-r = '''exec-and-forget ~/.config/aerospace/resort-windows.sh'''
 # Bring Apps to Current Workspace
 ctrl-alt-cmd-shift-c = '''exec-and-forget ~/.config/aerospace/bring-app-to-workspace.sh "Code" "Visual Studio Code" "Visual Studio Code"'''
@@ -38,7 +34,6 @@ ctrl-alt-cmd-shift-b = '''exec-and-forget ~/.config/aerospace/bring-app-to-works
 ctrl-alt-cmd-shift-m = '''exec-and-forget ~/.config/aerospace/bring-app-to-workspace.sh "Microsoft Teams" "Microsoft Teams"'''
 ctrl-alt-cmd-shift-n = '''exec-and-forget ~/.config/aerospace/bring-app-to-workspace.sh "Obsidian" "Obsidian"'''
 ctrl-alt-cmd-shift-l = '''exec-and-forget ~/.config/aerospace/bring-app-to-workspace.sh "Open WebUI" "/Applications/Open WebUI.app" "Open WebUI.app"'''
-ctrl-alt-cmd-shift-h = '''exec-and-forget ~/.config/aerospace/bring-app-to-workspace.sh "Hermes" "/Users/msetsma/.hermes/hermes-agent/apps/desktop/release/mac-arm64/Hermes.app"'''
 ctrl-alt-cmd-minus = '''exec-and-forget ~/.config/aerospace/move-window-to-empty-workspace.sh'''
 cmd-m = '''exec-and-forget ~/.config/aerospace/stash-window.sh'''
 cmd-h = []

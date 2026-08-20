@@ -49,7 +49,6 @@ unminimized_first=0
 unminimize_all_windows
 
 typeset -A BUILTIN_APP=(
-	Hermes 1
 	"Microsoft Outlook" 1
 	Outlook 1
 	"Microsoft Teams" 1
@@ -63,7 +62,6 @@ WINDOWS_PER_WORKSPACE=2
 HORIZONTAL_LAYOUT="h_tiles"
 VERTICAL_LAYOUT="v_tiles"
 typeset -a SINGLE_MONITOR_APP_ORDER=(
-	Hermes
 	"Microsoft Outlook"
 	"Microsoft Teams"
 	Messages

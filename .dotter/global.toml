@@ -28,7 +28,6 @@
 
 [mac.files]
 "common/bottom" = "~/Library/Application Support/bottom"
-# "macos/borders" = "~/.config/borders"
 "macos/aerospace" = "~/.config/aerospace"
 "macos/ghostty/config" = { target = "~/.config/ghostty/config", type = "template" }
 "macos/launchagents" = "~/Library/LaunchAgents"

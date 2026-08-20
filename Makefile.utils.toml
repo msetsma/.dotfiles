@@ -294,7 +294,7 @@ script = [
     "echo ''",
     "echo '--- Environment variables ---'",
     "echo \"XDG_CONFIG_HOME: ${XDG_CONFIG_HOME:-not set}\"",
-    "echo \"YAZI_CONFIG_HOME: ${YAZI_CONFIG_HOME:-not set}\"",
+    "echo \"ZDOTDIR: ${ZDOTDIR:-not set}\"",
     "echo ''",
     "echo '=== Health check complete ==='",
 ]
