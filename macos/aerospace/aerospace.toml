@@ -28,7 +28,7 @@ ctrl-alt-cmd-t = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Ghostty"
 ctrl-alt-cmd-b = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Safari" "Safari"'''
 ctrl-alt-cmd-m = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Microsoft Teams" "Microsoft Teams"'''
 ctrl-alt-cmd-n = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Obsidian" "Obsidian"'''
-ctrl-alt-cmd-l = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Open WebUI" "/Applications/Open WebUI.app" "Open WebUI.app"'''
+ctrl-alt-cmd-l = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Claude" "Claude"'''
 ctrl-alt-cmd-h = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Hermes" "/Users/msetsma/.hermes/hermes-agent/apps/desktop/release/mac-arm64/Hermes.app"'''
 ctrl-alt-cmd-r = '''exec-and-forget ~/.config/aerospace/resort-windows.sh'''
 # Bring Apps to Current Workspace
@@ -37,7 +37,7 @@ ctrl-alt-cmd-shift-t = '''exec-and-forget ~/.config/aerospace/bring-app-to-works
 ctrl-alt-cmd-shift-b = '''exec-and-forget ~/.config/aerospace/bring-app-to-workspace.sh "Safari" "Safari"'''
 ctrl-alt-cmd-shift-m = '''exec-and-forget ~/.config/aerospace/bring-app-to-workspace.sh "Microsoft Teams" "Microsoft Teams"'''
 ctrl-alt-cmd-shift-n = '''exec-and-forget ~/.config/aerospace/bring-app-to-workspace.sh "Obsidian" "Obsidian"'''
-ctrl-alt-cmd-shift-l = '''exec-and-forget ~/.config/aerospace/bring-app-to-workspace.sh "Open WebUI" "/Applications/Open WebUI.app" "Open WebUI.app"'''
+ctrl-alt-cmd-shift-l = '''exec-and-forget ~/.config/aerospace/bring-app-to-workspace.sh "Claude" "Claude"'''
 ctrl-alt-cmd-shift-h = '''exec-and-forget ~/.config/aerospace/bring-app-to-workspace.sh "Hermes" "/Users/msetsma/.hermes/hermes-agent/apps/desktop/release/mac-arm64/Hermes.app"'''
 ctrl-alt-cmd-minus = '''exec-and-forget ~/.config/aerospace/move-window-to-empty-workspace.sh'''
 cmd-m = '''exec-and-forget ~/.config/aerospace/stash-window.sh'''

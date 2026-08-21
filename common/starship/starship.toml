@@ -1,5 +1,8 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
+# git is slow on first prompt after terminal idles (cold FS cache); default 500ms trips the warning
+command_timeout = 2000
+
 format = """
 $directory\
 $git_branch\
