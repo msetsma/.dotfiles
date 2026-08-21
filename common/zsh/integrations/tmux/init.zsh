@@ -2,11 +2,11 @@
 
 _zsh_tmux_integration_dir="${${(%):-%x}:A:h}"
 
-# Auto-attach interactive shells to tmux. Set TMUX_AUTO_START=0 to bypass.
+# Opt-in tmux auto-attach, off by default. Set TMUX_AUTO_START=1 to re-enable.
 if [[ -o interactive \
   && -z "${TMUX:-}" \
   && -z "${TMUX_AUTO_STARTED:-}" \
-  && "${TMUX_AUTO_START:-1}" != "0" \
+  && "${TMUX_AUTO_START:-0}" != "0" \
   && "${TERM:-}" != "dumb" ]] && (( $+commands[tmux] )); then
   export TMUX_AUTO_STARTED=1
   exec tmux new-session -A -s "${TMUX_AUTO_SESSION:-main}"

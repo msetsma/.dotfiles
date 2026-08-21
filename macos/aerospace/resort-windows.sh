@@ -54,8 +54,7 @@ typeset -A BUILTIN_APP=(
 	"Microsoft Teams" 1
 	Messages 1
 	Obsidian 1
-	"Open WebUI" 1
-	"Open WebUI.app" 1
+	Claude 1
 )
 
 WINDOWS_PER_WORKSPACE=2
@@ -66,7 +65,7 @@ typeset -a SINGLE_MONITOR_APP_ORDER=(
 	"Microsoft Teams"
 	Messages
 	Obsidian
-	"Open WebUI"
+	Claude
 	Ghostty
 	Safari
 	Code
@@ -286,9 +285,6 @@ app_group_key() {
 	case "$app" in
 		Outlook|"Microsoft Outlook")
 			print -- "Microsoft Outlook"
-			;;
-		"Open WebUI.app"|"Open WebUI")
-			print -- "Open WebUI"
 			;;
 		"Visual Studio Code"|Code)
 			print -- "Code"
