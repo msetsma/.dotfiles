@@ -2,6 +2,11 @@ export EDITOR="nvim"
 export VISUAL="nvim"
 export XDG_CONFIG_HOME="$HOME/.config"
 
+# Keep __pycache__ out of the repo. Scripts under ~/.config/bash are symlinks
+# into .dotfiles, so bytecode would otherwise land next to the tracked sources
+# and make dotter warn on every run.
+export PYTHONPYCACHEPREFIX="${XDG_CACHE_HOME:-$HOME/.cache}/python"
+
 export BUN_INSTALL="$HOME/.bun"
 
 typeset -gU path PATH
