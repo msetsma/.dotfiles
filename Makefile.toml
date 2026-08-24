@@ -107,13 +107,16 @@ script = [
     "echo --- Installing Languages ---",
     "scoop install python go lua lua51 luarocks stylua",
 
+    "echo --- Installing Window Manager ---",
+    "scoop install komorebi whkd",
+
     "echo --- Installing Dependencies ---",
-    "scoop install autohotkey gcc cmake fastfetch",
+    "scoop install gcc cmake fastfetch",
     "scoop shim add gcc ~\\scoop\\apps\\gcc\\current\\bin\\gcc.exe", # Needed for NVim Telescope FZF Native
 
-    "echo --- Installing Scoopfile (if exists) ---",
+    "echo --- Installing the rest from windows/scoop.json (if it exists) ---",
     "if exist %USERPROFILE%\\.dotfiles\\windows\\scoop.json (",
-    "  for /f \"tokens=1\" %%i in (%USERPROFILE%\\.dotfiles\\windows\\scoop.json) do scoop install %%i 2>nul || echo Skipping %%i",
+    "  scoop import %USERPROFILE%\\.dotfiles\\windows\\scoop.json",
     ")",
 
     "echo --- Installing Python CLI tools via uv ---",

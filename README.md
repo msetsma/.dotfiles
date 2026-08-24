@@ -12,7 +12,7 @@ This repo is designed around a **unix-first** philosophy. The core dev environme
 
 ```
 macOS:    native apps (Ghostty, AeroSpace) --> unix backend (zsh, neovim, tmux)
-Windows:  native apps (WezTerm, AHK)       --> WSL2 --> unix backend (zsh, neovim, tmux)
+Windows:  native apps (WezTerm, komorebi)  --> WSL2 --> unix backend (zsh, neovim, tmux)
 ```
 
 Both platforms converge on the same `common/` configs for the shell and dev tools. The difference is only in the GUI layer above.
@@ -57,7 +57,7 @@ cargo make init
 On Windows, you run init twice -- once on the Windows host for native apps, and once inside WSL2 for the dev environment:
 
 ```bash
-# 1. Windows host (PowerShell/cmd) -- installs Scoop packages, WezTerm, AHK
+# 1. Windows host (PowerShell/cmd) -- installs Scoop packages, WezTerm, komorebi
 cargo make init
 
 # 2. Inside WSL2 -- installs zsh, zinit, CLI tools, symlinks common/ configs
@@ -135,7 +135,7 @@ cargo make info            # Show all available commands
 
 ### Windows-only (GUI layer)
 
-[WezTerm](https://github.com/wez/wezterm) | [AutoHotkey](https://github.com/AutoHotkey/AutoHotkey) | [Scoop](https://scoop.sh/)
+[WezTerm](https://github.com/wez/wezterm) | [komorebi](https://github.com/LGUG2Z/komorebi) | [whkd](https://github.com/LGUG2Z/whkd) | [yasb](https://github.com/amnweb/yasb) | [Scoop](https://scoop.sh/)
 
 ---
 

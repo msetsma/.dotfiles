@@ -18,6 +18,7 @@
 [windows.files]
 "windows/startup/startup.vbs" = "C:\\Users\\2015m\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\startup.vbs"
 "windows/komorebi" = "~/.config/komorebi"
+"windows/whkdrc/whkdrc" = "~/.config/whkdrc"
 "windows/yasb" = "~/.config/yasb"
 "windows/wezterm/constants.lua" = "~/.config/wezterm/constants.lua"
 "windows/wezterm/functions.lua" = "~/.config/wezterm/functions.lua"

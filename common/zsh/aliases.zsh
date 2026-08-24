@@ -20,7 +20,7 @@ alias lta='eza --icons --tree --group-directories-first -h --long --total-size -
 alias ltcopy='eza --tree | _clip'
 
 # git
-alias gfzf='~/.config/bash/git_fzf_checkout.sh'
+alias gfzf='~/.config/bash/git_checkout_fzf.sh'
 alias gaa='git add .'
 alias gs='git status'
 
