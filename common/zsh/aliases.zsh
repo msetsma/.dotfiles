@@ -36,9 +36,6 @@ alias db-dev='_use_databricks dev'
 # uv
 alias uvt='uv tool'
 
-# azure
-alias entra='~/.config/bash/entra.sh'
-
 # lazy docker
 alias lzd='lazydocker'
 alias lzg='lazygit'

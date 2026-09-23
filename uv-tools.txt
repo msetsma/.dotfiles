@@ -1,1 +1,2 @@
+entra-mcp
 ruff

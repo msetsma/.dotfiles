@@ -9,7 +9,7 @@
   <array>
     <string>/bin/zsh</string>
     <string>-lc</string>
-    <string>mkdir -p "$HOME/.cache/entra_membership"; export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; "$HOME/.config/bash/entra.sh" cache refresh >> "$HOME/.cache/entra_membership/launchd.out.log" 2>> "$HOME/.cache/entra_membership/launchd.err.log"</string>
+    <string>mkdir -p "$HOME/.cache/entra_membership"; export PATH="$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"; "$HOME/.local/bin/entra" cache refresh >> "$HOME/.cache/entra_membership/launchd.out.log" 2>> "$HOME/.cache/entra_membership/launchd.err.log"</string>
   </array>
 
   <key>RunAtLoad</key>
