@@ -1,5 +1,24 @@
 {
   "$schema": "https://raw.githubusercontent.com/LGUG2Z/komorebi/master/schema.asc.json",
+  "Path of Exile 2": {
+    "ignore": [
+      {
+        "kind": "Class",
+        "id": "POEWindowClass",
+        "matching_strategy": "Equals"
+      },
+      {
+        "kind": "Exe",
+        "id": "PathOfExile_x64Steam.exe",
+        "matching_strategy": "Equals"
+      },
+      {
+        "kind": "Exe",
+        "id": "PathOfExileSteam.exe",
+        "matching_strategy": "Equals"
+      }
+    ]
+  },
   "1Password": {
     "ignore": [
       {
