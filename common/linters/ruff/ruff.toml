@@ -43,6 +43,11 @@ exclude = [
 # LINTING
 # =============================================================================
 [lint]
+# Preview is enabled ONLY so a single preview rule can be selected: PLR1702
+# (too-many-nested-blocks). `explicit-preview-rules` keeps every other preview
+# rule off - without both settings PLR1702 silently does nothing.
+preview = true
+explicit-preview-rules = true
 select = [
   # Core
   "E",
@@ -80,6 +85,7 @@ select = [
   "S",  # flake8-bandit
   # Complexity
   "C90",  # mccabe
+  "PLR1702",  # too-many-nested-blocks (preview; threshold: [lint.pylint] max-nested-blocks)
   # Code quality
   "Q",  # flake8-quotes
   "ERA",  # eradicate (commented-out code)
@@ -111,7 +117,6 @@ ignore = [
   "TC003",
   # Minor preferences
   "PTH123",  # open() vs Path.open()
-  "PLR0912",  # branches (use mccabe instead)
   "PLR0915",  # statements
 ]
 fixable = ["ALL"]
@@ -119,8 +124,8 @@ unfixable = ["ERA001", "F401", "F841"]  # Require manual review
 
 [lint.per-file-ignores]
 "__init__.py" = ["F401", "F403"]
-"**/tests/**/*.py" = ["S101", "ARG", "PLR2004", "S105", "S106"]
-"**/test_*.py" = ["S101", "ARG", "PLR2004", "S105", "S106"]
+"**/tests/**/*.py" = ["S101", "S603", "ARG", "PLR2004", "S105", "S106"]
+"**/test_*.py" = ["S101", "S603", "ARG", "PLR2004", "S105", "S106"]
 "conftest.py" = ["F401", "ARG"]
 "conf*.py" = ["ERA001", "E501"]
 "settings*.py" = ["ERA001"]
