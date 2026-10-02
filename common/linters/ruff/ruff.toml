@@ -86,8 +86,6 @@ select = [
   "ERA",  # eradicate (commented-out code)
   # Testing
   "PT",  # flake8-pytest-style
-  # Docstrings (uncomment to enforce)
-  "D",  # pydocstyle
 ]
 ignore = [
   # Formatter handles these
@@ -207,9 +205,6 @@ ban-relative-imports = "parents"
 inline-quotes = "single"
 docstring-quotes = "double"
 avoid-escape = true
-
-[lint.pydocstyle]
-convention = "google"
 
 [lint.flake8-bandit]
 hardcoded-tmp-directory-extend = ["/var/tmp", "/dev/shm"]
