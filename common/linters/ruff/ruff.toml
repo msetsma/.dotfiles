@@ -136,6 +136,8 @@ max-complexity = 10
 combine-as-imports = true
 force-sort-within-sections = false
 lines-after-imports = 2
+# Align with [format] skip-magic-trailing-comma = true (ruff warns otherwise).
+split-on-trailing-comma = false
 
 [lint.pylint]
 max-args = 6
