@@ -1,0 +1,13 @@
+emulate -L zsh
+setopt pipefail
+
+local ruff_bin="${RUFF:-$(command -v ruff)}"
+if [[ -z "$ruff_bin" ]]; then
+  print -P "%F{red}ruff not found%f - install it or set \$RUFF"
+  return 127
+fi
+
+local -a targets=("$@")
+(( ${#targets} )) || targets=(.)
+
+"$ruff_bin" check "${targets[@]}"
