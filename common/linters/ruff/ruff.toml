@@ -1,12 +1,13 @@
 # Ruff configuration
 
 line-length = 120
-target-version = "py313"
 indent-width = 4
 cache-dir = "~/.cache/ruff"
 output-format = "full"
-fix = true
 show-fixes = true
+# target-version is intentionally unset: ruff infers it from each project's
+# requires-python, so one global config stays correct across repos on different
+# Python floors. (A global py13x floor would push newer syntax into older repos.)
 src = ["src", "."]
 exclude = [
   ".bzr",
@@ -205,8 +206,8 @@ inline-quotes = "single"
 docstring-quotes = "double"
 avoid-escape = true
 
-# [lint.pydocstyle]
-# convention = "google"
+[lint.pydocstyle]
+convention = "google"
 
 [lint.flake8-bandit]
 hardcoded-tmp-directory-extend = ["/var/tmp", "/dev/shm"]
