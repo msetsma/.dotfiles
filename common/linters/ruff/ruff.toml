@@ -82,7 +82,6 @@ select = [
   "C90",  # mccabe
   # Code quality
   "Q",  # flake8-quotes
-  "T20",  # flake8-print
   "ERA",  # eradicate (commented-out code)
   # Testing
   "PT",  # flake8-pytest-style
@@ -123,7 +122,6 @@ unfixable = ["ERA001", "F401", "F841"]  # Require manual review
 "**/tests/**/*.py" = ["S101", "ARG", "PLR2004", "S105", "S106"]
 "**/test_*.py" = ["S101", "ARG", "PLR2004", "S105", "S106"]
 "conftest.py" = ["F401", "ARG"]
-"**/scripts/**/*.py" = ["T20"]
 "conf*.py" = ["ERA001", "E501"]
 "settings*.py" = ["ERA001"]
 
