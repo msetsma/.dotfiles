@@ -120,10 +120,11 @@ prefix = "ctrl+b"
 # Accepts: hex (#89b4fa), named colors (cyan, blue, magenta), or rgb(r,g,b)
 # accent = "cyan"
 
-show_agent_labels_on_pane_borders = false
-agent_panel_sort = "priority"
+show_agent_labels_on_pane_borders = true
+agent_panel_sort = "spaces"
 
 # Background notification popup delivery
+status_indicators = "symbols"
 [ui.toast]
 # off = disable pop-up notifications
 # herdr = show top-right in-app toasts
@@ -131,7 +132,7 @@ agent_panel_sort = "priority"
 # system = ask the OS notification service directly
 # delivery = "off"
 
-delivery = "off"
+delivery = "system"
 [ui.sound]
 enabled = false
 

@@ -26,6 +26,7 @@ ctrl-alt-cmd-b = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Safari" 
 ctrl-alt-cmd-m = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Microsoft Teams" "Microsoft Teams"'''
 ctrl-alt-cmd-n = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Obsidian" "Obsidian"'''
 ctrl-alt-cmd-l = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Claude" "Claude"'''
+ctrl-alt-cmd-3 = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "T3 Code (Alpha)" "T3 Code (Alpha)"'''
 ctrl-alt-cmd-r = '''exec-and-forget ~/.config/aerospace/resort-windows.sh'''
 # Bring Apps to Current Workspace
 ctrl-alt-cmd-shift-c = '''exec-and-forget ~/.config/aerospace/bring-app-to-workspace.sh "Code" "Visual Studio Code" "Visual Studio Code"'''
@@ -34,6 +35,7 @@ ctrl-alt-cmd-shift-b = '''exec-and-forget ~/.config/aerospace/bring-app-to-works
 ctrl-alt-cmd-shift-m = '''exec-and-forget ~/.config/aerospace/bring-app-to-workspace.sh "Microsoft Teams" "Microsoft Teams"'''
 ctrl-alt-cmd-shift-n = '''exec-and-forget ~/.config/aerospace/bring-app-to-workspace.sh "Obsidian" "Obsidian"'''
 ctrl-alt-cmd-shift-l = '''exec-and-forget ~/.config/aerospace/bring-app-to-workspace.sh "Claude" "Claude"'''
+ctrl-alt-cmd-shift-3 = '''exec-and-forget ~/.config/aerospace/bring-app-to-workspace.sh "T3 Code (Alpha)" "T3 Code (Alpha)"'''
 ctrl-alt-cmd-minus = '''exec-and-forget ~/.config/aerospace/move-window-to-empty-workspace.sh'''
 cmd-m = '''exec-and-forget ~/.config/aerospace/stash-window.sh'''
 cmd-h = []

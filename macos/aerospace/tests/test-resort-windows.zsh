@@ -98,7 +98,7 @@ reset_calls() {
 }
 
 run_subject() {
-	UNMINIMIZE_FIRST=0 CHECK_MINIMIZED=0 "$SUBJECT"
+	UNMINIMIZE_FIRST=0 "$SUBJECT"
 }
 
 assert_called() {
@@ -125,69 +125,80 @@ assert_not_called() {
 	fi
 }
 
-test_two_monitors_keeps_safari_with_ghostty_on_external() {
+test_single_monitor_packs_work_first() {
 	reset_calls
 	cat > "$monitors_file" <<'MONITORS'
-1	Built-in Retina Display	false
-2	Gigabyte M32U	true
+1	Built-in Retina Display	true
 MONITORS
 	cat > "$windows_file" <<'WINDOWS'
-101	Ghostty	9	1	Ghostty
-102	Safari	10	1	Reference
+101	Code	9	1	repo-one
+102	Ghostty	9	1	shell
+103	Safari	9	1	docs
+104	T3 Code (Alpha)	9	1	t3
+105	Obsidian	9	1	notes
+106	Claude	9	1	chat
+107	Microsoft Outlook	9	1	inbox
+108	Microsoft Teams	9	1	teams
+109	Messages	9	1	im
 WINDOWS
 
 	run_subject
 
 	assert_called $'move-node	101	1'
-	assert_called $'move-node	102	1'
-	assert_called $'layout	102	tiling'
+	assert_called $'move-node	104	1'
+	assert_called $'move-node	102	2'
+	assert_called $'move-node	103	2'
+	assert_called $'move-node	105	3'
+	assert_called $'move-node	106	3'
+	assert_called $'move-node	107	4'
+	assert_called $'move-node	108	4'
+	assert_called $'move-node	109	5'
 	assert_called $'layout	101	h_tiles'
-	assert_called $'move-workspace	1	2'
+	assert_called $'layout	102	h_tiles'
+	assert_called $'layout	105	h_tiles'
+	assert_called $'layout	107	h_tiles'
+	assert_called $'layout	109	h_tiles'
+	assert_not_called $'move-workspace	1	1'
 }
 
-test_two_monitors_tiles_safari_already_in_target_workspace() {
+test_single_monitor_skips_windows_already_in_place() {
 	reset_calls
 	cat > "$monitors_file" <<'MONITORS'
-1	Built-in Retina Display	false
-2	Gigabyte M32U	true
+1	Built-in Retina Display	true
 MONITORS
 	cat > "$windows_file" <<'WINDOWS'
-101	Ghostty	1	2	Ghostty
-102	Safari	1	2	Reference
+801	Code	1	1	repo-one
 WINDOWS
 
 	run_subject
 
-	assert_called $'layout	102	tiling'
-	assert_called $'layout	101	h_tiles'
-	assert_not_called $'move-node	102	1'
+	assert_not_called $'move-node	801	1'
+	assert_called $'layout	801	tiling'
+	assert_called $'layout	801	h_tiles'
 }
 
-test_three_monitors_routes_safari_to_dell_reference_monitor() {
+test_two_monitors_routes_work_external_comms_builtin() {
 	reset_calls
 	cat > "$monitors_file" <<'MONITORS'
 1	Built-in Retina Display	false
 2	Gigabyte M32U	true
-3	DELL U2422HE	false
 MONITORS
 	cat > "$windows_file" <<'WINDOWS'
-201	Ghostty	9	1	Ghostty
-202	Safari	10	1	Reference
+201	Code	9	1	repo
+202	Microsoft Outlook	9	1	inbox
 WINDOWS
 
 	run_subject
 
 	assert_called $'move-node	201	1'
 	assert_called $'move-node	202	2'
-	assert_called $'layout	202	tiling'
 	assert_called $'layout	201	h_tiles'
-	assert_called $'layout	202	v_tiles'
+	assert_called $'layout	202	h_tiles'
 	assert_called $'move-workspace	1	2'
-	assert_called $'move-workspace	2	3'
-	assert_not_called $'move-node	202	1'
+	assert_called $'move-workspace	2	1'
 }
 
-test_three_monitors_keeps_builtin_workspaces_horizontal() {
+test_three_monitors_places_notes_on_reference() {
 	reset_calls
 	cat > "$monitors_file" <<'MONITORS'
 1	Built-in Retina Display	false
@@ -195,22 +206,43 @@ test_three_monitors_keeps_builtin_workspaces_horizontal() {
 3	DELL U2422HE	false
 MONITORS
 	cat > "$windows_file" <<'WINDOWS'
-301	Microsoft Outlook	1	1	Inbox
-302	Ghostty	1	1	Ghostty
-303	Safari	2	1	Reference
+301	Ghostty	9	1	shell
+302	Safari	9	1	docs
+303	Code	9	1	repo
+304	Obsidian	9	1	notes
+305	Claude	9	1	chat
+306	Microsoft Outlook	9	1	inbox
+307	Microsoft Teams	9	1	teams
+308	Messages	9	1	im
 WINDOWS
 
 	run_subject
 
+	assert_called $'move-node	301	1'
+	assert_called $'move-node	302	1'
+	assert_called $'move-node	303	2'
+	assert_called $'move-node	304	3'
+	assert_called $'move-node	305	3'
+	assert_called $'move-node	306	4'
+	assert_called $'move-node	307	5'
+	assert_called $'move-node	308	6'
 	assert_called $'layout	301	h_tiles'
-	assert_called $'layout	302	h_tiles'
-	assert_called $'layout	303	v_tiles'
+	assert_called $'layout	303	h_tiles'
+	assert_called $'layout	304	v_tiles'
+	assert_called $'layout	306	h_tiles'
+	assert_called $'move-workspace	1	2'
+	assert_called $'move-workspace	2	2'
+	assert_called $'move-workspace	3	3'
+	assert_called $'move-workspace	4	1'
+	assert_called $'move-workspace	5	1'
+	assert_called $'move-workspace	6	1'
 }
 
-test_single_monitor_splits_app_windows_after_two_per_workspace() {
+test_external_splits_after_two_windows() {
 	reset_calls
 	cat > "$monitors_file" <<'MONITORS'
-1	Built-in Retina Display	true
+1	Built-in Retina Display	false
+2	Gigabyte M32U	true
 MONITORS
 	cat > "$windows_file" <<'WINDOWS'
 401	Code	9	1	repo-one
@@ -227,9 +259,15 @@ WINDOWS
 	assert_called $'move-node	403	2'
 	assert_called $'move-node	404	2'
 	assert_called $'move-node	405	3'
+	assert_called $'layout	401	h_tiles'
+	assert_called $'layout	403	h_tiles'
+	assert_called $'layout	405	h_tiles'
+	assert_called $'move-workspace	1	2'
+	assert_called $'move-workspace	2	2'
+	assert_called $'move-workspace	3	2'
 }
 
-test_external_monitor_splits_builtin_app_windows_after_two_per_workspace() {
+test_builtin_gets_one_window_per_workspace() {
 	reset_calls
 	cat > "$monitors_file" <<'MONITORS'
 1	Built-in Retina Display	false
@@ -238,82 +276,75 @@ MONITORS
 	cat > "$windows_file" <<'WINDOWS'
 501	Microsoft Outlook	9	1	Inbox
 502	Microsoft Outlook	9	1	Calendar
-503	Microsoft Outlook	9	1	Mail
-504	Microsoft Outlook	9	1	Search
-505	Microsoft Outlook	9	1	Archive
+503	SomeRandomApp	9	1	Window
 WINDOWS
 
 	run_subject
 
 	assert_called $'move-node	501	1'
-	assert_called $'move-node	502	1'
-	assert_called $'move-node	503	2'
-	assert_called $'move-node	504	2'
-	assert_called $'move-node	505	3'
+	assert_called $'move-node	502	2'
+	assert_called $'move-node	503	3'
+	assert_called $'layout	501	h_tiles'
+	assert_called $'layout	502	h_tiles'
+	assert_called $'layout	503	h_tiles'
+	assert_called $'move-workspace	1	1'
 	assert_called $'move-workspace	2	1'
 	assert_called $'move-workspace	3	1'
 }
 
-test_external_monitor_starts_code_windows_at_first_workspace() {
+test_editors_pair_on_external() {
 	reset_calls
 	cat > "$monitors_file" <<'MONITORS'
 1	Built-in Retina Display	false
 2	Gigabyte M32U	true
 MONITORS
 	cat > "$windows_file" <<'WINDOWS'
-701	Code	9	1	repo-one
-702	Code	9	1	repo-two
-703	Code	9	1	repo-three
-704	Code	9	1	repo-four
-705	Code	9	1	repo-five
-WINDOWS
-
-	run_subject
-
-	assert_called $'move-node	701	1'
-	assert_called $'move-node	702	1'
-	assert_called $'move-node	703	2'
-	assert_called $'move-node	704	2'
-	assert_called $'move-node	705	3'
-	assert_called $'move-workspace	1	2'
-	assert_called $'move-workspace	2	2'
-	assert_called $'move-workspace	3	2'
-}
-
-test_three_monitors_splits_reference_windows_after_two_per_workspace() {
-	reset_calls
-	cat > "$monitors_file" <<'MONITORS'
-1	Built-in Retina Display	false
-2	Gigabyte M32U	true
-3	DELL U2422HE	false
-MONITORS
-	cat > "$windows_file" <<'WINDOWS'
-601	Safari	9	1	Docs one
-602	Safari	9	1	Docs two
-603	Safari	9	1	Docs three
-604	Safari	9	1	Docs four
-605	Safari	10	1	Docs five
+601	Code	9	1	repo
+602	T3 Code (Alpha)	9	1	t3
 WINDOWS
 
 	run_subject
 
 	assert_called $'move-node	601	1'
 	assert_called $'move-node	602	1'
-	assert_called $'move-node	603	2'
-	assert_called $'move-node	604	2'
-	assert_called $'move-node	605	3'
-	assert_called $'move-workspace	1	3'
-	assert_called $'move-workspace	2	3'
-	assert_called $'move-workspace	3	3'
+	assert_called $'layout	601	h_tiles'
+	assert_called $'move-workspace	1	2'
 }
 
-test_two_monitors_keeps_safari_with_ghostty_on_external
-test_two_monitors_tiles_safari_already_in_target_workspace
-test_three_monitors_routes_safari_to_dell_reference_monitor
-test_three_monitors_keeps_builtin_workspaces_horizontal
-test_single_monitor_splits_app_windows_after_two_per_workspace
-test_external_monitor_splits_builtin_app_windows_after_two_per_workspace
-test_external_monitor_starts_code_windows_at_first_workspace
-test_three_monitors_splits_reference_windows_after_two_per_workspace
+test_notes_collapse_to_builtin_without_reference_monitor() {
+	reset_calls
+	cat > "$monitors_file" <<'MONITORS'
+1	Built-in Retina Display	false
+2	Gigabyte M32U	true
+MONITORS
+	cat > "$windows_file" <<'WINDOWS'
+701	Obsidian	9	1	notes
+702	Claude	9	1	chat
+703	Ghostty	9	1	shell
+704	Safari	9	1	docs
+WINDOWS
+
+	run_subject
+
+	assert_called $'move-node	703	1'
+	assert_called $'move-node	704	1'
+	assert_called $'move-node	701	2'
+	assert_called $'move-node	702	3'
+	assert_called $'layout	703	h_tiles'
+	assert_called $'layout	701	h_tiles'
+	assert_called $'layout	702	h_tiles'
+	assert_called $'move-workspace	1	2'
+	assert_called $'move-workspace	2	1'
+	assert_called $'move-workspace	3	1'
+}
+
+test_single_monitor_packs_work_first
+test_single_monitor_skips_windows_already_in_place
+test_two_monitors_routes_work_external_comms_builtin
+test_three_monitors_places_notes_on_reference
+test_external_splits_after_two_windows
+test_builtin_gets_one_window_per_workspace
+test_editors_pair_on_external
+test_notes_collapse_to_builtin_without_reference_monitor
 
 print -- "resort-windows tests passed"

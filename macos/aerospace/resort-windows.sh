@@ -1,5 +1,13 @@
 #!/bin/zsh
-# Deterministically re-bucket AeroSpace windows into numeric workspaces.
+# Deterministically re-bucket AeroSpace windows into role-based workspaces.
+#
+# Placement:
+#   * Main external display  -> work apps (terminal, browser, editors), 2/workspace
+#   * Vertical reference     -> notes / AI, stacked, 2/workspace
+#   * Built-in display       -> communications + overflow, 1/workspace
+#   * No external display    -> everything packs work-first, 2/workspace
+#
+# Reorder apps by editing the *_APP_ORDER arrays below.
 
 emulate -LR zsh
 setopt pipefail
@@ -22,6 +30,63 @@ if [[ -z "$AERO" || ! -x "$AERO" ]]; then
 	print -u2 "resort-windows: aerospace binary not found"
 	exit 1
 fi
+
+## Tunables --------------------------------------------------------------------
+
+# Windows sharing a workspace before spilling into the next workspace.
+WINDOWS_PER_WORKSPACE_EXTERNAL=2
+WINDOWS_PER_WORKSPACE_REFERENCE=2
+WINDOWS_PER_WORKSPACE_BUILTIN=1
+WINDOWS_PER_WORKSPACE_SINGLE=2
+
+HORIZONTAL_LAYOUT="h_tiles"
+VERTICAL_LAYOUT="v_tiles"
+
+# Main external display (landscape): terminal + browser first, then editors.
+typeset -a EXTERNAL_APP_ORDER=(
+	Ghostty
+	Safari
+	Code
+	"T3 Code (Alpha)"
+)
+
+# Vertical reference display: notes + AI.
+typeset -a REFERENCE_APP_ORDER=(
+	Obsidian
+	Claude
+)
+
+# Built-in display: communications, one app per workspace.
+typeset -a BUILTIN_APP_ORDER=(
+	"Microsoft Outlook"
+	"Microsoft Teams"
+	Messages
+)
+
+# Single-display fallback: work-first.
+typeset -a SINGLE_MONITOR_APP_ORDER=(
+	Code
+	"T3 Code (Alpha)"
+	Ghostty
+	Safari
+	Obsidian
+	Claude
+	"Microsoft Outlook"
+	"Microsoft Teams"
+	Messages
+)
+
+typeset -A EXTERNAL_KEYS=()
+typeset -A REFERENCE_KEYS=()
+typeset -A BUILTIN_KEYS=()
+typeset -A SINGLE_KEYS=()
+for _key in "${EXTERNAL_APP_ORDER[@]}"; do EXTERNAL_KEYS[$_key]=1; done
+for _key in "${REFERENCE_APP_ORDER[@]}"; do REFERENCE_KEYS[$_key]=1; done
+for _key in "${BUILTIN_APP_ORDER[@]}"; do BUILTIN_KEYS[$_key]=1; done
+for _key in "${SINGLE_MONITOR_APP_ORDER[@]}"; do SINGLE_KEYS[$_key]=1; done
+unset _key
+
+## Window / workspace state ----------------------------------------------------
 
 unminimize_all_windows() {
 	[[ "${UNMINIMIZE_FIRST:-0}" == "0" ]] && return 0
@@ -48,32 +113,14 @@ APPLESCRIPT
 unminimized_first=0
 unminimize_all_windows
 
-typeset -A BUILTIN_APP=(
-	"Microsoft Outlook" 1
-	Outlook 1
-	"Microsoft Teams" 1
-	Messages 1
-	Obsidian 1
-	Claude 1
-)
-
-WINDOWS_PER_WORKSPACE=2
-HORIZONTAL_LAYOUT="h_tiles"
-VERTICAL_LAYOUT="v_tiles"
-typeset -a SINGLE_MONITOR_APP_ORDER=(
-	"Microsoft Outlook"
-	"Microsoft Teams"
-	Messages
-	Obsidian
-	Claude
-	Ghostty
-	Safari
-	Code
-)
+typeset -a windows=()
+typeset -a present_keys=()
+typeset -A present_key_set=()
 typeset -A TOUCHED_WORKSPACES=()
 typeset -A WORKSPACE_SAMPLE_WINDOW=()
 typeset -A WORKSPACE_LAYOUT=()
 typeset -A WORKSPACE_MONITOR=()
+next_workspace=1
 
 mark_workspace_touched() {
 	local workspace="$1"
@@ -106,23 +153,97 @@ set_workspace_monitor() {
 	WORKSPACE_MONITOR[$workspace]="$monitor"
 }
 
-apply_workspace_layouts() {
-	local workspace wid layout
+## Grouping helpers ------------------------------------------------------------
 
-	for workspace in ${(kon)WORKSPACE_LAYOUT}; do
-		wid="${WORKSPACE_SAMPLE_WINDOW[$workspace]-}"
-		layout="${WORKSPACE_LAYOUT[$workspace]-}"
-		[[ -z "$wid" || -z "$layout" ]] && continue
-		"$AERO" layout --window-id "$wid" "$layout" >/dev/null 2>&1 || true
+app_group_key() {
+	local app="$1"
+
+	case "$app" in
+		Outlook|"Microsoft Outlook")
+			print -- "Microsoft Outlook"
+			;;
+		"Visual Studio Code"|Code)
+			print -- "Code"
+			;;
+		*)
+			print -- "$app"
+			;;
+	esac
+}
+
+is_ghostty() {
+	[[ "$1" == "Ghostty" ]]
+}
+
+read_record() {
+	local record="$1"
+	IFS=$'\t' read -r wid app old_workspace monitor title <<< "$record"
+}
+
+collect_present_keys() {
+	local record wid app key
+
+	present_keys=()
+	present_key_set=()
+
+	for record in "${windows[@]}"; do
+		read_record "$record"
+		[[ -z "$wid" || -z "$app" ]] && continue
+		key="$(app_group_key "$app")"
+		[[ -n "${present_key_set[$key]-}" ]] && continue
+		present_key_set[$key]=1
+		present_keys+=("$key")
 	done
 }
 
-flatten_touched_workspaces() {
-	local workspace
+# Print the present keys from a preferred order (read-only).
+order_present() {
+	local key
 
-	for workspace in ${(kon)TOUCHED_WORKSPACES}; do
-		"$AERO" flatten-workspace-tree --workspace "$workspace" >/dev/null 2>&1 || true
+	for key in "$@"; do
+		[[ -n "${present_key_set[$key]-}" ]] && print -- "$key"
 	done
+}
+
+# Print every window whose group key is in the given list, in that order.
+records_for_keys() {
+	local key record wid app old_workspace monitor title
+
+	for key in "$@"; do
+		for record in "${windows[@]}"; do
+			read_record "$record"
+			[[ -z "$wid" || -z "$app" ]] && continue
+			[[ "$(app_group_key "$app")" != "$key" ]] && continue
+			print -r -- "$record"
+		done
+	done
+}
+
+## Moving ----------------------------------------------------------------------
+
+load_windows() {
+	windows=("${(@f)$($AERO list-windows --all --format "%{window-id}%{tab}%{app-name}%{tab}%{workspace}%{tab}%{monitor-id}%{tab}%{window-title}" 2>/dev/null)}")
+}
+
+windows_have_app() {
+	local expected="$1"
+	local record _wid app _old_workspace _monitor _title
+
+	for record in "${windows[@]}"; do
+		IFS=$'\t' read -r _wid app _old_workspace _monitor _title <<< "$record"
+		[[ "$app" == "$expected" ]] && return 0
+	done
+
+	return 1
+}
+
+ensure_safari_for_ghostty() {
+	windows_have_app Ghostty || return 0
+	windows_have_app Safari && return 0
+
+	open -a "Safari" >/dev/null 2>&1 || true
+	sleep 1
+	load_windows
 }
 
 ensure_window_tiling() {
@@ -153,6 +274,41 @@ move_window() {
 	remember_workspace_window "$target" "$wid"
 	ensure_window_tiling "$wid"
 }
+
+move_record_to_workspace() {
+	local record="$1"
+	local workspace="$2"
+	local wid app old_workspace monitor title
+
+	read_record "$record"
+	move_window "$wid" "$workspace" "$old_workspace"
+}
+
+assign_records_to_compact_workspaces() {
+	local monitor="$1"
+	local layout="$2"
+	local per_ws="$3"
+	shift 3
+
+	local record count=0
+	for record in "$@"; do
+		[[ -z "$record" ]] && continue
+		set_workspace_layout "$next_workspace" "$layout"
+		set_workspace_monitor "$next_workspace" "$monitor"
+		move_record_to_workspace "$record" "$next_workspace"
+		count=$(( count + 1 ))
+		if (( count >= per_ws )); then
+			next_workspace=$(( next_workspace + 1 ))
+			count=0
+		fi
+	done
+
+	if (( count > 0 )); then
+		next_workspace=$(( next_workspace + 1 ))
+	fi
+}
+
+## Monitors --------------------------------------------------------------------
 
 detect_monitors() {
 	local record id name is_main
@@ -237,270 +393,100 @@ route_workspaces_to_monitors() {
 	done
 }
 
-has_external_monitor() {
-	detect_monitors
-	[[ -n "$external_monitor" ]]
-}
+## Layout application ----------------------------------------------------------
 
-load_windows() {
-	windows=("${(@f)$($AERO list-windows --all --format "%{window-id}%{tab}%{app-name}%{tab}%{workspace}%{tab}%{monitor-id}%{tab}%{window-title}" 2>/dev/null)}")
-}
+apply_workspace_layouts() {
+	local workspace wid layout
 
-windows_have_app() {
-	local expected="$1"
-	local record _wid app _old_workspace _monitor _title
-
-	for record in "${windows[@]}"; do
-		IFS=$'\t' read -r _wid app _old_workspace _monitor _title <<< "$record"
-		[[ "$app" == "$expected" ]] && return 0
+	for workspace in ${(kon)WORKSPACE_LAYOUT}; do
+		wid="${WORKSPACE_SAMPLE_WINDOW[$workspace]-}"
+		layout="${WORKSPACE_LAYOUT[$workspace]-}"
+		[[ -z "$wid" || -z "$layout" ]] && continue
+		"$AERO" layout --window-id "$wid" "$layout" >/dev/null 2>&1 || true
 	done
-
-	return 1
 }
 
-ensure_safari_for_ghostty() {
-	windows_have_app Ghostty || return 0
-	windows_have_app Safari && return 0
+flatten_touched_workspaces() {
+	local workspace
 
-	open -a "Safari" >/dev/null 2>&1 || true
-	sleep 1
-	load_windows
-}
-
-is_safari() {
-	[[ "$1" == "Safari" ]]
-}
-
-is_code() {
-	[[ "$1" == "Code" || "$1" == "Visual Studio Code" ]]
-}
-
-is_ghostty() {
-	[[ "$1" == "Ghostty" ]]
-}
-
-app_group_key() {
-	local app="$1"
-
-	case "$app" in
-		Outlook|"Microsoft Outlook")
-			print -- "Microsoft Outlook"
-			;;
-		"Visual Studio Code"|Code)
-			print -- "Code"
-			;;
-		*)
-			print -- "$app"
-			;;
-	esac
-}
-
-is_minimized() {
-	local app="$1"
-	local title="$2"
-
-	[[ "${CHECK_MINIMIZED:-0}" != "1" ]] && return 1
-	[[ -z "$app" || -z "$title" ]] && return 1
-	command -v osascript >/dev/null 2>&1 || return 1
-
-	local result
-	result="$(/usr/bin/osascript - "$app" "$title" 2>/dev/null <<'APPLESCRIPT'
-on run argv
-    set appName to item 1 of argv
-    set windowTitle to item 2 of argv
-
-    tell application "System Events"
-        if not (exists process appName) then return "false"
-
-        tell process appName
-            repeat with candidateWindow in windows
-                try
-                    if (name of candidateWindow as text) is windowTitle then
-                        try
-                            if value of attribute "AXMinimized" of candidateWindow then return "true"
-                        end try
-                    end if
-                end try
-            end repeat
-        end tell
-    end tell
-
-    return "false"
-end run
-APPLESCRIPT
-)"
-
-	[[ "$result" == "true" ]]
-}
-
-read_record() {
-	local record="$1"
-	IFS=$'\t' read -r wid app old_workspace monitor title <<< "$record"
-}
-
-move_record_to_workspace() {
-	local record="$1"
-	local workspace="$2"
-	local wid app old_workspace monitor title
-
-	read_record "$record"
-	move_window "$wid" "$workspace" "$old_workspace"
-}
-
-assign_records_to_compact_workspaces() {
-	local monitor="$1"
-	local layout="$2"
-	shift 2
-
-	local record count=0
-	for record in "$@"; do
-		set_workspace_layout "$next_workspace" "$layout"
-		set_workspace_monitor "$next_workspace" "$monitor"
-		move_record_to_workspace "$record" "$next_workspace"
-		count=$(( count + 1 ))
-		if (( count == WINDOWS_PER_WORKSPACE )); then
-			next_workspace=$(( next_workspace + 1 ))
-			count=0
-		fi
+	for workspace in ${(kon)TOUCHED_WORKSPACES}; do
+		"$AERO" flatten-workspace-tree --workspace "$workspace" >/dev/null 2>&1 || true
 	done
-
-	if (( count > 0 )); then
-		next_workspace=$(( next_workspace + 1 ))
-	fi
 }
 
-process_external_pairs() {
-	local i record
-	typeset -a first_external_records external_records reference_records
-
-	if (( ${#ghostty_records[@]} > 0 )); then
-		first_external_records+=("${ghostty_records[1]}")
-		if [[ -z "$reference_monitor" ]] && (( ${#safari_records[@]} > 0 )); then
-			first_external_records+=("${safari_records[1]}")
-		fi
-	fi
-
-	for (( i = 2; i <= ${#ghostty_records[@]}; i++ )); do
-		external_records+=("${ghostty_records[$i]}")
-	done
-
-	for (( i = 1; i <= ${#safari_records[@]}; i++ )); do
-		if [[ -n "$reference_monitor" ]]; then
-			reference_records+=("${safari_records[$i]}")
-			continue
-		fi
-		if (( ${#ghostty_records[@]} > 0 && i == 1 )); then
-			continue
-		fi
-		external_records+=("${safari_records[$i]}")
-	done
-
-	for record in "${code_records[@]}"; do
-		external_records+=("$record")
-	done
-
-	assign_records_to_compact_workspaces "$external_monitor" "$HORIZONTAL_LAYOUT" "${first_external_records[@]}"
-	assign_records_to_compact_workspaces "$external_monitor" "$HORIZONTAL_LAYOUT" "${external_records[@]}"
-	assign_records_to_compact_workspaces "$reference_monitor" "$VERTICAL_LAYOUT" "${reference_records[@]}"
-}
+## Placement strategies --------------------------------------------------------
 
 process_single_monitor_app_workspaces() {
-	local record wid app old_workspace monitor title key workspace count
-	typeset -A seen_group completed_group
-	typeset -a groups ordered_groups
+	local key
+	typeset -a ordered_keys ordered_records
 
-	for record in "${windows[@]}"; do
-		read_record "$record"
-		[[ -z "$wid" || -z "$app" ]] && continue
-
-		key="$(app_group_key "$app")"
-		if [[ -z "${seen_group[$key]-}" ]]; then
-			seen_group[$key]=1
-			groups+=("$key")
-		fi
+	ordered_keys=("${(@f)$(order_present "${SINGLE_MONITOR_APP_ORDER[@]}")}")
+	for key in "${present_keys[@]}"; do
+		[[ -n "${SINGLE_KEYS[$key]-}" ]] && continue
+		ordered_keys+=("$key")
 	done
 
-	for key in "${SINGLE_MONITOR_APP_ORDER[@]}"; do
-		if [[ -n "${seen_group[$key]-}" ]]; then
-			ordered_groups+=("$key")
-			completed_group[$key]=1
-		fi
-	done
-
-	for key in "${(@o)groups}"; do
-		[[ -n "${completed_group[$key]-}" ]] && continue
-		ordered_groups+=("$key")
-	done
-
-	workspace=1
-	for key in "${ordered_groups[@]}"; do
-		count=0
-		for record in "${windows[@]}"; do
-			read_record "$record"
-			[[ -z "$wid" || -z "$app" ]] && continue
-			[[ "$(app_group_key "$app")" != "$key" ]] && continue
-
-			set_workspace_layout "$workspace" "$HORIZONTAL_LAYOUT"
-			move_window "$wid" "$workspace" "$old_workspace"
-			count=$(( count + 1 ))
-			if (( count == WINDOWS_PER_WORKSPACE )); then
-				workspace=$(( workspace + 1 ))
-				count=0
-			fi
-		done
-
-		if (( count > 0 )); then
-			workspace=$(( workspace + 1 ))
-		fi
-	done
+	ordered_records=("${(@f)$(records_for_keys "${ordered_keys[@]}")}")
+	assign_records_to_compact_workspaces "$builtin_monitor" "$HORIZONTAL_LAYOUT" "$WINDOWS_PER_WORKSPACE_SINGLE" "${ordered_records[@]}"
 }
 
-typeset -a minimized_records fixed_records other_records ghostty_records safari_records code_records
-typeset -a windows
-next_workspace=1
+process_multi_monitor() {
+	local key
+	typeset -a external_keys reference_keys builtin_keys other_keys
+	typeset -a external_records reference_records builtin_records
+
+	external_keys=("${(@f)$(order_present "${EXTERNAL_APP_ORDER[@]}")}")
+	reference_keys=("${(@f)$(order_present "${REFERENCE_APP_ORDER[@]}")}")
+	builtin_keys=("${(@f)$(order_present "${BUILTIN_APP_ORDER[@]}")}")
+
+	for key in "${present_keys[@]}"; do
+		[[ -n "${EXTERNAL_KEYS[$key]-}${REFERENCE_KEYS[$key]-}${BUILTIN_KEYS[$key]-}" ]] && continue
+		other_keys+=("$key")
+	done
+
+	# With no vertical reference display, notes/AI collapse onto the built-in.
+	if [[ -z "$reference_monitor" ]]; then
+		builtin_keys+=("${reference_keys[@]}")
+		reference_keys=()
+	fi
+
+	builtin_keys+=("${other_keys[@]}")
+
+	external_records=("${(@f)$(records_for_keys "${external_keys[@]}")}")
+	builtin_records=("${(@f)$(records_for_keys "${builtin_keys[@]}")}")
+
+	assign_records_to_compact_workspaces "$external_monitor" "$HORIZONTAL_LAYOUT" "$WINDOWS_PER_WORKSPACE_EXTERNAL" "${external_records[@]}"
+
+	if [[ -n "$reference_monitor" ]]; then
+		reference_records=("${(@f)$(records_for_keys "${reference_keys[@]}")}")
+		assign_records_to_compact_workspaces "$reference_monitor" "$VERTICAL_LAYOUT" "$WINDOWS_PER_WORKSPACE_REFERENCE" "${reference_records[@]}"
+	fi
+
+	assign_records_to_compact_workspaces "$builtin_monitor" "$HORIZONTAL_LAYOUT" "$WINDOWS_PER_WORKSPACE_BUILTIN" "${builtin_records[@]}"
+}
+
+## Main ------------------------------------------------------------------------
 
 load_windows
-if has_external_monitor; then
-	external_monitor_attached=1
-	ensure_safari_for_ghostty
-else
-	external_monitor_attached=0
-fi
-
 if (( ${#windows[@]} == 0 )); then
 	exit 0
 fi
 
-if (( ! external_monitor_attached )); then
+collect_present_keys
+detect_monitors
+
+if [[ -z "$external_monitor" ]]; then
 	process_single_monitor_app_workspaces
 	flatten_touched_workspaces
 	apply_workspace_layouts
 	exit 0
 fi
 
-for record in "${windows[@]}"; do
-	read_record "$record"
-	[[ -z "$wid" || -z "$app" ]] && continue
+ensure_safari_for_ghostty
+load_windows
+collect_present_keys
 
-	if (( ! unminimized_first )) && is_minimized "$app" "$title"; then
-		minimized_records+=("$record")
-	elif is_ghostty "$app"; then
-		ghostty_records+=("$record")
-	elif is_safari "$app"; then
-		safari_records+=("$record")
-	elif is_code "$app"; then
-		code_records+=("$record")
-	elif [[ -n "${BUILTIN_APP[$app]-}" ]]; then
-		fixed_records+=("$record")
-	else
-		other_records+=("$record")
-	fi
-done
-
-assign_records_to_compact_workspaces "$builtin_monitor" "$HORIZONTAL_LAYOUT" "${fixed_records[@]}"
-assign_records_to_compact_workspaces "$builtin_monitor" "$HORIZONTAL_LAYOUT" "${other_records[@]}"
-assign_records_to_compact_workspaces "$builtin_monitor" "$HORIZONTAL_LAYOUT" "${minimized_records[@]}"
-process_external_pairs
+process_multi_monitor
 route_workspaces_to_monitors
 flatten_touched_workspaces
 apply_workspace_layouts

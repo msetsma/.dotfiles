@@ -9,3 +9,8 @@ unset ANTHROPIC_FOUNDRY_API_KEY ANTHROPIC_FOUNDRY_RESOURCE CLAUDE_CODE_USE_FOUND
 # export ANTHROPIC_FOUNDRY_API_KEY=$(security find-generic-password -a "azure-openai" -s "azure-openai-api-key" -w 2>/dev/null)
 # export ANTHROPIC_FOUNDRY_RESOURCE=$(security find-generic-password -a "azure" -s "athropic-resource" -w 2>/dev/null)
 # export CLAUDE_CODE_USE_FOUNDRY=1
+# GitHub MCP server (opencode remote server) — derive bearer token from gh keyring.
+# Keeps the secret out of this file; value resolves at shell start.
+if command -v gh >/dev/null 2>&1; then
+  export GITHUB_TOKEN="${GITHUB_TOKEN:-$(gh auth token 2>/dev/null)}"
+fi
