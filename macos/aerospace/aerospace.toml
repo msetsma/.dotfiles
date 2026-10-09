@@ -101,3 +101,11 @@ alt-shift-h = ["join-with left", "mode main"]
 alt-shift-j = ["join-with down", "mode main"]
 alt-shift-k = ["join-with up", "mode main"]
 alt-shift-l = ["join-with right", "mode main"]
+
+# peek (~/.dotfiles-agents/bin/peek -o) opens a Ghostty window titled "peek-shot" to
+# screenshot a terminal program. Float it so it keeps the size peek asks for and the
+# tiled windows never reflow around it.
+[[on-window-detected]]
+if.app-id = 'com.mitchellh.ghostty'
+if.window-title-regex-substring = 'peek-shot'
+run = 'layout floating'
