@@ -206,6 +206,13 @@ script = [
     "dotter -v",
 ]
 
+# WSL shares the repo with Windows; keep a separate dotter cache
+[tasks.dotfiles.linux]
+script = [
+    "echo --- Creating Symlinks ---",
+    "dotter -v --cache-file .dotter/cache-wsl.toml --cache-directory .dotter/cache-wsl",
+]
+
 # ==========================
 # ==== Main Update Task ====
 # ==========================

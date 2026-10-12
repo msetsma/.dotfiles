@@ -58,8 +58,8 @@ build/
 
 # dotter
 .dotter/local.toml
-.dotter/cache.toml
-.dotter/cache
+.dotter/cache*.toml
+.dotter/cache*/
 
 target/
 

@@ -20,6 +20,11 @@ elif ! (( IS_MAC )) && (( $+commands[xdg-open] )); then
   alias open='xdg-open'
 fi
 
+# dotter: WSL shares the repo with Windows, so keep a separate cache
+if (( IS_WSL )); then
+  alias dotter='dotter --cache-file .dotter/cache-wsl.toml --cache-directory .dotter/cache-wsl'
+fi
+
 # general
 alias c='clear'
 alias home='cd $HOME'
