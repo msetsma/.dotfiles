@@ -1,12 +1,16 @@
-# export OPENROUTER_API_KEY=$(gopass show -o apis/openrouter)
-
 export AZURE_OPENAI_BASE_URL=$(security find-generic-password -a "azure-openai" -s "azure-openai-endpoint" -w 2>/dev/null)
 export AZURE_RESOURCE_NAME=$(security find-generic-password -s "resource_name" -w 2>/dev/null)
 export AZURE_OPENAI_API_KEY=$(security find-generic-password -a "azure-openai" -s "azure-openai-api-key" -w 2>/dev/null)
 
-# claude code to 
-export ANTHROPIC_FOUNDRY_API_KEY=$(security find-generic-password -a "azure-openai" -s "azure-openai-api-key" -w 2>/dev/null)
-export CLAUDE_CODE_USE_FOUNDRY=1
-export ANTHROPIC_DEFAULT_OPUS_MODEL='claude-opus-4-7'
-export ANTHROPIC_DEFAULT_SONNET_MODEL='claude-sonnet-4-6'
-export ANTHROPIC_DEFAULT_HAIKU_MODEL='claude-haiku-4-5'
+# Claude Code runs on the Anthropic account, not Foundry. Unset in case an
+# inherited environment still carries the old Foundry routing.
+unset ANTHROPIC_FOUNDRY_API_KEY ANTHROPIC_FOUNDRY_RESOURCE CLAUDE_CODE_USE_FOUNDRY
+# To go back to Foundry:
+# export ANTHROPIC_FOUNDRY_API_KEY=$(security find-generic-password -a "azure-openai" -s "azure-openai-api-key" -w 2>/dev/null)
+# export ANTHROPIC_FOUNDRY_RESOURCE=$(security find-generic-password -a "azure" -s "athropic-resource" -w 2>/dev/null)
+# export CLAUDE_CODE_USE_FOUNDRY=1
+# GitHub MCP server (opencode remote server) — derive bearer token from gh keyring.
+# Keeps the secret out of this file; value resolves at shell start.
+if command -v gh >/dev/null 2>&1; then
+  export GITHUB_TOKEN="${GITHUB_TOKEN:-$(gh auth token 2>/dev/null)}"
+fi

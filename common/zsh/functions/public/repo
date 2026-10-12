@@ -1,0 +1,104 @@
+#!/usr/bin/env zsh
+# Open the current repo in the browser (supports GitHub and Azure DevOps)
+
+_repo_open_url() {
+  local url="$1"
+
+  if (( ${IS_MAC:-0} )) && (( $+commands[open] )); then
+    command open "$url"
+  elif (( ${IS_WSL_INTEROP:-0} )) && (( $+commands[wslview] )); then
+    command wslview "$url"
+  elif (( $+commands[xdg-open] )); then
+    command xdg-open "$url"
+  elif (( ${IS_WSL_INTEROP:-0} )) && (( $+commands[wslview] )); then
+    command wslview "$url"
+  elif (( $+commands[open] )); then
+    command open "$url"
+  else
+    echo "No URL opener found. Enable WSL interop for wslview or install xdg-utils for Linux." >&2
+    return 1
+  fi
+}
+
+_repo_azure_url() {
+  local url="${1%.git}"
+  local path org project repo rest
+
+  if [[ "$url" == git@ssh.dev.azure.com:v3/* ]]; then
+    path="${url#git@ssh.dev.azure.com:v3/}"
+    org="${path%%/*}"
+    rest="${path#*/}"
+    project="${rest%%/*}"
+    repo="${rest#*/}"
+    print -r -- "https://dev.azure.com/${org}/${project}/_git/${repo}"
+  elif [[ "$url" == ssh://git@ssh.dev.azure.com/v3/* ]]; then
+    path="${url#ssh://git@ssh.dev.azure.com/v3/}"
+    org="${path%%/*}"
+    rest="${path#*/}"
+    project="${rest%%/*}"
+    repo="${rest#*/}"
+    print -r -- "https://dev.azure.com/${org}/${project}/_git/${repo}"
+  elif [[ "$url" == https://*@dev.azure.com/* ]]; then
+    print -r -- "https://dev.azure.com/${url#https://*@dev.azure.com/}"
+  elif [[ "$url" == https://dev.azure.com/* ]]; then
+    print -r -- "$url"
+  elif [[ "$url" == https://*@*.visualstudio.com/* ]]; then
+    print -r -- "https://${url#https://*@}"
+  elif [[ "$url" == https://*.visualstudio.com/* ]]; then
+    print -r -- "$url"
+  else
+    return 1
+  fi
+}
+
+_repo_github_url() {
+  local url="${1%.git}"
+  local host path rest
+
+  if [[ "$url" == git@*:* ]]; then
+    host="${url%%:*}"
+    host="${host#git@}"
+    if [[ "$host" == "github.com" || "$host" == github.com-* ]]; then
+      path="${url#*:}"
+      print -r -- "https://github.com/${path}"
+      return 0
+    fi
+  elif [[ "$url" == ssh://git@*/* ]]; then
+    rest="${url#ssh://git@}"
+    host="${rest%%/*}"
+    if [[ "$host" == "github.com" || "$host" == github.com-* ]]; then
+      path="${rest#*/}"
+      print -r -- "https://github.com/${path}"
+      return 0
+    fi
+  elif [[ "$url" == https://github.com/* ]]; then
+    print -r -- "$url"
+    return 0
+  elif [[ "$url" == https://*@github.com/* ]]; then
+    path="${url#https://*@github.com/}"
+    print -r -- "https://github.com/${path}"
+    return 0
+  fi
+
+  return 1
+}
+
+local remote_url
+remote_url=$(git remote get-url origin 2>/dev/null) || {
+  echo "Not a git repository or no 'origin' remote found" >&2
+  return 1
+}
+
+local url
+if url="$(_repo_github_url "$remote_url")"; then
+  _repo_open_url "$url"
+elif [[ "$remote_url" == *"dev.azure.com"* || "$remote_url" == *"visualstudio.com"* ]]; then
+  url="$(_repo_azure_url "$remote_url")" || {
+    echo "Unsupported Azure DevOps remote: $remote_url" >&2
+    return 1
+  }
+  _repo_open_url "$url"
+else
+  echo "Unsupported remote: $remote_url" >&2
+  return 1
+fi

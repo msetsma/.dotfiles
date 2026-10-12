@@ -14,8 +14,8 @@ return {
         indent = { enabled = true },
         lazygit = { enabled = true },
         input = { enabled = true },
-        notifier = { enabled = true },
-        notify = { enabled = true },
+        notifier = { enabled = false },
+        notify = { enabled = false },
         words = { enabled = true },
     },
     keys = {
@@ -32,13 +32,6 @@ return {
                 Snacks.scratch.select()
             end,
             desc = 'Select Scratch Buffer',
-        },
-        {
-            '<leader>nn',
-            function()
-                Snacks.notifier.show_history()
-            end,
-            desc = 'Notification History',
         },
         {
             '<leader>bd',
@@ -82,13 +75,6 @@ return {
                 Snacks.lazygit.log()
             end,
             desc = 'Lazygit Log (cwd)',
-        },
-        {
-            '<leader>un',
-            function()
-                Snacks.notifier.hide()
-            end,
-            desc = 'Dismiss All Notifications',
         },
         {
             '<c-:>',

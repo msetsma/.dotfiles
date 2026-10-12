@@ -13,7 +13,7 @@ typeset -A APP_WORKSPACE=(
 	Firefox 3
 	"Microsoft Teams" 4
 	Obsidian 5
-	"Open WebUI" 6
+	Claude 6
 )
 
 $AERO list-windows --all --format '%{window-id}|%{app-name}|%{workspace}' | while IFS='|' read -r wid app ws; do

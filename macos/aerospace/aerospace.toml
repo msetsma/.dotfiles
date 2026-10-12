@@ -1,7 +1,4 @@
 start-at-login = true
-after-startup-command = [
-  "exec-and-forget borders active_color=0xffe1e3e4 inactive_color=0xff494d64 width=2.0",
-]
 enable-normalization-flatten-containers = true
 enable-normalization-opposite-orientation-for-nested-containers = true
 accordion-padding = 24
@@ -23,13 +20,23 @@ outer.left = 2
 
 [mode.main.binding]
 # Launch/Focus Apps
-ctrl-alt-cmd-shift-c = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Code" "Visual Studio Code" "Visual Studio Code"'''
-ctrl-alt-cmd-shift-t = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Ghostty" "Ghostty"'''
-ctrl-alt-cmd-shift-b = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Safari" "Safari"'''
-ctrl-alt-cmd-shift-m = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Microsoft Teams" "Microsoft Teams"'''
-ctrl-alt-cmd-shift-n = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Obsidian" "Obsidian"'''
-ctrl-alt-cmd-shift-l = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Open WebUI" "/Applications/Open WebUI.app" "Open WebUI.app"'''
-ctrl-alt-cmd-shift-r = '''exec-and-forget ~/.config/aerospace/resort-windows.sh'''
+ctrl-alt-cmd-c = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Code" "Visual Studio Code" "Visual Studio Code"'''
+ctrl-alt-cmd-t = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Ghostty" "Ghostty"'''
+ctrl-alt-cmd-b = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Safari" "Safari"'''
+ctrl-alt-cmd-m = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Microsoft Teams" "Microsoft Teams"'''
+ctrl-alt-cmd-n = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Obsidian" "Obsidian"'''
+ctrl-alt-cmd-l = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "Claude" "Claude"'''
+ctrl-alt-cmd-3 = '''exec-and-forget ~/.config/aerospace/focus-cycle.sh "T3 Code (Alpha)" "T3 Code (Alpha)"'''
+ctrl-alt-cmd-r = '''exec-and-forget ~/.config/aerospace/resort-windows.sh'''
+# Bring Apps to Current Workspace
+ctrl-alt-cmd-shift-c = '''exec-and-forget ~/.config/aerospace/bring-app-to-workspace.sh "Code" "Visual Studio Code" "Visual Studio Code"'''
+ctrl-alt-cmd-shift-t = '''exec-and-forget ~/.config/aerospace/bring-app-to-workspace.sh "Ghostty" "Ghostty"'''
+ctrl-alt-cmd-shift-b = '''exec-and-forget ~/.config/aerospace/bring-app-to-workspace.sh "Safari" "Safari"'''
+ctrl-alt-cmd-shift-m = '''exec-and-forget ~/.config/aerospace/bring-app-to-workspace.sh "Microsoft Teams" "Microsoft Teams"'''
+ctrl-alt-cmd-shift-n = '''exec-and-forget ~/.config/aerospace/bring-app-to-workspace.sh "Obsidian" "Obsidian"'''
+ctrl-alt-cmd-shift-l = '''exec-and-forget ~/.config/aerospace/bring-app-to-workspace.sh "Claude" "Claude"'''
+ctrl-alt-cmd-shift-3 = '''exec-and-forget ~/.config/aerospace/bring-app-to-workspace.sh "T3 Code (Alpha)" "T3 Code (Alpha)"'''
+ctrl-alt-cmd-minus = '''exec-and-forget ~/.config/aerospace/move-window-to-empty-workspace.sh'''
 cmd-m = '''exec-and-forget ~/.config/aerospace/stash-window.sh'''
 cmd-h = []
 cmd-alt-h = []
@@ -38,9 +45,7 @@ cmd-alt-h = []
 alt-e = "layout tiles horizontal vertical"
 alt-comma = "layout accordion horizontal vertical"
 alt-f = "fullscreen"
-alt-y = ["focus right", "join-with down", "layout tiles horizontal"]
 # See: https://nikitabobko.github.io/AeroSpace/commands#focus
-alt-h = "focus left"
 alt-j = "focus down"
 alt-k = "focus up"
 alt-l = "focus right"
@@ -49,6 +54,14 @@ alt-shift-h = "move left"
 alt-shift-j = "move down"
 alt-shift-k = "move up"
 alt-shift-l = "move right"
+ctrl-alt-cmd-left = "move --boundaries workspace --boundaries-action stop left"
+ctrl-alt-cmd-right = "move --boundaries workspace --boundaries-action stop right"
+ctrl-alt-cmd-up = "move --boundaries workspace --boundaries-action stop up"
+ctrl-alt-cmd-down = "move --boundaries workspace --boundaries-action stop down"
+ctrl-alt-cmd-shift-left = "move-node-to-monitor --focus-follows-window left"
+ctrl-alt-cmd-shift-right = "move-node-to-monitor --focus-follows-window right"
+ctrl-alt-cmd-shift-up = "move-node-to-monitor --focus-follows-window up"
+ctrl-alt-cmd-shift-down = "move-node-to-monitor --focus-follows-window down"
 # See: https://nikitabobko.github.io/AeroSpace/commands#resize
 alt-shift-minus = "resize smart -50"
 alt-shift-equal = "resize smart +50"
@@ -88,3 +101,11 @@ alt-shift-h = ["join-with left", "mode main"]
 alt-shift-j = ["join-with down", "mode main"]
 alt-shift-k = ["join-with up", "mode main"]
 alt-shift-l = ["join-with right", "mode main"]
+
+# peek (~/.dotfiles-agents/bin/peek -o) opens a Ghostty window titled "peek-shot" to
+# screenshot a terminal program. Float it so it keeps the size peek asks for and the
+# tiled windows never reflow around it.
+[[on-window-detected]]
+if.app-id = 'com.mitchellh.ghostty'
+if.window-title-regex-substring = 'peek-shot'
+run = 'layout floating'

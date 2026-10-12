@@ -1,0 +1,16 @@
+# pi - launch the Pi coding agent without ambient Azure OpenAI credentials.
+#
+# ~/.config/zsh/.secrets.zsh exports AZURE_OPENAI_BASE_URL,
+# AZURE_OPENAI_API_KEY and AZURE_RESOURCE_NAME for every shell. Pi treats
+# those as an authenticated provider and can select Azure OpenAI models on
+# startup. Strip them for the Pi process only, so the credentials stay
+# available to everything else that relies on them.
+#
+# Default model/provider are pinned in ~/.pi/agent/settings.json.
+emulate -L zsh
+
+env -u AZURE_OPENAI_API_KEY \
+    -u AZURE_OPENAI_BASE_URL \
+    -u AZURE_OPENAI_RESOURCE_NAME \
+    -u AZURE_RESOURCE_NAME \
+    pi "$@"

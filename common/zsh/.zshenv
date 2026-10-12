@@ -1,13 +1,24 @@
 export EDITOR="nvim"
 export VISUAL="nvim"
 export XDG_CONFIG_HOME="$HOME/.config"
-export ZSH="${ZDOTDIR:-$XDG_CONFIG_HOME/zsh}/ohmyzsh"
-export PATH="/Users/msetsma/.bun/bin:$PATH"
+
+# Keep __pycache__ out of the repo. Scripts under ~/.config/bash are symlinks
+# into .dotfiles, so bytecode would otherwise land next to the tracked sources
+# and make dotter warn on every run.
+export PYTHONPYCACHEPREFIX="${XDG_CACHE_HOME:-$HOME/.cache}/python"
+
+export BUN_INSTALL="$HOME/.bun"
+
+typeset -gU path PATH
+if [[ -d "$BUN_INSTALL/bin" ]]; then
+  path=("$BUN_INSTALL/bin" "${path[@]}")
+fi
+export PATH
 
 export HOMEBREW_NO_ENV_HINTS=1
 
 # Telemetry Opt-Out (wide spread list, might not have tools installed)
-# Last updated: 2026-02-11
+# Last updated: 2026-10-06
 
 export DO_NOT_TRACK=1
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
@@ -31,3 +42,5 @@ export GOTELEMETRY=off
 export AUTOMATEDLAB_TELEMETRY_OPTOUT=1
 export POWERSHELL_TELEMETRY_OPTOUT=1
 export OMO_SEND_ANONYMOUS_TELEMETRY=0
+# DeepSeek Harness (dsh): any non-empty value hard-disables the OTel session telemetry row
+export DSH_TELEMETRY_DISABLED=1

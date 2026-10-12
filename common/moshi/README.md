@@ -39,7 +39,7 @@ phone, no viewport fights. Each location preserves its own continuity:
 detach on phone, reattach later from phone -> same `mobile` state.
 PC keeps `main` independently.
 
-The `moshi <dir>` shell function (`common/zsh/functions/moshi`) creates
+The `moshi <dir>` shell function (`common/zsh/functions/public/moshi`) creates
 a project session with five windows (agent/review/tests/servers/misc)
 when starting fresh on a new directory. iPhone selector reads
 `tmux list-sessions` so all sessions show up regardless of who created

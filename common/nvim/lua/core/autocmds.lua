@@ -49,3 +49,14 @@ vim.api.nvim_create_autocmd('LspAttach', {
         end, { desc = '[T]oggle Inlay [H]ints' })
     end,
 })
+
+local autoread_group = vim.api.nvim_create_augroup('auto-reload-external-changes', { clear = true })
+
+vim.api.nvim_create_autocmd({ 'FocusGained', 'BufEnter', 'CursorHold', 'CursorHoldI', 'TermClose', 'TermLeave' }, {
+    group = autoread_group,
+    callback = function()
+        if vim.fn.mode() ~= 'c' then
+            vim.cmd('silent! checktime')
+        end
+    end,
+})

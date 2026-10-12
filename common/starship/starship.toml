@@ -1,5 +1,8 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
+# git is slow on first prompt after terminal idles (cold FS cache); default 500ms trips the warning
+command_timeout = 2000
+
 format = """
 $directory\
 $git_branch\
@@ -98,7 +101,7 @@ tag_symbol = '  '
 
 [custom.git_worktree]
 command = "printf '󰔱'"
-when = '[ "$(git rev-parse --git-dir 2>/dev/null)" != "$(git rev-parse --git-common-dir 2>/dev/null)" ]'
+when = "d=$PWD; while [ -n \"$d\" ] && [ \"$d\" != / ]; do if [ -f \"$d/.git\" ]; then IFS= read -r gitdir < \"$d/.git\"; case \"$gitdir\" in */worktrees/*) exit 0;; esac; fi; d=${d%/*}; [ -n \"$d\" ] || d=/; done; exit 1"
 format = "[$output]($style) "
 style = "bold yellow"
 

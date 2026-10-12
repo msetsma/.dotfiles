@@ -43,6 +43,7 @@ opt.backup = false
 opt.writebackup = false -- Prevent editing a file if it's being edited elsewhere
 opt.undofile = true -- Enable undo history
 opt.fileencoding = 'utf-8' -- Set file encoding to UTF-8
+opt.autoread = true -- Reload unchanged buffers when files change on disk
 
 -- Display and Appearance
 opt.wrap = false

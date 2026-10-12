@@ -12,7 +12,7 @@ This repo is designed around a **unix-first** philosophy. The core dev environme
 
 ```
 macOS:    native apps (Ghostty, AeroSpace) --> unix backend (zsh, neovim, tmux)
-Windows:  native apps (WezTerm, AHK)       --> WSL2 --> unix backend (zsh, neovim, tmux)
+Windows:  native apps (WezTerm, komorebi)  --> WSL2 --> unix backend (zsh, neovim, tmux)
 ```
 
 Both platforms converge on the same `common/` configs for the shell and dev tools. The difference is only in the GUI layer above.
@@ -57,10 +57,10 @@ cargo make init
 On Windows, you run init twice -- once on the Windows host for native apps, and once inside WSL2 for the dev environment:
 
 ```bash
-# 1. Windows host (PowerShell/cmd) -- installs Scoop packages, WezTerm, AHK
+# 1. Windows host (PowerShell/cmd) -- installs Scoop packages, WezTerm, komorebi
 cargo make init
 
-# 2. Inside WSL2 -- installs zsh, oh-my-zsh, CLI tools, symlinks common/ configs
+# 2. Inside WSL2 -- installs zsh, zinit, CLI tools, symlinks common/ configs
 cargo make init
 ```
 
@@ -103,12 +103,13 @@ Platform-specific: `brew-*` (macOS), `scoop-*` (Windows), `apt` (WSL2/Linux).
 dotter # Deploy dotfiles via dotter
 ```
 
-### Python/pipx
+### Python CLI tools (uv)
 
 ```bash
-cargo make pipx-list       # List installed packages
-cargo make pipx-export     # Export to file
-cargo make pipx-install    # Install from file
+cargo make uv-tools-list     # List installed tools
+cargo make uv-tools-export   # Export to uv-tools.txt
+cargo make uv-tools-install  # Install from uv-tools.txt
+cargo make uv-tools-upgrade  # Upgrade all
 ```
 
 ### Utilities
@@ -126,15 +127,15 @@ cargo make info            # Show all available commands
 
 ### Common (all platforms)
 
-[Neovim](https://neovim.io/) | [Zsh](https://www.zsh.org/) + [Oh My Zsh](https://github.com/ohmyzsh/ohmyzsh) | [tmux](https://github.com/tmux/tmux) | [Mosh](https://mosh.org/) | [Mise](https://github.com/jdx/mise) | [Dotter](https://github.com/SuperCuber/dotter) | [Cargo-Make](https://github.com/sagiegurari/cargo-make) | [Starship](https://github.com/starship/starship) | [fzf](https://github.com/junegunn/fzf) | [eza](https://github.com/eza-community/eza) | [bat](https://github.com/sharkdp/bat) | [ripgrep](https://github.com/BurntSushi/ripgrep) | [fd](https://github.com/sharkdp/fd) | [yazi](https://github.com/sxyazi/yazi) | [lazygit](https://github.com/jesseduffield/lazygit) | [Bottom](https://github.com/ClementTsang/bottom) | [Ruff](https://github.com/astral-sh/ruff) | [Vivid](https://github.com/sharkdp/vivid) | [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono)
+[Neovim](https://neovim.io/) | [Zsh](https://www.zsh.org/) + [zinit](https://github.com/zdharma-continuum/zinit) | [tmux](https://github.com/tmux/tmux) | [Mise](https://github.com/jdx/mise) | [Dotter](https://github.com/SuperCuber/dotter) | [Cargo-Make](https://github.com/sagiegurari/cargo-make) | [Starship](https://github.com/starship/starship) | [fzf](https://github.com/junegunn/fzf) | [eza](https://github.com/eza-community/eza) | [bat](https://github.com/sharkdp/bat) | [ripgrep](https://github.com/BurntSushi/ripgrep) | [fd](https://github.com/sharkdp/fd) | [lazygit](https://github.com/jesseduffield/lazygit) | [Bottom](https://github.com/ClementTsang/bottom) | [Ruff](https://github.com/astral-sh/ruff) | [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono)
 
 ### macOS-only (GUI layer)
 
-[Ghostty](https://ghostty.org/) | [AeroSpace](https://github.com/nikitabobko/AeroSpace) | [borders](https://github.com/FelixKratz/JankyBorders)
+[Ghostty](https://ghostty.org/) | [AeroSpace](https://github.com/nikitabobko/AeroSpace)
 
 ### Windows-only (GUI layer)
 
-[WezTerm](https://github.com/wez/wezterm) | [AutoHotkey](https://github.com/AutoHotkey/AutoHotkey) | [Scoop](https://scoop.sh/)
+[WezTerm](https://github.com/wez/wezterm) | [komorebi](https://github.com/LGUG2Z/komorebi) | [whkd](https://github.com/LGUG2Z/whkd) | [yasb](https://github.com/amnweb/yasb) | [Scoop](https://scoop.sh/)
 
 ---
 

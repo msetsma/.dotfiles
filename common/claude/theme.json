@@ -1,0 +1,33 @@
+{
+  "name": "{{theme.name}}",
+  "base": "dark-ansi",
+  "overrides": {
+    "text": "{{theme.text}}",
+    "inverseText": "{{theme.base}}",
+    "inactive": "{{theme.overlay0}}",
+    "subtle": "{{theme.surface2}}",
+    "claude": "{{theme.peach}}",
+    "claudeShimmer": "{{theme.yellow}}",
+    "suggestion": "{{theme.blue}}",
+    "remember": "{{theme.blue}}",
+    "permission": "{{theme.blue}}",
+    "planMode": "{{theme.teal}}",
+    "autoAccept": "{{theme.mauve}}",
+    "skill": "{{theme.mauve}}",
+    "bashBorder": "{{theme.pink}}",
+    "promptBorder": "{{theme.surface2}}",
+    "success": "{{theme.green}}",
+    "error": "{{theme.red}}",
+    "warning": "{{theme.yellow}}",
+    "merged": "{{theme.mauve}}",
+    "diffAdded": "{{theme.add_bg}}",
+    "diffRemoved": "{{theme.remove_bg}}",
+    "diffAddedDimmed": "{{theme.add_dim}}",
+    "diffRemovedDimmed": "{{theme.remove_dim}}",
+    "diffAddedWord": "{{theme.add_word}}",
+    "diffRemovedWord": "{{theme.remove_word}}",
+    "userMessageBackground": "{{theme.surface0}}",
+    "userMessageBackgroundHover": "{{theme.surface1}}",
+    "composerSidebarBackground": "{{theme.base}}"
+  }
+}

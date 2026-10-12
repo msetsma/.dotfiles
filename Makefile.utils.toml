@@ -58,24 +58,24 @@ script = [
 # ---------- Windows: Scoop ----------
 
 [tasks.scoop-export]
-description = "Export current Scoop packages to scoopfile.json"
+description = "Export current Scoop packages to windows/scoop.json"
 condition = { platforms = ["windows"] }
 script = [
-    "echo --- Exporting Scoop packages to scoopfile.json ---",
-    "scoop export > %USERPROFILE%\\.dotfiles\\scoopfile.json",
-    "echo Scoopfile created at ~/.dotfiles/scoopfile.json",
+    "echo --- Exporting Scoop packages to windows/scoop.json ---",
+    "scoop export > %USERPROFILE%\\.dotfiles\\windows\\scoop.json",
+    "echo Scoopfile created at ~/.dotfiles/windows/scoop.json",
     "echo To install from this file later: cargo make scoop-import",
 ]
 
 [tasks.scoop-import]
-description = "Install Scoop packages from scoopfile.json"
+description = "Install Scoop packages from windows/scoop.json"
 condition = { platforms = ["windows"] }
 script = [
-    "echo --- Installing from scoopfile.json ---",
-    "if exist %USERPROFILE%\\.dotfiles\\scoopfile.json (",
-    "  for /f \"tokens=1\" %%i in (%USERPROFILE%\\.dotfiles\\scoopfile.json) do scoop install %%i",
+    "echo --- Installing from windows/scoop.json ---",
+    "if exist %USERPROFILE%\\.dotfiles\\windows\\scoop.json (",
+    "  scoop import %USERPROFILE%\\.dotfiles\\windows\\scoop.json",
     ") else (",
-    "  echo No scoopfile.json found. Run: cargo make scoop-export",
+    "  echo No scoop.json found. Run: cargo make scoop-export",
     ")",
 ]
 
@@ -294,7 +294,7 @@ script = [
     "echo ''",
     "echo '--- Environment variables ---'",
     "echo \"XDG_CONFIG_HOME: ${XDG_CONFIG_HOME:-not set}\"",
-    "echo \"YAZI_CONFIG_HOME: ${YAZI_CONFIG_HOME:-not set}\"",
+    "echo \"ZDOTDIR: ${ZDOTDIR:-not set}\"",
     "echo ''",
     "echo '=== Health check complete ==='",
 ]
@@ -363,8 +363,8 @@ script = [
     "echo '    cargo make brew-doctor       - Check for issues'",
     "echo ''",
     "echo '  Scoop (Windows):'",
-    "echo '    cargo make scoop-export      - Export to scoopfile.json'",
-    "echo '    cargo make scoop-import      - Install from scoopfile.json'",
+    "echo '    cargo make scoop-export      - Export to windows/scoop.json'",
+    "echo '    cargo make scoop-import      - Install from windows/scoop.json'",
     "echo '    cargo make scoop-cleanup     - Cleanup old versions'",
     "echo '    cargo make scoop-doctor      - Check for issues'",
     "echo ''",

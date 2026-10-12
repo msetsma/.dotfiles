@@ -67,3 +67,18 @@ target/
 .claude/
 .agents/
 .codex/
+
+# zsh completion cache
+.zcompdump
+.zcompdump-*
+common/zsh/.zcompdump
+common/zsh/.zcompdump-*
+.config/zsh/.zcompdump
+.config/zsh/.zcompdump-*
+
+# python bytecode
+__pycache__/
+*.py[cod]
+
+# custom
+launchagents/*

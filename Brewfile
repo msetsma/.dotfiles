@@ -1,42 +1,41 @@
 # Taps
 tap "nikitabobko/tap"
-tap "FelixKratz/formulae"
+tap "oven-sh/bun"
 
-# Window Management & Status Bar
+# Window Management
 cask "aerospace"
-brew "borders"
-brew "sketchybar"
 
 # Terminal & Multiplexer
 cask "ghostty"
 brew "tmux"
-brew "mosh"
 
-# Shell Tools
+# Shell
+brew "starship"
 brew "fzf"
 brew "ripgrep"
 brew "fd"
 brew "bat"
 brew "eza"
-
-# File Management
-brew "yazi"
-
-# Git
-brew "lazygit"
+brew "bottom"
+brew "fastfetch"
 
 # Dev Tools
-brew "fastfetch"
+brew "neovim"
+brew "gh"
+brew "lazygit"
+brew "lazydocker"
+brew "gopass"
 brew "cmake"
 brew "openssl"
-brew "neovim"
-brew "lazydocker"
+brew "azure-cli"
 
-# Languages
+# Runtimes & Package Managers
+brew "mise"
+brew "uv"
+brew "node"
+brew "oven-sh/bun/bun"
 brew "lua"
 brew "go"
-brew "python"
-brew "node"
 
 # Fonts
 cask "font-jetbrains-mono-nerd-font"
