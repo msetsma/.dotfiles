@@ -26,6 +26,7 @@
 "windows/wezterm/keybinds.lua" = "~/.config/wezterm/keybinds.lua"
 "windows/wezterm/wezterm.lua" = { target = "~/.config/wezterm/wezterm.lua", type = "template" }
 "windows/wsl/.wslconfig" = "~/.wslconfig"
+"windows/glance/glance.yml" = "~/.glance/glance.yml"
 # "windows/nushell" = "~/.config/nushell"
 
 [mac.files]
@@ -33,6 +34,7 @@
 "macos/aerospace" = "~/.config/aerospace"
 "macos/ghostty/config" = { target = "~/.config/ghostty/config", type = "template" }
 "macos/launchagents" = "~/Library/LaunchAgents"
+"macos/glance/glance.yml" = "~/.glance/glance.yml"
 
 [linux.files]
 "common/bottom" = "~/.config/bottom"

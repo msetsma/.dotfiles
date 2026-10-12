@@ -1,0 +1,7 @@
+# Glance config (windows). Docs: https://github.com/glanceapp/glance/blob/main/docs/configuration.md
+pages:
+  - name: Home
+    columns:
+      - size: full
+        widgets:
+          - type: calendar
