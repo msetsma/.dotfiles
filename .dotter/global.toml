@@ -8,7 +8,6 @@
 "common/zsh" = "~/.config/zsh"
 "common/bash" = "~/.config/bash"
 "common/tmux/tmux.conf" = "~/.tmux.conf"
-"common/tmux/which-key.yaml" = "~/.tmux/plugins/tmux-which-key/config.yaml"
 "common/uv" = "~/.config/uv"
 "common/moshi/hook-runner.sh" = "~/.config/moshi/hook-runner.sh"
 # "common/claude/settings.json" = "~/.claude/settings.json"
