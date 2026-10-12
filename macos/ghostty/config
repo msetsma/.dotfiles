@@ -1,4 +1,26 @@
-theme = "Catppuccin Macchiato"
+# Colors come from common/theme/catppuccin-mocha.toml (dotter template variables).
+background = {{theme.base}}
+foreground = {{theme.text}}
+cursor-color = {{theme.rosewater}}
+cursor-text = {{theme.base}}
+selection-background = {{theme.surface2}}
+selection-foreground = {{theme.text}}
+palette = 0={{theme.surface1}}
+palette = 1={{theme.red}}
+palette = 2={{theme.green}}
+palette = 3={{theme.yellow}}
+palette = 4={{theme.blue}}
+palette = 5={{theme.pink}}
+palette = 6={{theme.teal}}
+palette = 7={{theme.subtext1}}
+palette = 8={{theme.surface2}}
+palette = 9={{theme.red}}
+palette = 10={{theme.green}}
+palette = 11={{theme.yellow}}
+palette = 12={{theme.blue}}
+palette = 13={{theme.pink}}
+palette = 14={{theme.teal}}
+palette = 15={{theme.subtext0}}
 window-decoration = true
 font-family = "JetBrainsMono Nerd Font"
 font-size = 14

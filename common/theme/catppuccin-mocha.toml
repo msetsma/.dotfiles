@@ -1,0 +1,42 @@
+# Catppuccin Mocha: the one color source for every themed app in these dotfiles.
+# Dotter loads it through `includes` in each .dotter/<machine>.toml, so templates
+# read any color as {{theme.<name>}}. Swap the hex values here to retheme everything.
+# Palette: https://catppuccin.com/palette
+
+[common.variables.theme]
+name = "Catppuccin Mocha"
+
+rosewater = "#f5e0dc"
+flamingo  = "#f2cdcd"
+pink      = "#f5c2e7"
+mauve     = "#cba6f7"
+red       = "#f38ba8"
+maroon    = "#eba0ac"
+peach     = "#fab387"
+yellow    = "#f9e2af"
+green     = "#a6e3a1"
+teal      = "#94e2d5"
+sky       = "#89dceb"
+sapphire  = "#74c7ec"
+blue      = "#89b4fa"
+lavender  = "#b4befe"
+text      = "#cdd6f4"
+subtext1  = "#bac2de"
+subtext0  = "#a6adc8"
+overlay2  = "#9399b2"
+overlay1  = "#7f849c"
+overlay0  = "#6c7086"
+surface2  = "#585b70"
+surface1  = "#45475a"
+surface0  = "#313244"
+base      = "#1e1e2e"
+mantle    = "#181825"
+crust     = "#11111b"
+
+# Diff tints: green/red blended over base (10% dim, 20% line, 35% changed word).
+add_dim     = "#2c323a"
+add_bg      = "#394545"
+add_word    = "#4e6356"
+remove_dim  = "#33293a"
+remove_bg   = "#493446"
+remove_word = "#694459"

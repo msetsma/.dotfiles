@@ -1,1 +1,2 @@
 packages = [ "common" , "mac" ]
+includes = ["common/theme/catppuccin-mocha.toml"]

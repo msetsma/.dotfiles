@@ -18,7 +18,7 @@ export PATH
 export HOMEBREW_NO_ENV_HINTS=1
 
 # Telemetry Opt-Out (wide spread list, might not have tools installed)
-# Last updated: 2026-02-11
+# Last updated: 2026-10-06
 
 export DO_NOT_TRACK=1
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
@@ -42,3 +42,5 @@ export GOTELEMETRY=off
 export AUTOMATEDLAB_TELEMETRY_OPTOUT=1
 export POWERSHELL_TELEMETRY_OPTOUT=1
 export OMO_SEND_ANONYMOUS_TELEMETRY=0
+# DeepSeek Harness (dsh): any non-empty value hard-disables the OTel session telemetry row
+export DSH_TELEMETRY_DISABLED=1

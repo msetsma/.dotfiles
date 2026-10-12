@@ -106,6 +106,7 @@ ignore = [
   "S101",  # assert (fine in tests and often useful)
   "S104",  # binding to all interfaces
   "S311",  # pseudo-random (fine for non-crypto)
+  "S603",  # subprocess without shell (fires on any non-literal argv; S602/S605 cover shell=True)
   "PLR0913",  # too many arguments
   "PLR2004",  # magic values (too noisy for numeric code)
   "ARG001",  # unused function arg (needed for API compatibility)
