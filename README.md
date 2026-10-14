@@ -1,33 +1,45 @@
 # Dotfiles
 
-Feel free to take what you want, but I would advise against blindly installing without reviewing.
+[![License: MIT](https://img.shields.io/github/license/msetsma/.dotfiles)](LICENSE)
+![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20Windows%20(WSL2)-blue)
+[![Managed with dotter](https://img.shields.io/badge/managed%20with-dotter-orange)](https://github.com/SuperCuber/dotter)
+[![Tasks: cargo-make](https://img.shields.io/badge/tasks-cargo--make-orange)](https://github.com/sagiegurari/cargo-make)
+![Last commit](https://img.shields.io/github/last-commit/msetsma/.dotfiles)
 
-> These dotfiles are unix-first, adapted to work on Windows via WSL2.
+Unix-first dotfiles for macOS and Windows (via WSL2).
+
+> [!WARNING]
+> Feel free to take what you want, but review before installing. `cargo make init` installs packages and symlinks configs into your home directory.
 
 ---
 
 ## Architecture
 
-This repo is designed around a **unix-first** philosophy. The core dev environment (zsh, neovim, CLI tools) targets unix, and Windows gets there via WSL2.
+The core dev environment (zsh, Neovim, CLI tools) targets unix; Windows reaches it through WSL2. Both platforms converge on the same `common/` configs, and only the GUI layer differs.
 
+```mermaid
+flowchart LR
+    subgraph macOS
+        M[Ghostty, AeroSpace]
+    end
+    subgraph Windows
+        W[WezTerm, komorebi] --> WSL[WSL2]
+    end
+    M --> C["common/<br/>zsh, Neovim, tmux, CLI tools"]
+    WSL --> C
 ```
-macOS:    native apps (Ghostty, AeroSpace) --> unix backend (zsh, neovim, tmux)
-Windows:  native apps (WezTerm, komorebi)  --> WSL2 --> unix backend (zsh, neovim, tmux)
-```
-
-Both platforms converge on the same `common/` configs for the shell and dev tools. The difference is only in the GUI layer above.
 
 ---
 
-## Requirements
+## Principles
 
-1. **Unix-First** -- configs are written for unix. Windows uses WSL2 to run them.
-2. **Performance-First** -- preference for modern, Rust-based tools (eza, bat, ripgrep, fd).
-3. **Easy Installation** -- `dotter` for symlinks, `cargo-make` for setup automation.
+1. **Unix-first**: configs are written for unix. Windows uses WSL2 to run them.
+2. **Performance-first**: preference for modern, Rust-based tools (eza, bat, ripgrep, fd).
+3. **Easy installation**: `dotter` for symlinks, `cargo-make` for setup automation.
 
 ---
 
-## How to Install
+## Install
 
 ### Prerequisites
 
@@ -54,17 +66,17 @@ cargo make init
 
 ### Windows (two-step setup)
 
-On Windows, you run init twice -- once on the Windows host for native apps, and once inside WSL2 for the dev environment:
+On Windows, run init twice: once on the Windows host for native apps, and once inside WSL2 for the dev environment.
 
 ```bash
-# 1. Windows host (PowerShell/cmd) -- installs Scoop packages, WezTerm, komorebi
+# 1. Windows host (PowerShell/cmd): installs Scoop packages, WezTerm, komorebi
 cargo make init
 
-# 2. Inside WSL2 -- installs zsh, zinit, CLI tools, symlinks common/ configs
+# 2. Inside WSL2: installs zsh, zinit, CLI tools, symlinks common/ configs
 cargo make init
 ```
 
-The repo lives on the Windows filesystem and is accessed from WSL2 via `/mnt/c/Users/<you>/.dotfiles`.
+The repo lives on the Windows filesystem and is accessed from WSL2 via `/mnt/c/Users/<you>/.dotfiles`. Extra Windows tweaks are in [windows/README.md](windows/README.md).
 
 ### View available commands
 
@@ -77,7 +89,8 @@ cargo make info    # All commands
 
 ## Common Tasks
 
-### Setup & Updates
+<details>
+<summary><b>Setup & updates</b></summary>
 
 ```bash
 cargo make init            # Complete environment setup
@@ -86,7 +99,10 @@ cargo make check-outdated  # Check for available updates
 cargo make doctor          # System health check
 ```
 
-### Package Management (cross-platform)
+</details>
+
+<details>
+<summary><b>Package management (cross-platform)</b></summary>
 
 ```bash
 cargo make pkg-export      # Export packages
@@ -97,13 +113,19 @@ cargo make pkg-doctor      # Check for issues
 
 Platform-specific: `brew-*` (macOS), `scoop-*` (Windows), `apt` (WSL2/Linux).
 
-### Dotfile Deployment
+</details>
+
+<details>
+<summary><b>Dotfile deployment</b></summary>
 
 ```bash
 dotter # Deploy dotfiles via dotter
 ```
 
-### Python CLI tools (uv)
+</details>
+
+<details>
+<summary><b>Python CLI tools (uv)</b></summary>
 
 ```bash
 cargo make uv-tools-list     # List installed tools
@@ -112,22 +134,28 @@ cargo make uv-tools-install  # Install from uv-tools.txt
 cargo make uv-tools-upgrade  # Upgrade all
 ```
 
-### Utilities
+</details>
+
+<details>
+<summary><b>Utilities</b></summary>
 
 ```bash
 cargo make clean           # Cleanup caches
 cargo make info            # Show all available commands
 ```
 
+</details>
+
 ---
 
 ## Tools
 
+> [!NOTE]
 > Common tools are cross-platform. Installation methods differ by OS.
 
 ### Common (all platforms)
 
-[Neovim](https://neovim.io/) | [Zsh](https://www.zsh.org/) + [zinit](https://github.com/zdharma-continuum/zinit) | [tmux](https://github.com/tmux/tmux) | [Mise](https://github.com/jdx/mise) | [Dotter](https://github.com/SuperCuber/dotter) | [Cargo-Make](https://github.com/sagiegurari/cargo-make) | [Starship](https://github.com/starship/starship) | [fzf](https://github.com/junegunn/fzf) | [eza](https://github.com/eza-community/eza) | [bat](https://github.com/sharkdp/bat) | [ripgrep](https://github.com/BurntSushi/ripgrep) | [fd](https://github.com/sharkdp/fd) | [lazygit](https://github.com/jesseduffield/lazygit) | [Bottom](https://github.com/ClementTsang/bottom) | [Ruff](https://github.com/astral-sh/ruff) | [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono)
+[Neovim](https://neovim.io/) | [Zsh](https://www.zsh.org/) + [zinit](https://github.com/zdharma-continuum/zinit) | [tmux](https://github.com/tmux/tmux) | [Mise](https://github.com/jdx/mise) | [Dotter](https://github.com/SuperCuber/dotter) | [Cargo-Make](https://github.com/sagiegurari/cargo-make) | [Starship](https://github.com/starship/starship) | [fzf](https://github.com/junegunn/fzf) | [eza](https://github.com/eza-community/eza) | [bat](https://github.com/sharkdp/bat) | [ripgrep](https://github.com/BurntSushi/ripgrep) | [fd](https://github.com/sharkdp/fd) | [lazygit](https://github.com/jesseduffield/lazygit) | [Bottom](https://github.com/ClementTsang/bottom) | [Ruff](https://github.com/astral-sh/ruff) | [Glance](https://github.com/glanceapp/glance) | [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono)
 
 ### macOS-only (GUI layer)
 
@@ -141,15 +169,16 @@ cargo make info            # Show all available commands
 
 ## Moshi (remote coding from iPhone)
 
-iPhone -> Mosh/Tailscale -> Windows -> WSL2 -> tmux -> Claude Code.
+```mermaid
+flowchart LR
+    A[iPhone] -->|Mosh / Tailscale| B[Windows] --> C[WSL2] --> D[tmux] --> E[Claude Code]
+```
 
-Push notifications: `common/moshi/hook-runner.sh` gates Claude Code
-hooks via `tmux list-clients` -- pushes fire only when a Moshi client
-is actually attached.
+Push notifications: `common/moshi/hook-runner.sh` gates Claude Code hooks via `tmux list-clients`, so pushes fire only when a Moshi client is attached.
 
 Setup:
-- [docs/ssh-mosh-setup-guide.md](docs/ssh-mosh-setup-guide.md) -- host SSH/Mosh/Tailscale
-- [common/moshi/README.md](common/moshi/README.md) -- hook integration + token
+- [docs/ssh-mosh-setup-guide.md](docs/ssh-mosh-setup-guide.md): host SSH/Mosh/Tailscale
+- [common/moshi/README.md](common/moshi/README.md): hook integration + token
 
 ---
 
@@ -157,10 +186,12 @@ Setup:
 
 Shell configs use `common/zsh/platform.zsh` to detect the runtime environment:
 
-- `IS_MAC` -- macOS (Darwin)
-- `IS_WSL` -- WSL2 (Linux with Microsoft kernel)
-- `IS_WSL_INTEROP` -- WSL2 with Windows interop enabled
-- `IS_LINUX` -- generic Linux
+| Variable | Environment |
+|---|---|
+| `IS_MAC` | macOS (Darwin) |
+| `IS_WSL` | WSL2 (Linux with Microsoft kernel) |
+| `IS_WSL_INTEROP` | WSL2 with Windows interop enabled |
+| `IS_LINUX` | generic Linux |
 
 This drives platform-specific behavior like clipboard (`pbcopy` vs `clip.exe`), URL opening (`open` vs `wslview`), and credential storage (Keychain vs env files).
 
@@ -168,21 +199,36 @@ This drives platform-specific behavior like clipboard (`pbcopy` vs `clip.exe`), 
 
 ## Gotchas
 
-### Compiler Suite
+<details>
+<summary><b>Compiler suite</b></summary>
 
 - **macOS**: Clang (via Xcode command line tools)
 - **Windows**: MSVC (Visual Studio Build Tools, "Desktop development with C++" workload)
 - **WSL2/Linux**: GCC (`sudo apt install build-essential`)
 
-### WSL2 Line Endings
+</details>
+
+<details>
+<summary><b>WSL2 line endings</b></summary>
 
 The repo uses `.gitattributes` to enforce LF line endings for shell scripts. This prevents issues when the repo lives on the Windows filesystem and is accessed from WSL2 via `/mnt/c`.
 
-### WSL2 Hostname
+</details>
+
+<details>
+<summary><b>WSL2 hostname</b></summary>
 
 Dotter uses hostname-based machine configs (`.dotter/<hostname>.toml`). If your WSL2 hostname matches your Windows hostname, set a distinct one in `/etc/wsl.conf`:
 
 ```ini
 [network]
-hostname = mitch-wsl
+hostname = <host>-wsl
 ```
+
+</details>
+
+---
+
+## License
+
+[MIT](LICENSE)
