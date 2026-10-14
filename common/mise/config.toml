@@ -3,3 +3,4 @@
 python = "latest"
 go = "latest"
 lua = { version = '5.1', os = ['linux', 'macos'] } # neovim; vfox-lua build fails on windows
+herdr = "latest"
