@@ -96,9 +96,10 @@ zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 
 # Cached compinit; run the full security check once per day.
+# WSL: /mnt/c (DrvFs) reports every dir as world-writable, so skip the check.
 autoload -Uz compinit
 if [[ -n "$ZDOTDIR/.zcompdump"(#qN.mh+24) ]]; then
-  compinit
+  if [[ -n "$WSL_DISTRO_NAME" ]]; then compinit -u; else compinit; fi
 else
   compinit -C
 fi
@@ -118,7 +119,10 @@ done
 # ─────────────────────────────────────────────────────────────
 # 9. fzf
 # ─────────────────────────────────────────────────────────────
-if [[ -o interactive && -t 0 ]] && (( $+commands[fzf] )); then
+# `fzf --zsh` needs fzf >= 0.48 (distro packages often ship older).
+autoload -Uz is-at-least
+if [[ -o interactive && -t 0 ]] && (( $+commands[fzf] )) \
+  && is-at-least 0.48.0 ${${(s: :)$(fzf --version)}[1]}; then
   source <(fzf --zsh)
 fi
 export FZF_DEFAULT_COMMAND='rg --files --hidden --glob "!.git"'
