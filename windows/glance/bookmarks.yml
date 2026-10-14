@@ -1,0 +1,29 @@
+# Bookmarks widget, included from glance.yml. Edit by hand or with:
+#   uv run windows/glance/glance_add.py add <url> [-g GROUP] [-t TITLE] [-i ICON]
+#   uv run windows/glance/glance_add.py rm <url> | ls
+
+- type: bookmarks
+  groups:
+    - title: Watches
+      links:
+        - title: Chrono24
+          url: https://www.chrono24.com/
+          icon: https://www.google.com/s2/favicons?domain=www.chrono24.com&sz=64
+    - title: 3D Printing
+      links:
+        - title: Printables
+          url: https://www.printables.com/
+          icon: https://www.google.com/s2/favicons?domain=www.printables.com&sz=64
+        - title: MakerWorld
+          url: https://makerworld.com/
+          icon: https://www.google.com/s2/favicons?domain=makerworld.com&sz=64
+    - title: Fantasy Football
+      links:
+        - title: Dynasty Daddy
+          url: https://dynasty-daddy.com/
+          icon: https://www.google.com/s2/favicons?domain=dynasty-daddy.com&sz=64
+    - title: Dev
+      links:
+        - title: GitHub
+          url: https://github.com/
+          icon: https://www.google.com/s2/favicons?domain=github.com&sz=64

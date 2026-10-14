@@ -20,18 +20,8 @@ pages:
           - type: calendar
             first-day-of-week: monday
 
-          - type: bookmarks
-            groups:
-              - title: Watches
-                links:
-                  - title: Chrono24
-                    url: https://www.chrono24.com/
-              - title: 3D Printing
-                links:
-                  - title: Printables
-                    url: https://www.printables.com/
-                  - title: MakerWorld
-                    url: https://makerworld.com/
+          # Managed by glance_add.py (see bookmarks.yml)
+          - $include: bookmarks.yml
 
           - type: rss
             limit: 10

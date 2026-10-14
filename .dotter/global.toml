@@ -26,7 +26,9 @@
 "windows/wezterm/keybinds.lua" = "~/.config/wezterm/keybinds.lua"
 "windows/wezterm/wezterm.lua" = { target = "~/.config/wezterm/wezterm.lua", type = "template" }
 "windows/wsl/.wslconfig" = "~/.wslconfig"
-"windows/glance/glance.yml" = "~/.glance/glance.yml"
+# symbolic: glance's Go templates ({{ }}) would otherwise trip dotter's handlebars detection
+"windows/glance/glance.yml" = { target = "~/.glance/glance.yml", type = "symbolic" }
+"windows/glance/bookmarks.yml" = "~/.glance/bookmarks.yml"
 # "windows/nushell" = "~/.config/nushell"
 
 [mac.files]
