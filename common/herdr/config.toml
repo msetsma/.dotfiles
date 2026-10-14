@@ -8,7 +8,7 @@ onboarding = false
 
 [theme]
 # Built-in themes: catppuccin, terminal, tokyo-night, dracula, nord...
-name = "terminal"
+name = "catppuccin"
 
 # Override individual color tokens on top of the base theme.
 # Accepts: hex (#rrggbb), named colors, rgb(r,g,b), or panel_bg = "reset"
