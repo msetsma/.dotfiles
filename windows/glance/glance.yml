@@ -1,7 +1,80 @@
 # Glance config (windows). Docs: https://github.com/glanceapp/glance/blob/main/docs/configuration.md
+server:
+  port: 8280
+
+# Catppuccin Macchiato
+theme:
+  background-color: 232 23 18
+  contrast-multiplier: 1.2
+  primary-color: 220 83 75
+  positive-color: 105 48 72
+  negative-color: 351 74 73
+
 pages:
   - name: Home
+    # Optionally, if you only have a single page you can hide the desktop navigation for a cleaner look
+    # hide-desktop-navigation: true
     columns:
-      - size: full
+      - size: small
         widgets:
           - type: calendar
+            first-day-of-week: monday
+
+          - type: bookmarks
+            groups:
+              - title: Watches
+                links:
+                  - title: Chrono24
+                    url: https://www.chrono24.com/
+              - title: 3D Printing
+                links:
+                  - title: Printables
+                    url: https://www.printables.com/
+                  - title: MakerWorld
+                    url: https://makerworld.com/
+
+          - type: rss
+            limit: 10
+            collapse-after: 3
+            cache: 12h
+            feeds: []
+
+      - size: full
+        widgets:
+          - type: group
+            widgets:
+              - type: hacker-news
+              - type: lobsters
+
+          - type: videos
+            channels:
+              - UCq3O2WzAtAEAXP8BU1lifxA # This Watch, That Watch
+              - UCB0NRdlQ6fBYQX8W8bQyoDA # TPI - Titleist Performance Institute
+
+      - size: small
+        widgets:
+          - type: weather
+            location: London, United Kingdom
+            units: metric # alternatively "imperial"
+            hour-format: 12h # alternatively "24h"
+            # Optionally hide the location from being displayed in the widget
+            # hide-location: true
+
+          - type: releases
+            cache: 1d
+            # Without authentication the Github API allows for up to 60 requests per hour. You can create a
+            # read-only token from your Github account settings and use it here to increase the limit.
+            # token: ...
+            repositories:
+              - herdrdev/herdr
+
+          # Ghostty only publishes versions as git tags, not GitHub releases
+          - type: custom-api
+            title: Ghostty
+            title-url: https://ghostty.org/docs/install/release-notes
+            url: https://api.github.com/repos/ghostty-org/ghostty/tags?per_page=1
+            cache: 6h
+            template: |
+              {{ range .JSON.Array "" }}
+              <a class="size-h3 color-highlight" href="https://ghostty.org/docs/install/release-notes" target="_blank" rel="noreferrer">{{ .String "name" }}</a>
+              {{ end }}
