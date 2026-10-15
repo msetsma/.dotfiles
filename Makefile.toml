@@ -110,6 +110,9 @@ script = [
     "echo --- Installing Window Manager ---",
     "scoop install komorebi whkd",
 
+    "echo --- Installing Apps via winget ---",
+    "winget install --id cjpais.Handy -e --silent --accept-package-agreements --accept-source-agreements || echo Handy already installed",
+
     "echo --- Installing Dependencies ---",
     "scoop install gcc cmake fastfetch",
     "scoop shim add gcc ~\\scoop\\apps\\gcc\\current\\bin\\gcc.exe", # Needed for NVim Telescope FZF Native

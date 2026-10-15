@@ -41,6 +41,9 @@ cmd-m = '''exec-and-forget ~/.config/aerospace/stash-window.sh'''
 cmd-h = []
 cmd-alt-h = []
 
+# Handy speech-to-text (https://github.com/cjpais/Handy) - drives the running instance via CLI flags
+alt-v = '''exec-and-forget /Applications/Handy.app/Contents/MacOS/Handy --toggle-transcription'''
+
 # See: https://nikitabobko.github.ioeAeroSpace/commands#layout
 alt-e = "layout tiles horizontal vertical"
 alt-comma = "layout accordion horizontal vertical"
@@ -101,6 +104,11 @@ alt-shift-h = ["join-with left", "mode main"]
 alt-shift-j = ["join-with down", "mode main"]
 alt-shift-k = ["join-with up", "mode main"]
 alt-shift-l = ["join-with right", "mode main"]
+
+# Handy recording overlay must float, not tile
+[[on-window-detected]]
+if.app-id = 'com.pais.handy'
+run = 'layout floating'
 
 # peek (~/.dotfiles-agents/bin/peek -o) opens a Ghostty window titled "peek-shot" to
 # screenshot a terminal program. Float it so it keeps the size peek asks for and the

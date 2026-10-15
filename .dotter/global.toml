@@ -29,6 +29,8 @@
 # symbolic: glance's Go templates ({{ }}) would otherwise trip dotter's handlebars detection
 "windows/glance/glance.yml" = { target = "~/.glance/glance.yml", type = "symbolic" }
 "windows/glance/bookmarks.yml" = "~/.glance/bookmarks.yml"
+# symbolic: Handy rewrites this file at runtime; fs::write follows the link so edits land in the repo
+"windows/handy/settings_store.json" = { target = "~/AppData/Roaming/com.pais.handy/settings_store.json", type = "symbolic" }
 # "windows/nushell" = "~/.config/nushell"
 
 [mac.files]

@@ -10,6 +10,10 @@ alt + shift + o         : komorebic reload-configuration
 # alt + f                 : if ($wshell.AppActivate('Firefox') -eq $False) { start firefox }
 # alt + b                 : if ($wshell.AppActivate('Chrome') -eq $False) { start chrome }
 
+# Handy speech-to-text (https://github.com/cjpais/Handy) - drives the running instance via CLI flags.
+# Exe path comes from the installer's uninstall key (per-user or machine-wide install).
+alt + v                 : & ((Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\Handy', 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\Handy' -ErrorAction Ignore)[0].DisplayIcon.Trim([char]34)) --toggle-transcription
+
 alt + q                 : komorebic close
 alt + m                 : komorebic minimize
 
