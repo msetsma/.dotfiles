@@ -4,11 +4,6 @@
 
 - type: bookmarks
   groups:
-    - title: Watches
-      links:
-        - title: Chrono24
-          url: https://www.chrono24.com/
-          icon: https://www.google.com/s2/favicons?domain=www.chrono24.com&sz=64
     - title: 3D Printing
       links:
         - title: Printables
@@ -17,13 +12,31 @@
         - title: MakerWorld
           url: https://makerworld.com/
           icon: https://www.google.com/s2/favicons?domain=makerworld.com&sz=64
-    - title: Fantasy Football
+    - title: AI
       links:
-        - title: Dynasty Daddy
-          url: https://dynasty-daddy.com/
-          icon: https://www.google.com/s2/favicons?domain=dynasty-daddy.com&sz=64
+        - title: LLM Stats
+          url: https://llm-stats.com/
+          icon: https://www.google.com/s2/favicons?domain=llm-stats.com&sz=64
+        - title: OpenRouter
+          url: https://openrouter.ai/
+          icon: https://www.google.com/s2/favicons?domain=openrouter.ai&sz=64
     - title: Dev
       links:
         - title: GitHub
           url: https://github.com/
           icon: https://www.google.com/s2/favicons?domain=github.com&sz=64
+    - title: Fantasy Football
+      links:
+        - title: Dynasty Daddy
+          url: https://dynasty-daddy.com/
+          icon: https://www.google.com/s2/favicons?domain=dynasty-daddy.com&sz=64
+    - title: Social
+      links:
+        - title: LinkedIn
+          url: https://www.linkedin.com/
+          icon: https://www.google.com/s2/favicons?domain=www.linkedin.com&sz=64
+    - title: Watches
+      links:
+        - title: Chrono24
+          url: https://www.chrono24.com/
+          icon: https://www.google.com/s2/favicons?domain=www.chrono24.com&sz=64

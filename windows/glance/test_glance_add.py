@@ -56,6 +56,13 @@ def test_add_to_new_group_preserves_comments(bookmarks: Path) -> None:
     assert b"\r\n" not in bookmarks.read_bytes()
 
 
+def test_add_new_group_keeps_alphabetical_order(bookmarks: Path) -> None:
+    for url, group in [("https://x.com/", "Social"), ("https://a.ai/", "AI")]:
+        ga.main(["--file", str(bookmarks), "add", url, "-g", group, "-t", "T"])
+    text = bookmarks.read_text(encoding="utf-8")
+    assert text.index("title: AI") < text.index("title: Dev") < text.index("title: Social")
+
+
 def test_add_duplicate_fails(bookmarks: Path) -> None:
     assert (
         ga.main(["--file", str(bookmarks), "add", "https://github.com/", "-t", "G"])

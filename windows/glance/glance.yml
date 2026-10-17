@@ -2,6 +2,24 @@
 server:
   port: 8280
 
+# Widgets load async, so the search widget's `autofocus` attribute never fires.
+# Focus the search box once it appears, and again when the tab gains focus.
+document:
+  head: |
+    <script>
+      (() => {
+        const focusSearch = () => {
+          const input = document.querySelector(".search-input");
+          if (input && document.activeElement !== input) input.focus();
+          return Boolean(input);
+        };
+        const poll = setInterval(() => { if (focusSearch()) clearInterval(poll); }, 50);
+        setTimeout(() => clearInterval(poll), 5000);
+        window.addEventListener("focus", focusSearch);
+        document.addEventListener("visibilitychange", () => { if (!document.hidden) focusSearch(); });
+      })();
+    </script>
+
 # Catppuccin Macchiato
 theme:
   background-color: 232 23 18
@@ -17,9 +35,6 @@ pages:
     columns:
       - size: small
         widgets:
-          - type: calendar
-            first-day-of-week: monday
-
           # Managed by glance_add.py (see bookmarks.yml)
           - $include: bookmarks.yml
 
@@ -28,27 +43,6 @@ pages:
             collapse-after: 3
             cache: 12h
             feeds: []
-
-      - size: full
-        widgets:
-          - type: group
-            widgets:
-              - type: hacker-news
-              - type: lobsters
-
-          - type: videos
-            channels:
-              - UCq3O2WzAtAEAXP8BU1lifxA # This Watch, That Watch
-              - UCB0NRdlQ6fBYQX8W8bQyoDA # TPI - Titleist Performance Institute
-
-      - size: small
-        widgets:
-          - type: weather
-            location: Grand Rapids, Michigan, United States
-            units: metric # alternatively "imperial"
-            hour-format: 12h # alternatively "24h"
-            # Optionally hide the location from being displayed in the widget
-            # hide-location: true
 
           - type: releases
             cache: 1d
@@ -67,4 +61,260 @@ pages:
             template: |
               {{ range .JSON.Array "" }}
               <a class="size-h3 color-highlight" href="https://ghostty.org/docs/install/release-notes" target="_blank" rel="noreferrer">{{ .String "name" }}</a>
+              {{ end }}
+
+      - size: full
+        widgets:
+          - type: search
+            search-engine: https://search.brave.com/search?q={QUERY}
+            autofocus: true
+            placeholder: Search Brave or use !bangs
+            bangs:
+              - title: Wikipedia
+                shortcut: "!w"
+                url: https://en.wikipedia.org/w/index.php?search={QUERY}
+              - title: GitHub
+                shortcut: "!gh"
+                url: https://github.com/search?q={QUERY}&type=repositories
+              - title: Reddit
+                shortcut: "!r"
+                url: https://www.reddit.com/search/?q={QUERY}
+              - title: Amazon
+                shortcut: "!a"
+                url: https://www.amazon.com/s?k={QUERY}
+              - title: PyPI
+                shortcut: "!py"
+                url: https://pypi.org/search/?q={QUERY}
+
+          - type: group
+            widgets:
+              - type: hacker-news
+              - type: lobsters
+
+          - type: videos
+            channels:
+              - UCq3O2WzAtAEAXP8BU1lifxA # This Watch, That Watch
+              - UCB0NRdlQ6fBYQX8W8bQyoDA # TPI - Titleist Performance Institute
+
+      - size: small
+        widgets:
+          - type: calendar
+            first-day-of-week: monday
+
+          # Community widget: https://github.com/glanceapp/community-widgets/tree/main/widgets/weather-seven-day
+          - type: custom-api
+            title: Weather Forecast
+            body-type: string
+            cache: 1h
+            options:
+              location: Grand Rapids, Michigan, United States
+              temp_unit: fahrenheit # alternatively "celsius"
+            template: |
+              {{ $temp_unit := .Options.StringOr "temp_unit" "celsius" }}
+              {{ $weekend_color := .Options.StringOr "weekend_color" "var(--color-separator)" }}
+              {{ $overlay_color := .Options.StringOr "overlay_color" "hsl(var(--bghs), var(--bgl), 50%)" }}
+              {{ $color_clear := .Options.StringOr "color_clear" "var(--color-text-highlight)" }}
+              {{ $color_partly := .Options.StringOr "color_partly" "var(--color-text-highlight)" }}
+              {{ $color_cloud := .Options.StringOr "color_cloud" "var(--color-text-highlight)" }}
+              {{ $color_smog := .Options.StringOr "color_smog" "var(--color-text-highlight)" }}
+              {{ $color_drizzle := .Options.StringOr "color_drizzle" "var(--color-text-highlight)" }}
+              {{ $color_rain := .Options.StringOr "color_rain" "var(--color-text-highlight)" }}
+              {{ $color_freezing_rain := .Options.StringOr "color_freezing_rain" "var(--color-text-highlight)" }}
+              {{ $color_snow := .Options.StringOr "color_snow" "var(--color-text-highlight)" }}
+              {{ $color_thunderstorm := .Options.StringOr "color_thunderstorm" "var(--color-text-highlight)" }}
+              {{ $color_other := .Options.StringOr "color_other" "var(--color-text-highlight)" }}
+              {{ $color_red := .Options.StringOr "color_red" "var(--color-negative)" }}
+              {{ $color_yellow := .Options.StringOr "color_yellow" "var(--color-text-subdue)" }}
+              {{ $color_blue := .Options.StringOr "color_blue" "var(--color-positive)" }}
+              {{ $color_white := .Options.StringOr "color_white" "var(--color-text-highlight)" }}
+              {{ $temp_red := .Options.FloatOr "temp_red" 27 }}
+              {{ $temp_yellow := .Options.FloatOr "temp_yellow" 20 }}
+              {{ $temp_blue := .Options.FloatOr "temp_blue" 10.0 }}
+              {{ $temp_white := .Options.FloatOr "temp_white" 0 }}
+              {{ if eq $temp_unit "fahrenheit" }}
+                {{ $temp_red = .Options.FloatOr "temp_red" 80.0 }}
+                {{ $temp_yellow = .Options.FloatOr "temp_yellow" 70.0 }}
+                {{ $temp_blue = .Options.FloatOr "temp_blue" 50.0 }}
+                {{ $temp_white = .Options.FloatOr "temp_white" 30.0 }}
+              {{ end }}
+
+              {{ $location_string := replaceAll " " "%20" (.Options.StringOr "location" "") }}
+              {{ $url1 := printf "https://geocoding-api.open-meteo.com/v1/search?name=%s&count=20&language=en&format=json" $location_string }}
+              {{ $req1 := newRequest $url1 | getResponse }}
+              {{ $latitude := $req1.JSON.String "results.0.latitude" }}
+              {{ $longitude := $req1.JSON.String "results.0.longitude" }}
+
+              {{ $url2 := printf "https://api.open-meteo.com/v1/forecast?latitude=%s&longitude=%s&temperature_unit=%s&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto" $latitude $longitude $temp_unit }}
+              {{ $req2 := newRequest $url2 | getResponse }}
+
+              <div style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
+                {{ $dates := $req2.JSON.Array "daily.time" }}
+                <div style="position: relative; width: 100%; height: 25px;">
+                  {{ range $index, $date := $dates }}
+                    {{ $dateString := .String "" }}
+                    {{ $parsedDate := $dateString | parseTime "DateOnly" }}
+                    {{ $dayOfWeek := $parsedDate.Format "Monday" | trimSuffix "day" | trimSuffix "on" | trimSuffix "es" | trimSuffix "edn" |
+                        trimSuffix "urs" | trimSuffix "ri" | trimSuffix "tur" | trimSuffix "n" }}
+                    {{ $day_color := "" }}
+                    {{ if eq $dayOfWeek "Sa" "Su" }}
+                      {{ $day_color = $weekend_color }}
+                    {{ end }}
+                    <div style="text-align: center; width: 10%; height: 25px; line-height: 25px; margin: 0 10% 0 3%; left: {{ mul $index 14 }}%; position: absolute; background-color: {{ $day_color | safeCSS }}">
+                      <p class="size-h4 color-paragraph">{{ $dayOfWeek }}</p>
+                    </div>
+                  {{ end }}
+                </div>
+
+                <div style="position: relative; width: 100%; height: 25px;">
+                  {{ range $index, $date := $dates }}
+                    {{ $dateString := .String "" }}
+                    {{ $trimmedDate := replaceMatches "[0-9]+-[0-9]+-" "" $dateString }}
+                    <div style="text-align: center; width: 10%; height: 25px; line-height: 25px; margin: 0 10% 0 3%; left: {{ mul $index 14 }}%; position: absolute;">
+                      <p class="size-h4 color-paragraph">{{ $trimmedDate }}</p>
+                    </div>
+                  {{ end }}
+                </div>
+
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+                {{ $codes := $req2.JSON.Array "daily.weathercode" }}
+                <div style="position: relative; width: 100%; height: 30px;">
+                  {{ range $index, $thiscode := $codes }}
+                    {{ $code := .Int "" }}
+                    <div style="text-align: center; width: 10%; height: 25px; line-height: 25px; margin: 0 10% 0 3%; left: {{ mul $index 14 }}%; position: absolute;">
+                    {{ $wtype := "" }}
+                    {{ $wicon := "" }}
+                    {{ $wcolor := "" }}
+                    {{ if eq $code 0 }}
+                      {{ $wtype = "Clear" }}{{ $wicon = "fas fa-sun" }}{{ $wcolor = $color_clear }}
+                    {{ else if eq $code 1 2 }}
+                      {{ $wtype = "Part Clear" }}{{ $wicon = "fas fa-cloud-sun" }}{{ $wcolor = $color_partly }}
+                    {{ else if eq $code 3 }}
+                      {{ $wtype = "Cloudy" }}{{ $wicon = "fas fa-cloud" }}{{ $wcolor = $color_cloud }}
+                    {{ else if eq $code 45 48 }}
+                      {{ $wtype = "Fog" }}{{ $wicon = "fas fa-smog" }}{{ $wcolor = $color_smog }}
+                    {{ else if eq $code 51 53 55 56 57 }}
+                      {{ $wtype = "Drizzle" }}{{ $wicon = "fas fa-cloud-rain" }}{{ $wcolor = $color_drizzle }}
+                    {{ else if eq $code 61 63 65 80 81 82 }}
+                      {{ $wtype = "Rain" }}{{ $wicon = "fas fa-cloud-showers-heavy" }}{{ $wcolor = $color_rain }}
+                    {{ else if eq $code 66 67 }}
+                      {{ $wtype = "Freezing Rain" }}{{ $wicon = "fas fa-snowflake" }}{{ $wcolor = $color_freezing_rain }}
+                    {{ else if eq $code 71 73 75 77 85 86 }}
+                      {{ $wtype = "Snow" }}{{ $wicon = "fas fa-snowman" }}{{ $wcolor = $color_snow }}
+                    {{ else if eq $code 95 96 99 }}
+                      {{ $wtype = "Thunderstorm" }}{{ $wicon = "fas fa-bolt" }}{{ $wcolor = $color_thunderstorm }}
+                    {{ else }}
+                      {{ $wtype = "Other" }}{{ $wicon = "fa-solid fa-question" }}{{ $wcolor = $color_other }}
+                    {{ end }}
+                    <i class="{{ $wicon }}" style="font-size: 20px; color: {{ $wcolor | safeCSS }};" title="{{ $wtype }}"></i>
+                    </div>
+                  {{ end }}
+                </div>
+              </div>
+
+              {{ $maxTemps := $req2.JSON.Array "daily.temperature_2m_max" }}
+              {{ $minTemps := $req2.JSON.Array "daily.temperature_2m_min" }}
+              <div style="display: flex; justify-content: flex-start; align-items: center;">
+                {{ $max_max := -999 }}
+                {{ range $maxTemps }}
+                  {{ if gt (.Int "") $max_max }}{{ $max_max = (.Int "") }}{{ end }}
+                {{ end }}
+                {{ $min_min := 999 }}
+                {{ range $minTemps }}
+                  {{ if lt (.Int "") $min_min }}{{ $min_min = (.Int "") }}{{ end }}
+                {{ end }}
+                {{ $max_max = add $max_max 1 }}
+                {{ $min_min = sub $min_min 1 }}
+
+                <div style="position: relative; width: 100%; height: 75px;">
+                  {{ $temp_range := sub $max_max $min_min }}
+                  {{ range $index, $thisHigh := $maxTemps }}
+                    {{ $thisLow := index $minTemps $index }}
+                    {{ $thisHigh = $thisHigh.Float "" }}
+                    {{ $thisLow = $thisLow.Float "" }}
+                    {{ $thisHighPct := sub 1 (div (sub $max_max $thisHigh) $temp_range) }}
+                    {{ $thisLowPct := div (sub $thisLow $min_min) $temp_range }}
+                    {{ $thisTempRange := sub $thisHigh $thisLow }}
+                    {{ $red_pos := mul 100 (div (sub $thisHigh $temp_red) $thisTempRange) | toInt }}
+                    {{ $yel_pos := mul 100 (div (sub $thisHigh $temp_yellow) $thisTempRange) | toInt }}
+                    {{ $blu_pos := mul 100 (div (sub $thisHigh $temp_blue) $thisTempRange) | toInt }}
+                    {{ $whi_pos := mul 100 (div (sub $thisHigh $temp_white) $thisTempRange) | toInt }}
+                    {{ $gradient_string := printf "%s %d%%, %s %d%%, %s %d%%, %s %d%%" $color_red $red_pos $color_yellow $yel_pos $color_blue $blu_pos $color_white $whi_pos }}
+
+                    <div style="left: {{ mul $index 14 | add 3 }}%; bottom: {{ mul $thisLowPct 100 | toInt }}%;
+                      height: {{ mul (sub $thisHighPct $thisLowPct) 100 | toInt }}%; position: absolute;
+                      background: linear-gradient({{ $gradient_string | safeCSS }}); width: 10%; text-align: center; border-radius: 10px;">
+                      {{ $top_pos := -2 }}
+                      {{ $bot_pos := -2 }}
+                      {{ $pos_thresh := 0.20 }}
+                      {{ if lt (div $thisTempRange $temp_range) $pos_thresh }}
+                        {{ $top_pos = -17 }}
+                        {{ $bot_pos = -19 }}
+                      {{ else if and (lt (div $thisTempRange $temp_range) (mul $pos_thresh 2)) (lt (sub 1 $thisHighPct) $thisLowPct) }}
+                        {{ $bot_pos = -19 }}
+                      {{ else if and (lt (div $thisTempRange $temp_range) (mul $pos_thresh 2)) (gt (sub 1 $thisHighPct) $thisLowPct) }}
+                        {{ $top_pos = -17 }}
+                      {{ end }}
+                      <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: {{ $overlay_color | safeCSS }}; z-index: 1; border-radius: 10px;">
+                        <p style="color: #F0F0F0; position: absolute; top: {{ $top_pos }}px; left: 0px; right: 0px">{{ $thisHigh | toInt }}</p>
+                        <p style="color: #F0F0F0; position: absolute; bottom: {{ $bot_pos }}px; left: 0px; right: 0px">{{ $thisLow | toInt }}</p>
+                      </div>
+                    </div>
+                  {{ end }}
+                </div>
+              </div>
+
+          # Community widget: https://github.com/glanceapp/community-widgets/tree/main/widgets/sunrise-sunset
+          - type: custom-api
+            title: Sunrise & Sunset
+            body-type: string
+            cache: 12h
+            options:
+              location: Grand Rapids, Michigan, United States
+            template: |
+              {{ $timeLayout := "3:04 PM" }}
+              {{ $loc := replaceAll " " "%20" (.Options.StringOr "location" "") }}
+              {{ $geoUrl := printf "https://geocoding-api.open-meteo.com/v1/search?name=%s&count=1&language=en&format=json" $loc }}
+              {{ $geo := newRequest $geoUrl | getResponse }}
+              {{ $results := $geo.JSON.Array "results" }}
+
+              <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+              {{ if eq (len $results) 0 }}
+                <p class="color-paragraph">Location "{{ .Options.StringOr "location" "" }}" not found.</p>
+              {{ else }}
+                {{ $lat := $geo.JSON.String "results.0.latitude" }}
+                {{ $lon := $geo.JSON.String "results.0.longitude" }}
+                {{ $fcUrl := printf "https://api.open-meteo.com/v1/forecast?latitude=%s&longitude=%s&daily=sunrise,sunset,daylight_duration&forecast_days=1&timezone=auto" $lat $lon }}
+                {{ $fc := newRequest $fcUrl | getResponse }}
+                {{ $sunriseRaw := $fc.JSON.String "daily.sunrise.0" }}
+                {{ $sunsetRaw := $fc.JSON.String "daily.sunset.0" }}
+                {{ $daylight := $fc.JSON.Int "daily.daylight_duration.0" }}
+
+                {{ if or (eq $sunriseRaw "") (eq $sunsetRaw "") }}
+                  <p class="color-paragraph"><i class="fas fa-circle-exclamation"></i> No sunrise/sunset today.</p>
+                {{ else }}
+                  {{ $sunrise := $sunriseRaw | parseTime "2006-01-02T15:04" }}
+                  {{ $sunset := $sunsetRaw | parseTime "2006-01-02T15:04" }}
+                  {{ $hours := div $daylight 3600 }}
+                  {{ $mins := div (mod $daylight 3600) 60 }}
+                  <div style="display:flex; justify-content:space-around; align-items:center; padding:0.5rem 0;">
+                    <div style="text-align:center;">
+                      <i class="fas fa-arrow-up" style="color: var(--color-positive); font-size: 14px; margin-right: 0.25rem;"></i>
+                      <i class="fas fa-sun" style="color: var(--color-text-highlight); font-size: 28px;"></i>
+                      <p class="size-h3 color-text-highlight">{{ $sunrise.Format $timeLayout }}</p>
+                      <p class="size-h6 color-paragraph">Sunrise</p>
+                    </div>
+                    <div style="text-align:center;">
+                      <i class="fas fa-clock" style="color: var(--color-paragraph); font-size: 22px;"></i>
+                      <p class="size-h3 color-text-highlight">{{ $hours }}h {{ $mins }}m</p>
+                      <p class="size-h6 color-paragraph">Daylight</p>
+                    </div>
+                    <div style="text-align:center;">
+                      <i class="fas fa-arrow-down" style="color: var(--color-negative); font-size: 14px; margin-right: 0.25rem;"></i>
+                      <i class="fas fa-moon" style="color: var(--color-text-highlight); font-size: 28px;"></i>
+                      <p class="size-h3 color-text-highlight">{{ $sunset.Format $timeLayout }}</p>
+                      <p class="size-h6 color-paragraph">Sunset</p>
+                    </div>
+                  </div>
+                {{ end }}
               {{ end }}

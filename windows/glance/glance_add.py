@@ -139,9 +139,17 @@ def add_link(doc: Any, group_title: str, link: Link) -> None:
     groups = _bookmarks_widget(doc).setdefault("groups", [])
     group = next((g for g in groups if g.get("title") == group_title), None)
     if group is None:
-        group = {"title": group_title, "links": []}
-        groups.append(group)
-        group = groups[-1]
+        # New groups go in alphabetical (case-insensitive) position.
+        index = next(
+            (
+                i
+                for i, g in enumerate(groups)
+                if str(g.get("title", "")).casefold() > group_title.casefold()
+            ),
+            len(groups),
+        )
+        groups.insert(index, {"title": group_title, "links": []})
+        group = groups[index]
     group.setdefault("links", []).append(link.as_yaml())
 
 
