@@ -1,0 +1,12 @@
+# Linux-only Ghostty settings. Included from ~/.config/ghostty/config.
+# No quick terminal: it needs wlr-layer-shell, which GNOME (mutter) lacks.
+
+# Surface Pro 7 panel is high-DPI; GNOME scaling handles the rest
+font-size = 12
+
+# Match the GNOME header bar instead of a plain title bar
+gtk-titlebar = true
+gtk-single-instance = true
+
+# ctrl+shift+c is copy on Linux, so the mac cmd+shift+c helper moves to alt
+keybind = alt+shift+c=text:clip_last_output\n

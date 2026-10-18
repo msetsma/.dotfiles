@@ -28,6 +28,20 @@ _update_count_apt() {
   check_count="$(_update_nonempty_line_count "$check_output")"
 }
 
+_update_count_dnf() {
+  check_output="$(dnf -q check-update 2>/dev/null)"
+  check_status=$?
+  # dnf exits 100 when updates exist
+  (( check_status == 100 )) && check_status=0
+  check_count="$(_update_nonempty_line_count "$check_output")"
+}
+
+_update_count_pacman() {
+  check_output="$(pacman -Qu 2>/dev/null)"
+  check_status=0
+  check_count="$(_update_nonempty_line_count "$check_output")"
+}
+
 _update_count_mise() {
   check_output="$(mise outdated 2>/dev/null)"
   check_status=$?
@@ -72,6 +86,8 @@ _update_count_bun() {
 managers=(
   "Homebrew|brew|_update_count_homebrew"
   "apt|apt|_update_count_apt"
+  "dnf|dnf|_update_count_dnf"
+  "pacman|pacman|_update_count_pacman"
   "mise|mise|_update_count_mise"
   "Rust toolchains|rustup|_update_count_rustup"
   "Cargo installs|cargo-install-update|_update_count_cargo_install_update"
@@ -84,6 +100,8 @@ managers=(
 update_steps=(
   "Homebrew|brew|brew update && brew upgrade --greedy && brew cleanup"
   "apt|apt|sudo apt update && sudo apt upgrade -y"
+  "dnf|dnf|sudo dnf upgrade -y"
+  "pacman|pacman|sudo pacman -Syu"
   "mise|mise|mise upgrade"
   "Rust toolchains|rustup|rustup self update && rustup update"
   "Cargo installs|cargo-install-update|cargo install-update -a"

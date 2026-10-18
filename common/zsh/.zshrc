@@ -165,7 +165,7 @@ if (( _zinit_available )); then
   zinit light zsh-users/zsh-autosuggestions # Suggest commands from history/completion.
   zinit light zsh-users/zsh-syntax-highlighting # Highlight commands as you type.
 fi
-export PATH="/opt/homebrew/sbin:$PATH"
+(( IS_MAC )) && export PATH="/opt/homebrew/sbin:$PATH"
 
 # opencode
-export PATH=/Users/msetsma/.opencode/bin:$PATH
+export PATH="$HOME/.opencode/bin:$PATH"

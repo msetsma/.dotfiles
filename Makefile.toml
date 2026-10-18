@@ -154,10 +154,34 @@ script = [
     "fi",
 ]
 
+# cargo-make treats WSL2 and native Linux as one platform, so split at runtime
 [tasks.linux-tools]
 condition = { platforms = ["linux"] }
+dependencies = ["wsl-tools", "native-linux-tools"]
+
+[tasks.native-linux-tools]
+description = "Native Linux: distro packages (dnf/apt/pacman) + gap fillers"
+condition = { platforms = ["linux"] }
+condition_script = ["! grep -qi microsoft /proc/version"]
+script = ["bash ~/.dotfiles/linux/install-tools.sh"]
+
+[tasks.linux-desktop]
+description = "Native Linux: apply GNOME keybinds/appearance (AeroSpace-style workspaces)"
+condition = { platforms = ["linux"] }
+condition_script = ["! grep -qi microsoft /proc/version"]
+script = ["bash ~/.dotfiles/linux/gnome/settings.sh"]
+
+[tasks.linux-surface]
+description = "Native Linux: install linux-surface kernel + iptsd (Surface Pro 7)"
+condition = { platforms = ["linux"] }
+condition_script = ["! grep -qi microsoft /proc/version"]
+script = ["bash ~/.dotfiles/linux/surface/install.sh"]
+
+[tasks.wsl-tools]
+condition = { platforms = ["linux"] }
+condition_script = ["grep -qi microsoft /proc/version"]
 script = [
-    "echo '--- Installing WSL2/Linux tools via apt ---'",
+    "echo '--- Installing WSL2 tools via apt ---'",
     "sudo apt update",
     "sudo apt install -y zsh fzf ripgrep fd-find bat neovim cmake curl git build-essential pkg-config libssl-dev fastfetch tmux mosh",
 
@@ -205,7 +229,11 @@ script = [
 [tasks.dotfiles.linux]
 script = [
     "echo --- Creating Symlinks ---",
-    "dotter -v --cache-file .dotter/cache-wsl.toml --cache-directory .dotter/cache-wsl",
+    "if grep -qi microsoft /proc/version; then",
+    "  dotter -v --cache-file .dotter/cache-wsl.toml --cache-directory .dotter/cache-wsl",
+    "else",
+    "  dotter -v",
+    "fi",
 ]
 
 # ==========================
@@ -258,8 +286,11 @@ script = [
 [tasks.update-linux-tools]
 condition = { platforms = ["linux"] }
 script = [
-    "echo '--- Updating apt packages ---'",
-    "sudo apt update && sudo apt upgrade -y",
+    "echo '--- Updating distro packages ---'",
+    "if command -v dnf >/dev/null 2>&1; then sudo dnf upgrade -y",
+    "elif command -v apt-get >/dev/null 2>&1; then sudo apt update && sudo apt upgrade -y",
+    "elif command -v pacman >/dev/null 2>&1; then sudo pacman -Syu --noconfirm",
+    "fi",
 
     "echo '--- Updating Python CLI tools ---'",
     "uv tool upgrade --all",
@@ -304,6 +335,9 @@ script = [
 [tasks.check-outdated-linux]
 condition = { platforms = ["linux"] }
 script = [
-    "echo '--- Checking for upgradeable apt packages ---'",
-    "apt list --upgradeable 2>/dev/null || echo 'apt not available'",
+    "echo '--- Checking for upgradeable distro packages ---'",
+    "if command -v dnf >/dev/null 2>&1; then dnf check-update || true",
+    "elif command -v apt-get >/dev/null 2>&1; then apt list --upgradeable 2>/dev/null",
+    "elif command -v pacman >/dev/null 2>&1; then pacman -Qu || true",
+    "fi",
 ]

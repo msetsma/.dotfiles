@@ -1,12 +1,12 @@
 # Dotfiles
 
 [![License: MIT](https://img.shields.io/github/license/msetsma/.dotfiles)](LICENSE)
-![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20Windows%20(WSL2)-blue)
+![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20Linux%20%7C%20Windows%20(WSL2)-blue)
 [![Managed with dotter](https://img.shields.io/badge/managed%20with-dotter-orange)](https://github.com/SuperCuber/dotter)
 [![Tasks: cargo-make](https://img.shields.io/badge/tasks-cargo--make-orange)](https://github.com/sagiegurari/cargo-make)
 ![Last commit](https://img.shields.io/github/last-commit/msetsma/.dotfiles)
 
-Unix-first dotfiles for macOS and Windows (via WSL2).
+Unix-first dotfiles for macOS, Linux, and Windows (via WSL2).
 
 > [!WARNING]
 > Feel free to take what you want, but review before installing. `cargo make init` installs packages and symlinks configs into your home directory.
@@ -22,10 +22,14 @@ flowchart LR
     subgraph macOS
         M[Ghostty, AeroSpace]
     end
+    subgraph Linux
+        L[Ghostty, GNOME]
+    end
     subgraph Windows
         W[WezTerm, komorebi] --> WSL[WSL2]
     end
     M --> C["common/<br/>zsh, Neovim, tmux, CLI tools"]
+    L --> C
     WSL --> C
 ```
 
@@ -63,6 +67,18 @@ git clone git@github.com:msetsma/.dotfiles.git
 cd .dotfiles
 cargo make init
 ```
+
+### Linux (native)
+
+Tested target: Surface Pro 7 on GNOME (Fedora or Ubuntu with the [linux-surface](https://github.com/linux-surface/linux-surface) kernel). `linux/install-tools.sh` detects `dnf`, `apt`, or `pacman`.
+
+```bash
+cargo make linux-surface   # optional: linux-surface kernel + iptsd (reboot after)
+cargo make init            # packages, zinit, fonts, zsh as login shell, hostname mitch-linux, dotter
+cargo make linux-desktop   # GNOME keybinds that mirror AeroSpace
+```
+
+Details in [linux/README.md](linux/README.md).
 
 ### Windows (two-step setup)
 
@@ -161,6 +177,10 @@ cargo make info            # Show all available commands
 
 [Ghostty](https://ghostty.org/) | [AeroSpace](https://github.com/nikitabobko/AeroSpace)
 
+### Linux-only (GUI layer)
+
+[Ghostty](https://ghostty.org/) | [GNOME](https://www.gnome.org/) | [linux-surface](https://github.com/linux-surface/linux-surface)
+
 ### Windows-only (GUI layer)
 
 [WezTerm](https://github.com/wez/wezterm) | [Firefox](https://www.firefox.com/) + [Betterfox](https://github.com/yokoffing/Betterfox) | [komorebi](https://github.com/LGUG2Z/komorebi) | [whkd](https://github.com/LGUG2Z/whkd) | [yasb](https://github.com/amnweb/yasb) | [Scoop](https://scoop.sh/)
@@ -204,7 +224,7 @@ This drives platform-specific behavior like clipboard (`pbcopy` vs `clip.exe`), 
 
 - **macOS**: Clang (via Xcode command line tools)
 - **Windows**: MSVC (Visual Studio Build Tools, "Desktop development with C++" workload)
-- **WSL2/Linux**: GCC (`sudo apt install build-essential`)
+- **WSL2/Linux**: GCC (installed by `cargo make init`: `build-essential`, `gcc gcc-c++`, or `base-devel`)
 
 </details>
 

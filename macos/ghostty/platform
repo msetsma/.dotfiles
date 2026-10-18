@@ -1,0 +1,14 @@
+# macOS-only Ghostty settings. Included from ~/.config/ghostty/config.
+background-blur = 15
+macos-option-as-alt = true
+
+# Global keybinding to summon a temp terminal
+# https://ghostty.org/docs/config/reference#quick-terminal-size
+quick-terminal-screen = main
+quick-terminal-size = 1000px,700px
+quick-terminal-animation-duration = .02
+quick-terminal-position = center
+quick-terminal-space-behavior = remain
+
+keybind = global:cmd+grave_accent=toggle_quick_terminal
+keybind = cmd+shift+c=text:clip_last_output\n

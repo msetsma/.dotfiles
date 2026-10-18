@@ -1,0 +1,2 @@
+packages = ["common", "linux", "linux-desktop"]
+includes = ["common/theme/catppuccin-mocha.toml"]

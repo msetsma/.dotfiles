@@ -123,21 +123,23 @@ mac_alias = "brew-doctor"
 windows_alias = "scoop-doctor"
 linux_alias = "linux-pkg-info"
 
-# ---------- Linux/WSL2: apt ----------
+# ---------- Linux/WSL2: dnf / apt / pacman ----------
 
 [tasks.linux-pkg-info]
 condition = { platforms = ["linux"] }
 script = [
-    "echo '--- Linux/WSL2 uses apt ---'",
-    "echo 'Use apt directly: sudo apt update && sudo apt upgrade'",
+    "echo '--- Linux packages are declared in linux/install-tools.sh (WSL2: wsl-tools task) ---'",
+    "echo 'Re-run: cargo make install-tools'",
 ]
 
 [tasks.linux-pkg-cleanup]
 condition = { platforms = ["linux"] }
 script = [
-    "echo '--- Cleaning up apt ---'",
-    "sudo apt autoremove -y",
-    "sudo apt autoclean",
+    "echo '--- Cleaning up distro packages ---'",
+    "if command -v dnf >/dev/null 2>&1; then sudo dnf autoremove -y && sudo dnf clean all",
+    "elif command -v apt-get >/dev/null 2>&1; then sudo apt autoremove -y && sudo apt autoclean",
+    "elif command -v pacman >/dev/null 2>&1; then sudo pacman -Sc --noconfirm",
+    "fi",
 ]
 
 
@@ -290,6 +292,12 @@ script = [
     "  echo '✓ WSL2 detected'",
     "  command -v wslview >/dev/null 2>&1 && echo '✓ wslu installed' || echo '✗ wslu not found (install: sudo apt install wslu)'",
     "  command -v zsh >/dev/null 2>&1 && echo '✓ zsh installed' || echo '✗ zsh not found'",
+    "elif [[ \"$OSTYPE\" == \"linux\"* ]]; then",
+    "  echo '✓ Native Linux detected'",
+    "  command -v zsh >/dev/null 2>&1 && echo '✓ zsh installed' || echo '✗ zsh not found'",
+    "  command -v ghostty >/dev/null 2>&1 && echo '✓ ghostty installed' || echo '✗ ghostty not found'",
+    "  command -v wl-copy >/dev/null 2>&1 && echo '✓ wl-clipboard installed' || echo '✗ wl-clipboard not found'",
+    "  uname -r | grep -q surface && echo '✓ linux-surface kernel' || echo '- stock kernel (Surface: cargo make linux-surface)'",
     "fi",
     "echo ''",
     "echo '--- Environment variables ---'",
@@ -367,6 +375,10 @@ script = [
     "echo '    cargo make scoop-import      - Install from windows/scoop.json'",
     "echo '    cargo make scoop-cleanup     - Cleanup old versions'",
     "echo '    cargo make scoop-doctor      - Check for issues'",
+    "echo ''",
+    "echo '  Linux (native):'",
+    "echo '    cargo make linux-desktop     - Apply GNOME keybinds/appearance'",
+    "echo '    cargo make linux-surface     - Install linux-surface kernel (Surface Pro 7)'",
     "echo ''",
     "echo '  Python/uv tool:'",
     "echo '    cargo make uv-tools-list     - List packages'",

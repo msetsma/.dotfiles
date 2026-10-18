@@ -38,11 +38,18 @@
 "common/herdr" = "~/.config/herdr"
 "common/bottom" = "~/Library/Application Support/bottom"
 "macos/aerospace" = "~/.config/aerospace"
-"macos/ghostty/config" = { target = "~/.config/ghostty/config", type = "template" }
+"common/ghostty/config" = { target = "~/.config/ghostty/config", type = "template" }
+"macos/ghostty/platform" = "~/.config/ghostty/platform"
 "macos/launchagents" = "~/Library/LaunchAgents"
 "macos/glance/glance.yml" = "~/.glance/glance.yml"
 
+# Shared by WSL2 and native Linux
 [linux.files]
 "common/herdr" = "~/.config/herdr"
 "common/bottom" = "~/.config/bottom"
 "windows/wsl/.hushlogin" = "~/.hushlogin"
+
+# Native Linux desktop (GNOME); WSL2 skips this package
+[linux-desktop.files]
+"common/ghostty/config" = { target = "~/.config/ghostty/config", type = "template" }
+"linux/ghostty/platform" = "~/.config/ghostty/platform"
