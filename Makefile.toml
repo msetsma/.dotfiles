@@ -131,6 +131,13 @@ script = [
     'setx XDG_CONFIG_HOME "%USERPROFILE%\\.config"',
 ]
 
+[tasks.firefox-autoconfig]
+description = "Install Firefox autoconfig (Glance as new-tab page); prompts for admin"
+condition = { platforms = ["windows"] }
+script = [
+    "powershell -NoProfile -ExecutionPolicy Bypass -File %USERPROFILE%\\.dotfiles\\windows\\firefox\\install-autoconfig.ps1",
+]
+
 [tasks.mac-tools]
 script = [
     "echo '--- Installing via Brewfile ---'",

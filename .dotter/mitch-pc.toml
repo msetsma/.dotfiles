@@ -1,2 +1,6 @@
 packages = [ "common", "windows" ]
 includes = ["common/theme/catppuccin-mocha.toml"]
+
+# Firefox profile dirs are random per machine, so map user.js per host
+[files]
+"windows/firefox/user.js" = { target = "~/AppData/Roaming/Mozilla/Firefox/Profiles/2zo01l3k.betterfox/user.js", type = "symbolic" }

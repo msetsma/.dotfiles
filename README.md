@@ -163,7 +163,7 @@ cargo make info            # Show all available commands
 
 ### Windows-only (GUI layer)
 
-[WezTerm](https://github.com/wez/wezterm) | [komorebi](https://github.com/LGUG2Z/komorebi) | [whkd](https://github.com/LGUG2Z/whkd) | [yasb](https://github.com/amnweb/yasb) | [Scoop](https://scoop.sh/)
+[WezTerm](https://github.com/wez/wezterm) | [Firefox](https://www.firefox.com/) + [Betterfox](https://github.com/yokoffing/Betterfox) | [komorebi](https://github.com/LGUG2Z/komorebi) | [whkd](https://github.com/LGUG2Z/whkd) | [yasb](https://github.com/amnweb/yasb) | [Scoop](https://scoop.sh/)
 
 ---
 
