@@ -31,6 +31,8 @@ Guidance for coding agents working in this repo. See [README.md](README.md) for 
 
 - **Linux vs WSL2:** cargo-make reports both as `linux`. Tasks split with `condition_script` on `/proc/version`; dotter packages are `linux` (shared) plus `linux-desktop` (native only).
 - **Ghostty:** `common/ghostty/config` is the shared base; it includes `platform` from `macos/ghostty/` or `linux/ghostty/`.
+- **Nushell (native Windows):** `windows/nushell/` deploys to `~/.config/nushell` (via `XDG_CONFIG_HOME`). Commands live in `autoload/*.nu`, sourced alphabetically after `config.nu`. `env.nu` caches starship/zoxide/carapace/vivid init into `%APPDATA%\nushell\vendor\autoload`; run `rld --regen` after upgrading those tools. Don't cache `mise activate nu` (it bakes in PATH; shims cover mise).
+- **Nushell checks:** `nu -c` skips autoloads, so test with `nu -e '<cmds>; exit'`. Git for Windows' `usr\bin` is on PATH, so a removed nu builtin (e.g. `fmt`) silently falls through to a coreutils binary.
 
 ## Tests
 

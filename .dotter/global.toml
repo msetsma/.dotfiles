@@ -32,7 +32,7 @@
 "windows/glance/bookmarks.yml" = "~/.glance/bookmarks.yml"
 # symbolic: Handy rewrites this file at runtime; fs::write follows the link so edits land in the repo
 "windows/handy/settings_store.json" = { target = "~/AppData/Roaming/com.pais.handy/settings_store.json", type = "symbolic" }
-# "windows/nushell" = "~/.config/nushell"
+"windows/nushell" = "~/.config/nushell"
 
 [mac.files]
 "common/herdr" = "~/.config/herdr"

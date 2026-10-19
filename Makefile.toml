@@ -102,7 +102,10 @@ script = [
     "echo --- Installing Tools ---",
     "scoop bucket add extras 2>nul || echo extras bucket already added",
     "scoop bucket add nerd-fonts 2>nul || echo nerd-fonts bucket already added",
-    "scoop install lazygit neovim wezterm-nightly fzf ripgrep bat yasb JetBrainsMono-NF",
+    "scoop install lazygit neovim wezterm-nightly fzf ripgrep bat fd eza yasb JetBrainsMono-NF",
+
+    "echo --- Installing Shell ---",
+    "scoop install nu starship zoxide carapace-bin vivid",
 
     "echo --- Installing Languages ---",
     "scoop install python go lua lua51 luarocks stylua",
