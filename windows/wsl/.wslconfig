@@ -1,5 +1,6 @@
 [wsl2]
 networkingMode=mirrored
+guiApplications=false
 
 [experimental]
 autoMemoryReclaim=gradual
