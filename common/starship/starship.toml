@@ -100,6 +100,8 @@ symbol = " "
 tag_symbol = '  '
 
 [custom.git_worktree]
+# POSIX sh so the check also runs on Windows (Git for Windows ships sh)
+shell = ["sh"]
 command = "printf '󰔱'"
 when = "d=$PWD; while [ -n \"$d\" ] && [ \"$d\" != / ]; do if [ -f \"$d/.git\" ]; then IFS= read -r gitdir < \"$d/.git\"; case \"$gitdir\" in */worktrees/*) exit 0;; esac; fi; d=${d%/*}; [ -n \"$d\" ] || d=/; done; exit 1"
 format = "[$output]($style) "
