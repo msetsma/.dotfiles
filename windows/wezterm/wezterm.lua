@@ -7,6 +7,7 @@ local config = wezterm.config_builder()
 config.default_prog = F.get_default_program()
 config.automatically_reload_config = true
 config.launch_menu = {
+    { label = 'Nushell',            args = { 'nu.exe' } },
     { label = 'WSL (zsh)',          args = { 'wsl.exe', '--cd', '~' } },
     { label = 'Windows PowerShell', args = { 'powershell.exe' } },
 }

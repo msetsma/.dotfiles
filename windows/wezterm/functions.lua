@@ -29,17 +29,17 @@ end
 function F.get_default_program()
     local os = F.detect_os()
     if os == 'windows' then
-        return { 'wsl.exe', '--cd', '~' }
+        return { 'nu.exe' }
     end
     return { 'zsh' }
 end
 
 function F.get_pane_type(pane)
     local proc = (pane.foreground_process_name or ''):lower()
-    if proc:match('powershell') or proc:match('cmd') then
-        return 'windows'
+    if proc:match('wsl') then
+        return 'wsl'
     end
-    return 'wsl'
+    return 'windows'
 end
 
 function F.get_tab_title(tab, tabs)

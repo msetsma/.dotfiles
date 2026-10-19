@@ -22,7 +22,7 @@ auto_switch = false
 [terminal]
 # Executable used for new interactive panes.
 # Empty means $SHELL, then /bin/sh.
-# default_shell = ""
+default_shell = 'C:\Users\2015m\scoop\apps\nu\current\nu.exe'
 
 # CWD policy for new panes, tabs, and workspaces when no explicit --cwd is provided.
 # Use "follow" to inherit the source pane/workspace, "home" for $HOME,
