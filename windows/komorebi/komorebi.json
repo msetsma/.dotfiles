@@ -1,6 +1,13 @@
 {
   "$schema": "https://raw.githubusercontent.com/LGUG2Z/komorebi/v0.1.40/schema.json",
   "app_specific_configuration_path": "$Env:USERPROFILE/.config/komorebi/applications.json",
+  "floating_applications": [
+    {
+      "kind": "Exe",
+      "id": "TextInputHost.exe",
+      "matching_strategy": "Equals"
+    }
+  ],
   "display_index_preferences": {
     "0": "GBT3204-5&11d5afbc&0&UID4353",
     "1": "SAM0E14-5&11d5afbc&0&UID4357"
