@@ -12,3 +12,10 @@ quick-terminal-space-behavior = remain
 
 keybind = global:cmd+grave_accent=toggle_quick_terminal
 keybind = cmd+shift+c=text:clip_last_output\n
+
+# Cmd+Z sends Ctrl+_ (undo in Claude Code's prompt and zsh's line editor).
+# Replaces Ghostty's undo of closed tabs/splits; Cmd+Shift+T still does that.
+keybind = super+z=text:\x1f
+# Default redo is performable: with nothing to redo, Cmd+Shift+Z falls through
+# and Claude Code (kitty protocol via herdr) inserts a literal "Z". Always consume it.
+keybind = super+shift+z=redo

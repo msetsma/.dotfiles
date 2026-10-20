@@ -24,3 +24,6 @@ _zsh_bind_widget_key zle-helper-widget '^[h' '^[H' '\M-h' '\M-H'
 _zsh_bind_widget_key clip-widget '^[y' '^[Y' '\M-y' '\M-Y'
 
 unfunction _zsh_bind_widget_key
+
+# Ctrl+_ undoes (Ghostty sends it for Cmd+Z); viins self-inserts it by default.
+bindkey -M viins '^_' undo
