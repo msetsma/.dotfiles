@@ -1,0 +1,9 @@
+#compdef gimmie
+
+_arguments -s \
+  '(-a)-d[search N levels deep (default 5)]:depth:' \
+  '(-d)-a[search every level]' \
+  '-r[only files changed within AGE]:age (30m, 2d, 1w):' \
+  '-D[list folders too]' \
+  '-c[copy instead of move]' \
+  '1: :{_alternative "commands:command:((undo\:\"reverse the last run\"))" "dirs:search root:_files -/"}'

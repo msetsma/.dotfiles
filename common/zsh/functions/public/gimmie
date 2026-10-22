@@ -1,0 +1,177 @@
+# gimmie [-d depth | -a] [-r age] [-D] [-c] [search_root]
+# Fuzzy-find files under search_root (default: $HOME) and move them into the
+# current directory.
+#   -d N   search N levels deep (default 5)
+#   -a     search every level
+#   -r AGE only files changed within AGE (fd syntax: 30m, 2d, 1w)
+#   -D     list folders too
+#   -c     copy instead of move
+# A name clash brings the file in as "name (1).ext"; nothing is overwritten.
+# gimmie undo: reverse the last run (moves go back, copies get deleted).
+# Keys: Tab multi-select, ctrl-o open, ctrl-y copy path, ctrl-/ preview,
+#       ctrl-d toggle folders.
+# Deps: fd, fzf (>= 0.45), bat, eza
+
+emulate -L zsh
+setopt pipefail
+
+# fzf preview runs this same file as a script: gimmie --preview <file>
+if [[ $1 == --preview ]]; then
+  zmodload zsh/stat zsh/datetime
+  local f=${2%/} w=${FZF_PREVIEW_COLUMNS:-60}
+  local -A st
+  zstat -H st -- "$f" 2>/dev/null || { print "Cannot stat: $f"; return 1 }
+
+  local born
+  if [[ $OSTYPE == darwin* ]]; then born=$(command stat -f %B -- "$f")
+  else born=$(command stat -c %W -- "$f"); fi
+
+  _when() {
+    (( $1 > 0 )) || { print -n "unknown"; return }
+    local d=$(( EPOCHSECONDS - $1 )) ago
+    if   (( d < 3600 ));   then ago="$(( d / 60 ))m ago"
+    elif (( d < 86400 ));  then ago="$(( d / 3600 ))h ago"
+    elif (( d < 2592000 )); then ago="$(( d / 86400 ))d ago"
+    else ago="$(( d / 2592000 ))mo ago"; fi
+    print -n "$(strftime '%Y-%m-%d %H:%M' $1) %F{8}($ago)%f"
+  }
+  _size() {
+    local n=$1 u
+    for u in B KB MB GB TB; do
+      (( n < 1024 )) && break
+      n=$(( n / 1024.0 ))
+    done
+    [[ $u == B ]] && print -n "$n B" || printf '%.1f %s' $n $u
+  }
+  _row() { print -P "  %F{blue}${(r:10:)1}%f $2" }
+
+  print -P "%B%F{cyan}${f:t}%f%b"
+  print -P "%F{8}${f:h}%f"
+  print -P "%F{8}${(l:$w::─:)}%f"
+  if [[ -d $f ]]; then
+    _row Size   "%F{green}$(du -sh -- "$f" 2>/dev/null | cut -f1)%f"
+    _row Items  "$(fd --hidden . "$f" 2>/dev/null | wc -l | tr -d ' ')"
+  else
+    _row Size   "%F{green}$(_size $st[size])%f"
+  fi
+  _row Type     "%F{yellow}$(file -b -- "$f" | cut -c1-$(( w - 13 )))%f"
+  _row Modified "$(_when $st[mtime])"
+  _row Created  "$(_when $born)"
+  _row Accessed "$(_when $st[atime])"
+  _row Mode     "%F{magenta}$(zstat -s +mode -- "$f")%f"
+  _row Owner    "$(zstat -s +uid -- "$f")"
+  print -P "%F{8}${(l:$w::─:)}%f"
+  if [[ -d $f ]]; then
+    eza --tree --level=2 --icons --color=always -- "$f"
+  elif file -b --mime -- "$f" | grep -q '^text/'; then
+    bat --style=numbers --color=always --line-range=:80 -- "$f"
+  fi
+  return 0
+fi
+
+local log="${XDG_STATE_HOME:-$HOME/.local/state}/gimmie/last"
+
+# Each line of the log is "<mv|cp>\t<original path>\t<new path>".
+if [[ $1 == undo ]]; then
+  [[ -s $log ]] || { print -P "%F{yellow}Nothing to undo%f"; return 0 }
+  local op src dst
+  while IFS=$'\t' read -r op src dst; do
+    if [[ ! -e $dst ]]; then
+      print -P "%F{yellow}Skipped (gone):%f $dst"
+    elif [[ $op == cp ]]; then
+      rm -rf -- "$dst" && print -P "%F{green}Removed copy:%f $dst"
+    elif [[ -e $src ]]; then
+      print -P "%F{yellow}Skipped (original spot taken):%f $src"
+    elif mkdir -p -- "${src:h}" && mv -- "$dst" "$src"; then
+      print -P "%F{green}Restored:%f $src"
+    fi
+  done < $log
+  rm -f -- $log
+  return 0
+fi
+
+local -a o_depth o_all o_dirs o_copy o_recent
+zparseopts -D -E -F d:=o_depth a=o_all D=o_dirs c=o_copy r:=o_recent || return 1
+
+local root="${1:-$HOME}"
+[[ -d "$root" ]] || { print -P "%F{red}Not a directory:%f $root"; return 1 }
+
+local -a fd_cmd=(fd --hidden --exclude .git --exclude node_modules --exclude Library
+                 --absolute-path)
+(( $#o_all )) || fd_cmd+=(--max-depth "${o_depth[2]:-5}")
+(( $#o_recent )) && fd_cmd+=(--changed-within "$o_recent[2]")
+fd_cmd+=(. "$root" --type f)
+local -a first=($fd_cmd)
+(( $#o_dirs )) && first+=(--type d)
+
+local opener=xdg-open clip="cat >/dev/null" c
+if (( ${IS_MAC:-0} )); then opener=open
+elif (( ${IS_WSL_INTEROP:-0} )); then opener=wslview; fi
+for c in pbcopy clip.exe wl-copy "xclip -selection clipboard"; do
+  (( $+commands[${c%% *}] )) && { clip=$c; break }
+done
+
+local verb=Move done=Moved prompt='gimmie > '
+(( $#o_copy )) && verb=Copy done=Copied
+(( $#o_dirs )) && prompt='gimmie +dirs > '
+
+# ctrl-d reloads the list with or without folders; fzf's child shell reads
+# the fd command from GIMMIE_FD.
+local -a picked
+picked=("${(@f)$(
+  $first 2>/dev/null |
+    GIMMIE_FD="${(j: :)${(@q)fd_cmd}}" fzf --multi \
+        --prompt="$prompt" \
+        --header="$verb into ${PWD/#$HOME/~}"$'\n'"^o open  ^y copy path  ^/ preview  ^d folders" \
+        --keep-right \
+        --preview="zsh ${(q)functions_source[gimmie]} --preview {}" \
+        --preview-window=right:60%:wrap \
+        --bind="ctrl-o:execute-silent($opener {})" \
+        --bind="ctrl-y:execute-silent(print -rn -- {} | $clip)" \
+        --bind='ctrl-/:toggle-preview' \
+        --bind='ctrl-d:transform:[[ $FZF_PROMPT == *dirs* ]] &&
+          echo "change-prompt(gimmie > )+reload:eval $GIMMIE_FD 2>/dev/null" ||
+          echo "change-prompt(gimmie +dirs > )+reload:eval $GIMMIE_FD --type d 2>/dev/null"' \
+        --layout=reverse \
+        --height=90% \
+        --border
+)}")
+
+[[ -z "${picked[1]}" ]] && return 0
+
+mkdir -p -- "${log:h}"
+: > $log
+
+local f name dst n
+for f in $picked; do
+  f=${f%/}  # fd prints folders with a trailing slash
+  if [[ ! -e $f ]]; then
+    print -P "%F{yellow}Skipped (moved with its folder):%f $f"
+    continue
+  fi
+
+  # Pick a free name: "report.pdf" -> "report (1).pdf". Folders and
+  # dotfiles like ".zshrc" get the number at the end.
+  name=${f:t} dst="$PWD/${f:t}" n=1
+  while [[ -e $dst ]]; do
+    if [[ -d $f || -z ${name:r} || $name != *.* ]]; then
+      dst="$PWD/$name ($n)"
+    else
+      dst="$PWD/${name:r} ($n).${name:e}"
+    fi
+    (( n++ ))
+  done
+
+  if (( $#o_copy )); then
+    cp -Rp -- "$f" "$dst" || continue
+    print -r -- "cp"$'\t'"$f"$'\t'"$dst" >> $log
+  else
+    mv -- "$f" "$dst" || continue
+    print -r -- "mv"$'\t'"$f"$'\t'"$dst" >> $log
+  fi
+  if [[ ${dst:t} == $name ]]; then
+    print -P "%F{green}$done:%f $f"
+  else
+    print -P "%F{green}$done:%f $f %F{8}as%f ${dst:t}"
+  fi
+done
