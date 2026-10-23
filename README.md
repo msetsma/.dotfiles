@@ -191,14 +191,12 @@ cargo make info            # Show all available commands
 
 ```mermaid
 flowchart LR
-    A[iPhone] -->|Mosh / Tailscale| B[Windows] --> C[WSL2] --> D[tmux] --> E[Claude Code]
+    A[iPhone] -->|SSH / Tailscale| B[Windows sshd] --> C[nushell] --> D[herdr] --> E[Claude Code]
 ```
 
-Push notifications: `common/moshi/hook-runner.sh` gates Claude Code hooks via `tmux list-clients`, so pushes fire only when a Moshi client is attached.
+Push notifications come from native `moshi-hook` (experimental on Windows, Herdr only).
 
-Setup:
-- [docs/ssh-mosh-setup-guide.md](docs/ssh-mosh-setup-guide.md): host SSH/Mosh/Tailscale
-- [common/moshi/README.md](common/moshi/README.md): hook integration + token
+Setup: [docs/ssh-mosh-setup-guide.md](docs/ssh-mosh-setup-guide.md)
 
 ---
 

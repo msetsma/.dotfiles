@@ -1,159 +1,61 @@
-# iPhone → WSL SSH/Mosh Setup via Tailscale
+# iPhone → Windows SSH Setup via Tailscale
 
-## Architecture
 ```
-Moshi (iPhone) → Mosh/SSH → Tailscale → Windows (mirrored networking) → WSL → tmux → your code
+Moshi (iPhone) → SSH :22 → Tailscale → Windows sshd → nushell → herdr → claude
+                                                          └─ `wsl` when Linux is needed
 ```
+
+SSH only: there is no native Windows mosh-server.
 
 ## Prerequisites
-- Tailscale installed and authenticated on both iPhone and Windows PC
-- WSL2 with a Linux distro installed
-- Moshi app on iPhone with an Ed25519 key generated
 
----
+- Tailscale installed and signed in on both iPhone and Windows
+- Moshi app on iPhone with an Ed25519 key
+- nushell and herdr installed (scoop / herdr.dev)
 
-## 1. Enable Mirrored Networking in WSL2
+## 1. sshd
 
-Create/edit `C:\Users\<your-user>\.wslconfig`:
-
-```ini
-[wsl2]
-networkingMode=mirrored
-```
-
-Restart WSL from PowerShell:
+From any shell (prompts for UAC):
 
 ```powershell
-wsl --shutdown
+powershell -File windows/ssh/setup-sshd.ps1 -PublicKey "<moshi public key>"
 ```
 
-This lets WSL share the Windows network stack so ports opened inside WSL are reachable via the Windows Tailscale IP.
+Installs OpenSSH Server on port 22 with key-only auth, sets nushell as the login shell, writes the
+key to `C:\ProgramData\ssh\administrators_authorized_keys` (admin users read keys from there, not
+`~/.ssh`), and opens the firewall. Safe to re-run.
 
----
+## 2. moshi-hook (notifications)
 
-## 2. Install OpenSSH Server and Mosh in WSL
-
-```bash
-sudo apt update
-sudo apt install openssh-server mosh
-```
-
----
-
-## 3. Configure sshd
-
-Edit `/etc/ssh/sshd_config` — place these lines **at the top** of the file, before any `Include` directives:
-
-```
-Port 22
-PubkeyAuthentication yes
-PasswordAuthentication no
-PermitRootLogin no
-MaxAuthTries 3
-AllowUsers <your-wsl-username>
-```
-
-Replace `<your-wsl-username>` with the output of `whoami`.
-
----
-
-## 4. Generate SSH Host Keys
-
-```bash
-sudo ssh-keygen -A
-```
-
----
-
-## 5. Add Moshi Public Key to WSL
-
-Copy the public key from Moshi (found in the app's key management section). Then in WSL:
-
-```bash
-mkdir -p ~/.ssh
-echo "<your-moshi-public-key>" >> ~/.ssh/authorized_keys
-chmod 700 ~/.ssh
-chmod 600 ~/.ssh/authorized_keys
-```
-
----
-
-## 6. Start sshd
-
-```bash
-sudo mkdir -p /run/sshd && sudo /usr/sbin/sshd -p 22
-```
-
-Note: `/run/sshd` is cleared on every WSL restart and must be recreated.
-
----
-
-## 7. Automate sshd on WSL Boot
-
-Edit `/etc/wsl.conf`:
-
-```ini
-[boot]
-systemd=true
-command=mkdir -p /run/sshd && /usr/sbin/sshd -p 22
-```
-
----
-
-## 8. Windows Firewall Rules
-
-In an elevated PowerShell:
+Native Windows builds are experimental and only support Herdr. Defender flags the vendor's
+`irm | iex` one-liner, so download the installer and run it as a file:
 
 ```powershell
-New-NetFirewallRule -DisplayName "WSL Mosh UDP" -Direction Inbound -LocalPort 60000-61000 -Protocol UDP -Action Allow
+irm https://getmoshi.app/install.ps1 -OutFile $env:TEMP\moshi-install.ps1
+powershell -NoProfile -File $env:TEMP\moshi-install.ps1
+# new terminal
+moshi-hook install --target claude
+moshi-hook pair --token <token from app: Settings -> Integrations>
+moshi-hook service install
+moshi-hook status   # expect: paired
 ```
 
-If SSH also needs a rule:
+## 3. Moshi app
 
-```powershell
-New-NetFirewallRule -DisplayName "WSL SSH" -Direction Inbound -LocalPort 22 -Protocol TCP -Action Allow
-```
-
----
-
-## 9. Disable Windows OpenSSH Server (Optional)
-
-If you previously enabled the Windows OpenSSH server and no longer need it:
-
-```powershell
-Stop-Service sshd
-Set-Service -Name sshd -StartupType Disabled
-```
-
----
-
-## 10. Configure Moshi on iPhone
-
-- **Host**: PC's Tailscale IP (find with `tailscale ip` in PowerShell)
+- **Host**: Tailscale IP (`tailscale ip -4`) or MagicDNS name
 - **Port**: 22
-- **Username**: your WSL username
-- **Auth**: the Ed25519 key you generated in Moshi
-- **Connection type**: Mosh
+- **User**: Windows username (`$env:USERNAME`)
+- **Auth**: the Ed25519 key from step 1
+- **Connection type**: SSH
 
----
-
-## 11. Install tmux for Session Persistence
-
-```bash
-sudo apt install tmux
-```
-
-Usage:
-- Start a session: `tmux new -s work`
-- Detach: `Ctrl+B` then `D`
-- Reattach after reconnecting: `tmux attach -t work`
-
----
+Run agents inside Herdr so notifications can target the pane.
 
 ## Troubleshooting
 
-- **sshd won't start**: Check `sudo sshd -t` for config errors. Ensure `/run/sshd` exists.
-- **Port already in use**: Run `sudo pkill sshd` then restart. Check Windows side with `netstat -ano | findstr <port>` in PowerShell.
-- **Mosh connection fails**: Verify UDP firewall rule exists. Confirm mirrored networking is active in `.wslconfig`.
-- **Permission denied**: Verify `authorized_keys` permissions (700 on `.ssh`, 600 on the file). Confirm `AllowUsers` matches your username.
-- **Connection hangs**: sshd likely isn't running. Start it manually with `sudo mkdir -p /run/sshd && sudo /usr/sbin/sshd -p 22`.
+- **Timeout**: nothing reached sshd. Portmaster blocks inbound by default, below Windows Firewall
+  and without logging there: in Portmaster, open sshd's app settings, disable *Block Inbound
+  Connections*, optionally with incoming rule `+ 100.64.0.0/10` (tailnet only). Otherwise check
+  Tailscale is connected on the phone, then
+  `Get-WinEvent -LogName OpenSSH/Operational -MaxEvents 10` for attempts from the phone's 100.x IP.
+- **Permission denied**: key missing or file ACL loosened. Re-run step 1.
+- **Invalid user**: wrong username in the app.
