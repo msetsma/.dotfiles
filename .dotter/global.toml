@@ -30,6 +30,10 @@
 "windows/glance/glance.yml" = { target = "~/.glance/glance.yml", type = "symbolic" }
 "windows/glance/bookmarks.yml" = "~/.glance/bookmarks.yml"
 "windows/nushell" = "~/.config/nushell"
+# template (a copy, not a link): sshd sessions skip unelevated links outside ~/.config
+"windows/powershell/profile.ps1" = { target = "~/Documents/PowerShell/profile.ps1", type = "template" }
+# 05-theme.ps1 holds {{theme.*}} colors, so dotter templates it automatically
+"windows/powershell/conf.d" = "~/.config/powershell/conf.d"
 
 [mac.files]
 "common/herdr" = "~/.config/herdr"
