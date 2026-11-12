@@ -6,8 +6,6 @@ tap "oven-sh/bun"
 cask "aerospace"
 
 # Apps
-cask "handy"
-
 # Terminal & Multiplexer
 cask "ghostty"
 brew "tmux"

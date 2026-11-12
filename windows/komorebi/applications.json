@@ -19,15 +19,6 @@
       }
     ]
   },
-  "Handy": {
-    "ignore": [
-      {
-        "kind": "Exe",
-        "id": "handy.exe",
-        "matching_strategy": "Equals"
-      }
-    ]
-  },
   "1Password": {
     "ignore": [
       {

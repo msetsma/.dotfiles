@@ -37,6 +37,5 @@ Log out and back in so zsh (login shell), the hostname, and GNOME workspaces tak
 - **AeroSpace tiling and app-focus binds** (`ctrl+alt+cmd+<key>`): GNOME has no tiling. Hyprland would fit these, but touch and pen on the Surface are much better on GNOME.
 - **Ghostty quick terminal**: needs `wlr-layer-shell`, which GNOME does not implement.
 - **Glance**: config lives in `macos/glance/` and `windows/glance/`; add a `linux/glance/` copy plus a systemd user unit if wanted.
-- **Handy**: grab the `.rpm`/`.deb` from its GitHub releases.
 - **LaunchAgents** (`entra` cache refresh): would become a systemd user timer.
 - **Firefox Betterfox**: `windows/firefox/user.js` works here too; map it in `.dotter/mitch-linux.toml` once the profile dir exists (`~/.mozilla/firefox/<id>.default-release/user.js`).
