@@ -34,12 +34,21 @@ function F.get_default_program()
     return { 'zsh' }
 end
 
+-- foreground_process_name walks the process tree on Windows, and format-tab-title
+-- runs on every repaint (including mouse moves), so cache the result per pane.
+local PANE_TYPE_TTL_SECONDS = 2
+local pane_type_cache = {}
+
 function F.get_pane_type(pane)
-    local proc = (pane.foreground_process_name or ''):lower()
-    if proc:match('wsl') then
-        return 'wsl'
+    local now = os.time()
+    local cached = pane_type_cache[pane.pane_id]
+    if cached and now - cached.at < PANE_TYPE_TTL_SECONDS then
+        return cached.kind
     end
-    return 'windows'
+    local proc = (pane.foreground_process_name or ''):lower()
+    local kind = proc:match('wsl') and 'wsl' or 'windows'
+    pane_type_cache[pane.pane_id] = { kind = kind, at = now }
+    return kind
 end
 
 function F.get_tab_title(tab, tabs)
