@@ -1,5 +1,12 @@
 # Python Rules
 
+Every Python edit and commit passes a gate (`~/.dotfiles-agents/bin/clean-python`:
+ruff plus extra checks). It already enforces typed signatures, no `print()`, no
+bare or blind `except`, `raise ... from`, `X | None`, function size and argument
+counts, frozen dataclasses, files of 800 lines or fewer, no code only tests use,
+and type correctness (ty). `# noqa` does not silence it: fix the code. Write code
+that passes it the first time; the rules below are the ones no tool can check.
+
 ## Architecture & Patterns
 
 - Prefer composition over inheritance; use protocols/ABCs for interfaces
@@ -11,18 +18,17 @@
 
 ## Error Handling & Logging
 
-- No bare `except` — always catch specific exceptions
 - Prefer custom exception hierarchies for domain errors (inherit from a project base exception)
-- Use `raise ... from` to preserve exception chains
-- Use `structlog` or stdlib `logging` — never `print()` for observability
+- Use `structlog` or stdlib `logging` for observability
 - Log at appropriate levels: DEBUG for dev, INFO for business events, WARNING for recoverable issues, ERROR for failures
 - Let exceptions propagate — don't catch-and-log-and-swallow
 
-## Type Hints & Data Modeling
+## Data Modeling
 
-- Type-annotate all function signatures (params + return)
 - Use `Pydantic BaseModel` for external data boundaries (API, config, file I/O)
-- Use `dataclasses` for internal domain objects
+- Use frozen `dataclasses` for internal domain objects
 - Use `TypedDict` only for typed dict literals (e.g., kwargs)
 - Prefer `collections.abc` types (`Sequence`, `Mapping`) over concrete types in signatures
-- Use `X | None` syntax (PEP 604), not `Optional[X]`
+
+Use the `python-review` skill before a refactor, when deleting or splitting code,
+and when reviewing a Python diff.

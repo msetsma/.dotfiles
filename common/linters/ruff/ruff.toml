@@ -43,9 +43,10 @@ exclude = [
 # LINTING
 # =============================================================================
 [lint]
-# Preview is enabled ONLY so a single preview rule can be selected: PLR1702
-# (too-many-nested-blocks). `explicit-preview-rules` keeps every other preview
-# rule off - without both settings PLR1702 silently does nothing.
+# Preview is enabled ONLY so named preview rules can be selected: PLR1702
+# (too-many-nested-blocks) and PLR0917 (too-many-positional-arguments).
+# `explicit-preview-rules` keeps every other preview rule off - without both
+# settings those rules silently do nothing.
 preview = true
 explicit-preview-rules = true
 select = [
@@ -86,6 +87,12 @@ select = [
   # Complexity
   "C90",  # mccabe
   "PLR1702",  # too-many-nested-blocks (preview; threshold: [lint.pylint] max-nested-blocks)
+  "PLR0917",  # too-many-positional-arguments (preview; threshold: [lint.pylint] max-positional-args)
+  # Type hints on every signature
+  "ANN",  # flake8-annotations
+  # Observability and error handling
+  "T20",  # flake8-print (no print(); use logging)
+  "BLE",  # flake8-blind-except (no `except Exception:`)
   # Code quality
   "Q",  # flake8-quotes
   "ERA",  # eradicate (commented-out code)
@@ -107,7 +114,6 @@ ignore = [
   "S104",  # binding to all interfaces
   "S311",  # pseudo-random (fine for non-crypto)
   "S603",  # subprocess without shell (fires on any non-literal argv; S602/S605 cover shell=True)
-  "PLR0913",  # too many arguments
   "PLR2004",  # magic values (too noisy for numeric code)
   "ARG001",  # unused function arg (needed for API compatibility)
   "ARG002",  # unused method arg
@@ -118,7 +124,7 @@ ignore = [
   "TC003",
   # Minor preferences
   "PTH123",  # open() vs Path.open()
-  "PLR0915",  # statements
+  "ANN401",  # Any is legitimate for json.loads-style values
 ]
 fixable = ["ALL"]
 unfixable = ["ERA001", "F401", "F841"]  # Require manual review
@@ -143,6 +149,7 @@ split-on-trailing-comma = false
 
 [lint.pylint]
 max-args = 6
+max-positional-args = 5
 max-returns = 8
 max-branches = 15
 max-statements = 60
