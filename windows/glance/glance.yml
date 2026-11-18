@@ -2,24 +2,6 @@
 server:
   port: 8280
 
-# Widgets load async, so the search widget's `autofocus` attribute never fires.
-# Focus the search box once it appears, and again when the tab gains focus.
-document:
-  head: |
-    <script>
-      (() => {
-        const focusSearch = () => {
-          const input = document.querySelector(".search-input");
-          if (input && document.activeElement !== input) input.focus();
-          return Boolean(input);
-        };
-        const poll = setInterval(() => { if (focusSearch()) clearInterval(poll); }, 50);
-        setTimeout(() => clearInterval(poll), 5000);
-        window.addEventListener("focus", focusSearch);
-        document.addEventListener("visibilitychange", () => { if (!document.hidden) focusSearch(); });
-      })();
-    </script>
-
 # Catppuccin Macchiato
 theme:
   background-color: 232 23 18
@@ -67,7 +49,6 @@ pages:
         widgets:
           - type: search
             search-engine: https://search.brave.com/search?q={QUERY}
-            autofocus: true
             placeholder: Search Brave or use !bangs
             bangs:
               - title: Wikipedia
