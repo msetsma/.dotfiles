@@ -89,17 +89,17 @@
             "Source": "main"
         },
         {
-            "Version": "6.2",
-            "Info": "",
-            "Updated": "2025-01-21T09:41:36.3267111-05:00",
-            "Name": "firacode",
-            "Source": "nerd-fonts"
-        },
-        {
             "Version": "3.4.0",
             "Info": "",
             "Updated": "2026-04-29T06:21:04.8330644-04:00",
             "Name": "FiraCode-NF",
+            "Source": "nerd-fonts"
+        },
+        {
+            "Version": "3.5.1",
+            "Info": "",
+            "Updated": "2026-11-15T00:00:00.0000000-05:00",
+            "Name": "FiraCode-NF-Mono",
             "Source": "nerd-fonts"
         },
         {

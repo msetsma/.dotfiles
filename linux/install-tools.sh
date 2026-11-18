@@ -9,7 +9,7 @@ set -euo pipefail
 
 DOTFILES="${DOTFILES:-$HOME/.dotfiles}"
 HOSTNAME_TARGET="mitch-linux"
-NERD_FONTS=("JetBrainsMono" "Hack")
+NERD_FONTS=("FiraCode" "JetBrainsMono" "Hack")
 NERD_FONTS_VERSION="v3.4.0"
 
 log() { printf '\n--- %s ---\n' "$*"; }

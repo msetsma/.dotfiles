@@ -22,7 +22,7 @@ palette = 13={{theme.pink}}
 palette = 14={{theme.teal}}
 palette = 15={{theme.subtext0}}
 window-decoration = true
-font-family = "JetBrainsMono Nerd Font"
+font-family = "FiraCode Nerd Font Mono"
 font-size = 14
 confirm-close-surface = false
 background-opacity = 1
